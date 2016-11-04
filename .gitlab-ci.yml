@@ -28,6 +28,5 @@ build:
     - ./gradlew -g /cache/.gradle buildPlugin
   allow_failure: false
   artifacts:
-    untracked: true
     paths:
-        - intellij/build/libs/
+        - intellij/build/
