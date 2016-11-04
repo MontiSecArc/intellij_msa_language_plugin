@@ -21,6 +21,10 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
 
   @JvmStatic
   @NotNull
+  String getName();
+
+  @JvmStatic
+  @NotNull
   String getQualifiedName();
 
   @JvmStatic

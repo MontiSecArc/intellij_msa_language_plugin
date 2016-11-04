@@ -17,7 +17,6 @@
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
-  <depends>com.intellij.modules.lang</depends>
   <extensions defaultExtensionNs="com.intellij">
 
     <internalFileTemplate name="MSA Component" />
@@ -58,6 +57,7 @@
     <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAPortIndex" />
     <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex" />
     <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex" />
+    <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex" />
    </extensions>
 
   <actions>

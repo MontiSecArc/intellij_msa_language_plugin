@@ -7,5 +7,5 @@ import de.monticore.lang.montisecarc.stubs.MSAFileStub
  * Created by thomasbuning on 26.09.16.
  */
 object MSAFileElementType : IStubFileElementType<MSAFileStub>(MSALanguage.instance) {
-    override fun getStubVersion(): Int = 13
+    override fun getStubVersion(): Int = 24
 }

@@ -12,6 +12,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import de.monticore.lang.montisecarc.psi.*
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex
+import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex
+import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
 import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 import org.jetbrains.annotations.NotNull
 
@@ -102,18 +104,11 @@ class MSAReferenceContributor : PsiReferenceContributor() {
 
                 val msaComponentName = element as MSAComponentName
 
-                if (msaComponentName.parent is MSAComponentSignature) {
+                val instanceDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentInstanceDeclaration::class.java)
+                if (instanceDeclaration != null) {
 
-                    val instanceName = (msaComponentName.parent as MSAComponentSignature).componentInstanceName?.text.orEmpty()
-                    if(!instanceName.isNullOrEmpty()) {
-
-                        val componentName = msaComponentName.text
-                        return arrayOf(MSAComponentNameReference(msaComponentName, TextRange(0, componentName.length), componentName))
-                    } else {
-
-                        return PsiReference.EMPTY_ARRAY
-                    }
-
+                    val componentName = msaComponentName.text
+                    return arrayOf(MSAComponentNameReference(msaComponentName, TextRange(0, componentName.length), componentName))
                 } else {
 
                     return PsiReference.EMPTY_ARRAY
@@ -232,21 +227,68 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 
-        val connector = PsiTreeUtil.getParentOfType(element, MSAConnector::class.java)
         val relationStatement = PsiTreeUtil.getParentOfType(element, MSATrustLevelRelationStatement::class.java)
         val identityStatement = PsiTreeUtil.getParentOfType(element, MSAIdentityStatement::class.java)
 
-        val found = arrayListOf<MSAComponentDeclaration>()
-        StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, reference, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
+        val parentComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
-            if(relationStatement != null) {
+        val found = arrayListOf<MSANamedElement>()
+        StubIndex.getInstance().processElements(MSAComponentInstanceIndex.KEY, reference, element.project, GlobalSearchScope.allScope(element.project), MSAComponentInstanceDeclaration::class.java, {
 
-                val msaComponentDeclaration = PsiTreeUtil.getParentOfType(relationStatement, MSAComponentDeclaration::class.java)
+            if (identityStatement != null) {
+                val itComponentParent = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
 
-                if(msaComponentDeclaration?.qualifiedName.equals(PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)?.qualifiedName)) {
+                if (itComponentParent?.qualifiedName.equals(parentComponent?.qualifiedName)) {
                     found.add(it)
                 }
             }
+            true
+        })
+
+        StubIndex.getInstance().processElements(MSAComponentInstanceDeclarationIndex.KEY, reference, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
+
+            if (identityStatement != null) {
+                val itComponentParent = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
+
+                if (itComponentParent?.qualifiedName.equals(parentComponent?.qualifiedName)) {
+                    found.add(it)
+                }
+            }
+            true
+        })
+        return found.map(::PsiElementResolveResult).toTypedArray()
+    }
+
+    override fun resolve(): PsiElement? {
+
+        val resolveResults = multiResolve(false)
+        return if (resolveResults.size == 1) resolveResults[0].element else null
+    }
+
+    override fun getVariants(): Array<out Any> {
+
+        val found = arrayListOf<MSAComponentDeclaration>()
+
+        val foundComponentInstanceNames = found.filter { !it.instanceName.isNullOrEmpty() }
+        val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {
+            val lookupElementBuilder = LookupElementBuilder.create(it)
+            lookupElementBuilder.withLookupString(it.instanceName)
+            lookupElementBuilder.withTailText("(" + it.qualifiedName + ")")
+
+        }.toTypedArray()
+
+        return arrayOfLookupElementBuilders
+    }
+}
+
+class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange, val componentName: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
+
+    override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
+
+        val found = arrayListOf<MSAComponentDeclaration>()
+        StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
+
+            found.add(it)
             true
         })
         return found.map(::PsiElementResolveResult).toTypedArray()
@@ -267,38 +309,6 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
                 true
             })
         }
-
-        val foundComponentInstanceNames = found.filter { !it.instanceName.isNullOrEmpty() }
-        val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {
-            val lookupElementBuilder = LookupElementBuilder.create(it)
-            lookupElementBuilder.withLookupString(it.instanceName)
-            lookupElementBuilder.withTailText("(" + it.qualifiedName + ")")
-
-        }.toTypedArray()
-
-        return arrayOfLookupElementBuilders
-    }
-}
-
-class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange, val componentName: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
-
-    override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
-
-        val found = arrayListOf<MSAComponentDeclaration>()
-
-        return found.map(::PsiElementResolveResult).toTypedArray()
-    }
-
-    override fun resolve(): PsiElement? {
-
-        val resolveResults = multiResolve(false)
-        return if (resolveResults.size == 1) resolveResults[0].element else null
-    }
-
-    override fun getVariants(): Array<out Any> {
-
-        val found = arrayListOf<MSAComponentDeclaration>()
-
         val foundComponentInstanceNames = found.filter { !it.instanceName.isNullOrEmpty() }
         val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {
             val lookupElementBuilder = LookupElementBuilder.create(it)

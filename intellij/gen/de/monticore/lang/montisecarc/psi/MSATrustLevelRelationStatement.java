@@ -10,9 +10,6 @@ public interface MSATrustLevelRelationStatement extends MSACompositeElement {
   @NotNull
   List<MSAComponentInstanceName> getComponentInstanceNameList();
 
-  @NotNull
-  List<MSAPortInstanceName> getPortInstanceNameList();
-
   @Nullable
   MSAStereotype getStereotype();
 

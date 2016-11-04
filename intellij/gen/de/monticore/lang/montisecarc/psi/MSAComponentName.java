@@ -14,6 +14,10 @@ public interface MSAComponentName extends MSACompositeElement {
 
   @JvmStatic
   @NotNull
+  String getName();
+
+  @JvmStatic
+  @NotNull
   PsiElement setName(String newName);
 
   @JvmStatic

@@ -10,6 +10,9 @@ import kotlin.jvm.JvmStatic;
 public interface MSAReferenceType extends MSACompositeElement {
 
   @NotNull
+  List<MSAComponentName> getComponentNameList();
+
+  @NotNull
   List<MSAReferenceType> getReferenceTypeList();
 
   @JvmStatic

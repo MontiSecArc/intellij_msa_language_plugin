@@ -30,6 +30,12 @@ public class MSAReferenceTypeImpl extends MSACompositeElementImpl implements MSA
 
   @Override
   @NotNull
+  public List<MSAComponentName> getComponentNameList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentName.class);
+  }
+
+  @Override
+  @NotNull
   public List<MSAReferenceType> getReferenceTypeList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAReferenceType.class);
   }

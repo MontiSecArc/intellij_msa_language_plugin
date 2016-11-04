@@ -31,7 +31,7 @@ import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 * limitations under the License.
 */
 
-object MSAComponentInstanceStubElementType : MSANamedStubElementType<MSAComponentInstanceStub, MSAComponentInstanceDeclaration>("COMPONENT_INSTANCE") {
+object MSAComponentInstanceStubElementType : MSANamedStubElementType<MSAComponentInstanceStub, MSAComponentInstanceDeclaration>("COMPONENT_INSTANCE_DECLARATION") {
 
 
     override fun serialize(stub: MSAComponentInstanceStub, dataStream: StubOutputStream) = with(dataStream) {
@@ -41,7 +41,7 @@ object MSAComponentInstanceStubElementType : MSANamedStubElementType<MSAComponen
 
     override fun createStub(psi: MSAComponentInstanceDeclaration, parentStub: StubElement<*>?): MSAComponentInstanceStub {
 
-        val name = psi.componentInstanceNameList.joinToString()
+        val name = psi.componentInstanceNameList.map { it.text }.joinToString()
         return MSAComponentInstanceStub(parentStub, this, name)
     }
 

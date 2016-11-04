@@ -32,12 +32,6 @@ public class MSATrustLevelRelationStatementImpl extends MSACompositeElementImpl 
   }
 
   @Override
-  @NotNull
-  public List<MSAPortInstanceName> getPortInstanceNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAPortInstanceName.class);
-  }
-
-  @Override
   @Nullable
   public MSAStereotype getStereotype() {
     return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);

@@ -36,6 +36,12 @@ public class MSAComponentInstanceNameImpl extends MSACompositeElementImpl implem
 
   @JvmStatic
   @NotNull
+  public String getName() {
+    return MSAPsiImplUtil.getName(this);
+  }
+
+  @JvmStatic
+  @NotNull
   public PsiElement setName(String newName) {
     return MSAPsiImplUtil.setName(this, newName);
   }

@@ -70,6 +70,26 @@ class MSAPsiImplUtil {
             return element
         }
 
+        @JvmStatic fun getName(element: MSAComponentInstanceName): String {
+
+            return element.text
+        }
+
+        @JvmStatic fun getName(element: MSAComponentName): String {
+
+            return element.text
+        }
+
+        @JvmStatic fun getName(element: MSAComponentDeclaration): String {
+
+            return element.qualifiedName
+        }
+
+        @JvmStatic fun getName(element: MSAComponentInstanceDeclaration): String {
+
+            return element.componentInstanceNameList.map { it.text }.joinToString()
+        }
+
         @JvmStatic fun getReferences(element: MSAReferenceType): Array<out PsiReference> {
 
             return ReferenceProvidersRegistry.getReferencesFromProviders(element)
@@ -169,7 +189,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {
 
-            val instanceName = element.componentSignature?.componentInstanceName?.text ?: element.componentSignature?.componentName?.text?.decapitalize()
+            val instanceName = element.componentSignature?.componentInstanceName?.text
             return instanceName.orEmpty()
         }
 

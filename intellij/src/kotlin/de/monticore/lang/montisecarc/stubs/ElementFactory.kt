@@ -22,7 +22,7 @@ import de.monticore.lang.montisecarc.stubs.elements.MSAPortStubElementType
 fun factory(name: String): MSAStubElementType<*, *> = when (name) {
     "PORT_ELEMENT"            -> MSAPortStubElementType
     "COMPONENT_DECLARATION"   -> MSAComponentDeclarationStubElementType
-    "COMPONENT_INSTANCE"      -> MSAComponentInstanceStubElementType
+    "COMPONENT_INSTANCE_DECLARATION"      -> MSAComponentInstanceStubElementType
     else               -> {
         throw IllegalArgumentException("Unknown element $name")
     }

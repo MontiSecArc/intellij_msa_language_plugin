@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MSATypeParameters extends MSACompositeElement {
 
   @NotNull
+  List<MSAComponentName> getComponentNameList();
+
+  @NotNull
   List<MSAReferenceType> getReferenceTypeList();
 
 }

@@ -73,14 +73,14 @@ private package_recover ::= !(';' | '<<' | <<eof>> | import | component)
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
 private import_recover ::= !('<<' | component | import | semi)
 
-ComponentName ::= ID { methods=[setName getReferences] }
-ComponentInstanceName ::= ID { methods=[setName getReferences] }
+ComponentName ::= ID { methods=[getName setName getReferences] }
+ComponentInstanceName ::= ID { methods=[getName setName getReferences] }
 RoleName ::= ID { methods=[] }
 PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
 
 ComponentDeclaration ::= Stereotype? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
+                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -94,6 +94,7 @@ ComponentBody ::= LBRACE (Statement | ComponentDeclaration)* RBRACE {pin=1}
 
 ComponentInstanceDeclaration ::= Stereotype? InputFilter? ReferenceType ("(" QualifiedIdentifier ("," QualifiedIdentifier)* ")" )? ComponentInstance (COMMA ComponentInstance)* semi {
         pin=3
+        methods=[getName]
         implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
         stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -124,7 +125,8 @@ ConnectPortStatement ::= Stereotype? connect Connector semi { pin=2 }
 TrustLevelStatement ::= Stereotype? trustlevel LEVEL [STRING] semi { pin=2 }
 LEVEL ::= [ PLUS | MINUS ] NUMBER
 
-TrustLevelRelationStatement ::= Stereotype? trustlevelrelation QualifiedIdentifier { EQUAL | LESS | GREATER } QualifiedIdentifier semi { pin=2 }
+TrustLevelRelationStatement ::= Stereotype? trustlevelrelation TrustLevelIdentifier { EQUAL | LESS | GREATER } TrustLevelIdentifier semi { pin=2 }
+private TrustLevelIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName
 
 AutoConnectStatement ::= Stereotype? AUTOCONNECT [ENCRYPTED | UNENCRYPTED] { TYPE | port | OFF } semi { pin=2 }
 
@@ -135,7 +137,7 @@ PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAR
 AccessControlStatement ::= Stereotype? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
 IdentityStatement ::= Stereotype? IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
-private IdentityIdentifier ::= ComponentInstanceName (DOT ComponentInstanceName)* PortInstanceName?
+private IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName?
 
 CPEStatement ::= Stereotype? CPE STRING semi { pin=2 }
 
@@ -162,7 +164,7 @@ private StereoValue ::= ID ("=" STRING)?
 TypeParameters ::= LESS TypeVariableDeclaration (COMMA TypeVariableDeclaration)* GREATER
 private TypeVariableDeclaration ::= ID (extends (ComplexReferenceType | "&")+)?
 ReferenceType ::= SimpleReferenceType | ComplexReferenceType {methods=[getReferences]}
-private SimpleReferenceType ::= ID ("." ID)* (TypeArguments)? {pin=1}
+private SimpleReferenceType ::= (ID ".")* ComponentName (TypeArguments)? {pin=ComponentName}
 private ComplexReferenceType ::= SimpleReferenceType  (DOT SimpleReferenceType)* {pin=1}
 private TypeArguments ::= ("<" (WildcardType | ",")* ">")
 private WildcardType ::= '?' ((extends ReferenceType) | (super ReferenceType))?;

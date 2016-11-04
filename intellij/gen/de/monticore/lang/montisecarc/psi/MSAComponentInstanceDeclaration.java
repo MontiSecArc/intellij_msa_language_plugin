@@ -6,6 +6,7 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub;
+import kotlin.jvm.JvmStatic;
 
 public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBasedPsiElement<MSAComponentInstanceStub> {
 
@@ -26,5 +27,9 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
 
   @Nullable
   PsiElement getId();
+
+  @JvmStatic
+  @NotNull
+  String getName();
 
 }

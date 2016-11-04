@@ -8,6 +8,7 @@ import de.monticore.lang.montisecarc.psi.impl.MSAPortElementImpl
 import de.monticore.lang.montisecarc.stubs.MSANamedElementStub
 import de.monticore.lang.montisecarc.stubs.MSANamedStubElementType
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex
+import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
 import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 
@@ -53,7 +54,7 @@ object MSAComponentDeclarationStubElementType : MSANamedStubElementType<MSACompo
         super.indexStub(stub, sink)
 
         stub.name.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentDeclarationIndex.KEY, it!!)} }
-        stub.instanceName.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentInstanceIndex.KEY, it!!)} }
+        stub.instanceName.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentInstanceDeclarationIndex.KEY, stub.instanceName!!) } }
     }
 }
 

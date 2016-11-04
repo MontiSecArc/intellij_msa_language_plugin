@@ -47,6 +47,5 @@ dependencies {
 intellij {
     pluginName 'MSA'
     version "2016.2.5"
-    downloadSources false
 }
 

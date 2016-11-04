@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin;
 import de.monticore.lang.montisecarc.psi.*;
+import kotlin.jvm.JvmStatic;
 import de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub;
 import com.intellij.psi.stubs.IStubElementType;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
@@ -67,6 +68,12 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
   @Nullable
   public PsiElement getId() {
     return findChildByType(ID);
+  }
+
+  @JvmStatic
+  @NotNull
+  public String getName() {
+    return MSAPsiImplUtil.getName(this);
   }
 
 }
