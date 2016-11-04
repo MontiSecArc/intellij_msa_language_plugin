@@ -29,4 +29,4 @@ build:
   allow_failure: false
   artifacts:
     paths:
-        - intellij/build/libs/intellij-1.0-SNAPSHOT.jar
+        - /build/ma_buning/msa/intellij/build/libs/
