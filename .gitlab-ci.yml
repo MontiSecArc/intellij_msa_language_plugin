@@ -29,4 +29,4 @@ build:
   allow_failure: false
   artifacts:
     paths:
-        - /build/ma_buning/msa/intellij/build/libs/
+        - intellij/build/libs/
