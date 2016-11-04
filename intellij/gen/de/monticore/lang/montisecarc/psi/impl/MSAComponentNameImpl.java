@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
+import com.intellij.psi.PsiReference;
 import kotlin.jvm.JvmStatic;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
@@ -37,6 +38,12 @@ public class MSAComponentNameImpl extends MSACompositeElementImpl implements MSA
   @NotNull
   public PsiElement setName(String newName) {
     return MSAPsiImplUtil.setName(this, newName);
+  }
+
+  @JvmStatic
+  @NotNull
+  public PsiReference[] getReferences() {
+    return MSAPsiImplUtil.getReferences(this);
   }
 
 }

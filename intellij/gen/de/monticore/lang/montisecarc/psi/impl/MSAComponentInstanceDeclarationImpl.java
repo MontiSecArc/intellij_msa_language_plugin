@@ -8,13 +8,20 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
+import de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin;
 import de.monticore.lang.montisecarc.psi.*;
+import de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub;
+import com.intellij.psi.stubs.IStubElementType;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAComponentInstanceDeclarationImpl extends MSACompositeElementImpl implements MSAComponentInstanceDeclaration {
+public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImplMixin implements MSAComponentInstanceDeclaration {
 
   public MSAComponentInstanceDeclarationImpl(ASTNode node) {
     super(node);
+  }
+
+  public MSAComponentInstanceDeclarationImpl(MSAComponentInstanceStub stub, IStubElementType<?, ?> nodeType) {
+    super(stub, nodeType);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {

@@ -85,6 +85,11 @@ class MSAPsiImplUtil {
             return ReferenceProvidersRegistry.getReferencesFromProviders(element)
         }
 
+        @JvmStatic fun getReferences(element: MSAComponentName): Array<out PsiReference> {
+
+            return ReferenceProvidersRegistry.getReferencesFromProviders(element)
+        }
+
         @JvmStatic fun getReferencedPortElement(element: MSAPortInstanceName): MSAPortElement? {
 
             val referencesFromProviders = ReferenceProvidersRegistry.getReferencesFromProviders(element)
@@ -135,7 +140,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getQualifiedName(element: MSAComponentDeclaration): String {
 
-            val name = element.componentSignature?.componentName?.text.orEmpty()
+            val name = getComponentName(element)
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
@@ -155,6 +160,11 @@ class MSAPsiImplUtil {
 
                 return arrayOf(wrappingComponent.qualifiedName, name).joinToString(".")
             }
+        }
+
+        @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
+
+            return element.componentSignature?.componentName?.text.orEmpty()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {

@@ -93,6 +93,33 @@ class MSAReferenceContributor : PsiReferenceContributor() {
                 }
             }
         })
+
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(MSACompositeElementTypes.COMPONENT_NAME), object : PsiReferenceProvider() {
+
+            @NotNull
+            override fun getReferencesByElement(@NotNull element: PsiElement,
+                                                @NotNull context: ProcessingContext): Array<PsiReference> {
+
+                val msaComponentName = element as MSAComponentName
+
+                if (msaComponentName.parent is MSAComponentSignature) {
+
+                    val instanceName = (msaComponentName.parent as MSAComponentSignature).componentInstanceName?.text.orEmpty()
+                    if(!instanceName.isNullOrEmpty()) {
+
+                        val componentName = msaComponentName.text
+                        return arrayOf(MSAComponentNameReference(msaComponentName, TextRange(0, componentName.length), componentName))
+                    } else {
+
+                        return PsiReference.EMPTY_ARRAY
+                    }
+
+                } else {
+
+                    return PsiReference.EMPTY_ARRAY
+                }
+            }
+        })
     }
 }
 
@@ -240,6 +267,37 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
                 true
             })
         }
+
+        val foundComponentInstanceNames = found.filter { !it.instanceName.isNullOrEmpty() }
+        val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {
+            val lookupElementBuilder = LookupElementBuilder.create(it)
+            lookupElementBuilder.withLookupString(it.instanceName)
+            lookupElementBuilder.withTailText("(" + it.qualifiedName + ")")
+
+        }.toTypedArray()
+
+        return arrayOfLookupElementBuilders
+    }
+}
+
+class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange, val componentName: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
+
+    override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
+
+        val found = arrayListOf<MSAComponentDeclaration>()
+
+        return found.map(::PsiElementResolveResult).toTypedArray()
+    }
+
+    override fun resolve(): PsiElement? {
+
+        val resolveResults = multiResolve(false)
+        return if (resolveResults.size == 1) resolveResults[0].element else null
+    }
+
+    override fun getVariants(): Array<out Any> {
+
+        val found = arrayListOf<MSAComponentDeclaration>()
 
         val foundComponentInstanceNames = found.filter { !it.instanceName.isNullOrEmpty() }
         val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {

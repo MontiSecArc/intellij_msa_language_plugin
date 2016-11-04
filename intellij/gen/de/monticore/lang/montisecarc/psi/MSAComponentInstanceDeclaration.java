@@ -4,8 +4,10 @@ package de.monticore.lang.montisecarc.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.StubBasedPsiElement;
+import de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub;
 
-public interface MSAComponentInstanceDeclaration extends MSACompositeElement {
+public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBasedPsiElement<MSAComponentInstanceStub> {
 
   @NotNull
   List<MSAComponentInstanceName> getComponentInstanceNameList();

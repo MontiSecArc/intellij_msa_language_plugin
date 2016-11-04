@@ -1,9 +1,12 @@
 package de.monticore.lang.montisecarc.stubs.elements
 
 import com.intellij.psi.stubs.*
+import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
+import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 import de.monticore.lang.montisecarc.psi.MSAPortElement
 import de.monticore.lang.montisecarc.psi.impl.MSAComponentDeclarationImpl
+import de.monticore.lang.montisecarc.psi.impl.MSAComponentInstanceDeclarationImpl
 import de.monticore.lang.montisecarc.psi.impl.MSAPortElementImpl
 import de.monticore.lang.montisecarc.stubs.MSANamedElementStub
 import de.monticore.lang.montisecarc.stubs.MSANamedStubElementType
@@ -27,40 +30,37 @@ import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-object MSAComponentDeclarationStubElementType : MSANamedStubElementType<MSAComponentDeclarationStub, MSAComponentDeclaration>("COMPONENT_DECLARATION") {
+
+object MSAComponentInstanceStubElementType : MSANamedStubElementType<MSAComponentInstanceStub, MSAComponentInstanceDeclaration>("COMPONENT_INSTANCE") {
 
 
-    override fun serialize(stub: MSAComponentDeclarationStub, dataStream: StubOutputStream) = with(dataStream) {
+    override fun serialize(stub: MSAComponentInstanceStub, dataStream: StubOutputStream) = with(dataStream) {
 
         writeName(stub.name)
-        writeName(stub.instanceName)
     }
 
-    override fun createStub(psi: MSAComponentDeclaration, parentStub: StubElement<*>?): MSAComponentDeclarationStub {
+    override fun createStub(psi: MSAComponentInstanceDeclaration, parentStub: StubElement<*>?): MSAComponentInstanceStub {
 
-        val name = psi.componentName
-        val instanceName = psi.instanceName
-        return MSAComponentDeclarationStub(parentStub, this, name, instanceName)
+        val name = psi.componentInstanceNameList.joinToString()
+        return MSAComponentInstanceStub(parentStub, this, name)
     }
 
-    override fun createPsi(stub: MSAComponentDeclarationStub): MSAComponentDeclaration =
-            MSAComponentDeclarationImpl(stub, this)
+    override fun createPsi(stub: MSAComponentInstanceStub): MSAComponentInstanceDeclaration =
+            MSAComponentInstanceDeclarationImpl(stub, this)
 
-    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): MSAComponentDeclarationStub =
-            MSAComponentDeclarationStub(parentStub, this, dataStream.readNameAsString(), dataStream.readNameAsString())
+    override fun deserialize(dataStream: StubInputStream, parentStub: StubElement<*>?): MSAComponentInstanceStub =
+            MSAComponentInstanceStub(parentStub, this, dataStream.readNameAsString())
 
-    override fun indexStub(stub: MSAComponentDeclarationStub, sink: IndexSink) {
+    override fun indexStub(stub: MSAComponentInstanceStub, sink: IndexSink) {
         super.indexStub(stub, sink)
 
-        stub.name.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentDeclarationIndex.KEY, it!!)} }
-        stub.instanceName.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentInstanceIndex.KEY, it!!)} }
+        stub.name?.split(",")?.forEach { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentInstanceIndex.KEY, it)} }
     }
 }
 
 
-class MSAComponentDeclarationStub(
+class MSAComponentInstanceStub(
         parent: StubElement<*>?,
         elementType: IStubElementType<*, *>,
-        name: String?,
-        val instanceName: String?
-) : MSANamedElementStub<MSAComponentDeclaration>(parent, elementType, name ?: "")
+        name: String?
+) : MSANamedElementStub<MSAComponentInstanceDeclaration>(parent, elementType, name ?: "")

@@ -31,7 +31,7 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitComponentInstanceDeclaration(@NotNull MSAComponentInstanceDeclaration o) {
-    visitCompositeElement(o);
+    visitNamedElement(o);
   }
 
   public void visitComponentInstanceName(@NotNull MSAComponentInstanceName o) {

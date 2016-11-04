@@ -73,14 +73,14 @@ private package_recover ::= !(';' | '<<' | <<eof>> | import | component)
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
 private import_recover ::= !('<<' | component | import | semi)
 
-ComponentName ::= ID { methods=[setName] }
+ComponentName ::= ID { methods=[setName getReferences] }
 ComponentInstanceName ::= ID { methods=[setName getReferences] }
 RoleName ::= ID { methods=[] }
 PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
 
 ComponentDeclaration ::= Stereotype? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getQualifiedName getInstanceName getTrustLevel getAbsoluteTrustLevel]
+                                methods=[getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -92,7 +92,13 @@ private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
 
 ComponentBody ::= LBRACE (Statement | ComponentDeclaration)* RBRACE {pin=1}
 
-ComponentInstanceDeclaration ::= Stereotype? InputFilter? ReferenceType ("(" QualifiedIdentifier ("," QualifiedIdentifier)* ")" )? ComponentInstance (COMMA ComponentInstance)* semi {pin=3}
+ComponentInstanceDeclaration ::= Stereotype? InputFilter? ReferenceType ("(" QualifiedIdentifier ("," QualifiedIdentifier)* ")" )? ComponentInstance (COMMA ComponentInstance)* semi {
+        pin=3
+        implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+        stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
+        elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
+        mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin"
+    }
 private ComponentInstance ::=  ComponentInstanceName (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
 PortDeclaration ::= Stereotype? port PortElement ( COMMA PortElement )* semi {pin=2}

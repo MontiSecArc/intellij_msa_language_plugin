@@ -60,6 +60,12 @@ public class MSAComponentDeclarationImpl extends MSAComponentDeclarationImplMixi
 
   @JvmStatic
   @NotNull
+  public String getComponentName() {
+    return MSAPsiImplUtil.getComponentName(this);
+  }
+
+  @JvmStatic
+  @NotNull
   public String getInstanceName() {
     return MSAPsiImplUtil.getInstanceName(this);
   }
