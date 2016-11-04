@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<templateSet group="MSA">
+    <template name="con" description="connect ports" toReformat="false" toShortenFQNames="true"
+              value="connect $SOURCE$ -> $TARGET$;$END$">
+
+        <variable name="SOURCE" expression="" defaultValue="&quot;source&quot;" alwaysStopAt="true"/>
+        <variable name="TARGET" expression="" defaultValue="&quot;target&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_PORT_DECLARATION" value="true" />
+        </context>
+    </template>
+    <template name="portIn" description="new port" toReformat="true" toShortenFQNames="true"
+              value="port in $PORT_TYPE$ $PORT_NAME$;$END$">
+
+        <variable name="PORT_TYPE" expression="" defaultValue="&quot;Type&quot;" alwaysStopAt="true"/>
+        <variable name="PORT_NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_PORT_DECLARATION" value="true" />
+        </context>
+    </template>
+    <template name="portOut" description="new port" toReformat="true" toShortenFQNames="true"
+              value="port out $PORT_TYPE$ $PORT_NAME$;$END$">
+
+        <variable name="PORT_TYPE" expression="" defaultValue="&quot;Type&quot;" alwaysStopAt="true"/>
+        <variable name="PORT_NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true"/>
+        <context>
+            <option name="MSA_PORT_DECLARATION" value="true" />
+        </context>
+    </template>
+</templateSet>

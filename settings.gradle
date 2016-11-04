@@ -1,0 +1,5 @@
+rootProject.name = 'montisecarc'
+include 'intellij'
+include 'analysis'
+include 'de.monticore.lang.montisecarc.generator'
+

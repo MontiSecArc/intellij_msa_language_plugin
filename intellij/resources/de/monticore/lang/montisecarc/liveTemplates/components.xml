@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<templateSet group="MSA">
+    <template name="compa" description="new component" toReformat="true" toShortenFQNames="true"
+              value="$STEREOTYPE$ component $COMPONENT_TYPE$ $COMPONENT_NAME$ {&#10;    $END$&#10;}">
+
+        <variable name="STEREOTYPE" expression="" defaultValue="" alwaysStopAt="false"/>
+        <variable name="COMPONENT_TYPE" expression="" defaultValue="&quot;Type&quot;" alwaysStopAt="true"/>
+        <variable name="COMPONENT_NAME" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_COMPONENT_DECLARATION" value="true" />
+        </context>
+    </template>
+</templateSet>

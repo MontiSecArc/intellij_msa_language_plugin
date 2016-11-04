@@ -1,0 +1,163 @@
+{
+  parserClass="de.monticore.lang.montisecarc.MSAParser"
+  psiImplUtilClass="de.monticore.lang.montisecarc.psi.impl.MSAPsiImplUtil"
+
+  implements="de.monticore.lang.montisecarc.psi.MSACompositeElement"
+  extends="de.monticore.lang.montisecarc.psi.impl.MSACompositeElementImpl"
+
+  psiClassPrefix="MSA"
+  psiImplClassSuffix="Impl"
+  psiPackage="de.monticore.lang.montisecarc.psi"
+  psiImplPackage="de.monticore.lang.montisecarc.psi.impl"
+
+  elementTypeHolderClass="de.monticore.lang.montisecarc.psi.MSACompositeElementTypes"
+  elementTypeClass="de.monticore.lang.montisecarc.psi.MSACompositeElementType"
+  tokenTypeClass="de.monticore.lang.montisecarc.psi.MSATokenType"
+
+  parserImports='static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*'
+
+  tokens=[
+      LBRACE               =  '{'
+      RBRACE               =  '}'
+      LBRACK               =  '['
+      RBRACK               =  ']'
+      LPAREN               =  '('
+      RPAREN               =  ')'
+      COLON                =  ':'
+      SEMICOLON            =  ';'
+      COMMA                =  ','
+      SEMICOLON_SYNTHETIC  = '<NL>'
+    PLUS                 =  '+'
+    MINUS                =  '-'
+    EQUAL                =  '='
+    LESS                 =  '<'
+    GREATER              =  '>'
+    IN                   =  'in'
+    OUT                  =  'out'
+    ARROW                =  '->'
+    CRITICAL             =  'critical'
+    ENCRYPTED            =  'encrypted'
+    UNENCRYPTED          =  'unencrypted'
+    AUTOCONNECT          =  'autoconnect'
+    TYPE                 =  'type'
+    OFF                  =  'off'
+    ON                   =  'on'
+    ACCESS               =  'access'
+    ACCESSCONTROL        =  'accesscontrol'
+    IDENTITY             =  'identity'
+    STRONG               =  'strong'
+    WEAK                 =  'weak'
+    CPE                  =  'cpe'
+    CONFIGURATION        =  'configuration'
+    WHITE_SPACE='regexp:\s+'
+     SINGLE_LINE_COMMENT = "regexp:(//|#)[^\r\n]*"
+     MULTI_LINE_COMMENT = "regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*+/)"
+    NUMBER='regexp:\d+(\.\d*)?'
+    ID='regexp:\p{Alpha}\w*'
+    STRING="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+    DOT='.'
+    ASTERIX='*'
+  ]
+
+  generateTokens=false
+  consumeTokenMethod(".*") = "consumeTokenFast"
+}
+
+File ::= [PackageClause] (ImportDeclaration)* ComponentDeclaration?
+
+private semi ::= SEMICOLON_SYNTHETIC | SEMICOLON | <<eof>> { name="semicolon" }
+
+PackageClause ::= package (DOT | ID)+ semi {pin=1 recoverWhile=package_recover}
+private package_recover ::= !(';' | '<<' | <<eof>> | import | component)
+
+ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
+private import_recover ::= !('<<' | component | import | semi)
+
+ComponentName ::= ID { methods=[setName] }
+ComponentInstanceName ::= ID { methods=[setName getReferences] }
+RoleName ::= ID { methods=[] }
+PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
+
+ComponentDeclaration ::= Stereotype? component ComponentSignature ComponentBody {
+                                pin=2
+                                methods=[getQualifiedName getInstanceName getTrustLevel getAbsoluteTrustLevel]
+                                implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+                                stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
+                                elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
+                                mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
+                                }
+
+ComponentSignature ::= InputFilter? ComponentName TypeParameters? ("(" (Parameter | ",")+ ")")? (extends ReferenceType)? ComponentInstanceName? {pin=2 recoverWhile=signature_recover}
+private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
+
+ComponentBody ::= LBRACE (Statement | ComponentDeclaration)* RBRACE {pin=1}
+
+ComponentInstanceDeclaration ::= Stereotype? InputFilter? ReferenceType ("(" QualifiedIdentifier ("," QualifiedIdentifier)* ")" )? ComponentInstance (COMMA ComponentInstance)* semi {pin=3}
+private ComponentInstance ::=  ComponentInstanceName (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
+
+PortDeclaration ::= Stereotype? port PortElement ( COMMA PortElement )* semi {pin=2}
+PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } ReferenceType [PortInstanceName] {
+    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
+    implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+    stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
+    elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
+    mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin"
+    recoverWhile=port_element_recover
+}
+private port_element_recover ::= !(';' | ',' | InputFilter | CRITICAL)
+
+private SimpleConnectPortStatement ::= Stereotype? Connector
+Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}
+
+ConnectSource ::= QualifiedIdentifier
+ConnectTarget ::= QualifiedIdentifier
+private QualifiedIdentifier ::= (ComponentInstanceName DOT)* PortInstanceName { pin=2 }
+
+ConnectPortStatement ::= Stereotype? connect Connector semi { pin=2 }
+
+TrustLevelStatement ::= Stereotype? trustlevel LEVEL [STRING] semi { pin=2 }
+LEVEL ::= [ PLUS | MINUS ] NUMBER
+
+TrustLevelRelationStatement ::= Stereotype? trustlevelrelation QualifiedIdentifier { EQUAL | LESS | GREATER } QualifiedIdentifier semi { pin=2 }
+
+AutoConnectStatement ::= Stereotype? AUTOCONNECT [ENCRYPTED | UNENCRYPTED] { TYPE | port | OFF } semi { pin=2 }
+
+AccessStatement ::= Stereotype? ACCESS AccessRoles ( COMMA AccessRoles )* semi { pin=2 }
+private AccessRoles ::= PortAccessRole | RoleName
+PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAREN)
+
+AccessControlStatement ::= Stereotype? ACCESSCONTROL { ON | OFF } semi { pin=2 }
+
+IdentityStatement ::= Stereotype? IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
+private IdentityIdentifier ::= ComponentInstanceName (DOT ComponentInstanceName)* PortInstanceName?
+
+CPEStatement ::= Stereotype? CPE STRING semi { pin=2 }
+
+ConfigurationStatement ::= Stereotype? CONFIGURATION ID semi { pin=2 }
+
+private Statement ::=
+ TrustLevelStatement |
+                                TrustLevelRelationStatement |
+                                CPEStatement |
+                                ConfigurationStatement |
+                                AutoConnectStatement |
+                                AccessControlStatement |
+    PortDeclaration |
+    ComponentInstanceDeclaration
+    | ConnectPortStatement
+    | AccessStatement
+    | IdentityStatement
+{recoverWhile=statement_recover}
+private statement_recover ::= !('<<' | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ReferenceType)
+
+private InputFilter ::= LPAREN filter ID RPAREN
+Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
+private StereoValue ::= ID ("=" STRING)?
+TypeParameters ::= LESS TypeVariableDeclaration (COMMA TypeVariableDeclaration)* GREATER
+private TypeVariableDeclaration ::= ID (extends (ComplexReferenceType | "&")+)?
+ReferenceType ::= SimpleReferenceType | ComplexReferenceType {methods=[getReferences]}
+private SimpleReferenceType ::= ID ("." ID)* (TypeArguments)? {pin=1}
+private ComplexReferenceType ::= SimpleReferenceType  (DOT SimpleReferenceType)* {pin=1}
+private TypeArguments ::= ("<" (WildcardType | ",")* ">")
+private WildcardType ::= '?' ((extends ReferenceType) | (super ReferenceType))?;
+private Parameter ::= ReferenceType ID ("=" ID)?

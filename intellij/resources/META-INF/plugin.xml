@@ -1,0 +1,76 @@
+<idea-plugin version="2">
+  <id>de.monticore.lang.montisecarc</id>
+  <name>MSA</name>
+  <version>1.0</version>
+  <vendor email="thomas.buning@rwth-aachen.de" url="https://www.monticore.de">RWTH Aachen</vendor>
+
+  <description><![CDATA[
+      MontiSecArc IntelliJ Language Plugin
+    ]]></description>
+
+  <change-notes><![CDATA[
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="141.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+
+    <internalFileTemplate name="MSA Component" />
+    <internalFileTemplate name="MSA File" />
+    <defaultTemplatePropertiesProvider implementation="de.monticore.lang.montisecarc.actions.MSATemplatePropertiesProvider" />
+    <createFromTemplateHandler implementation="de.monticore.lang.montisecarc.actions.MSACreateFromTemplateHandler" />
+
+    <stubElementTypeHolder class="de.monticore.lang.montisecarc.psi.MSACompositeElementType" />
+
+    <!-- Add your extensions here -->
+    <fileTypeFactory implementation="de.monticore.lang.montisecarc.MSAFileTypeFactory"/>
+    <lang.parserDefinition language="MSA" implementationClass="de.monticore.lang.montisecarc.MSAParserDefinition" />
+    <lang.syntaxHighlighterFactory language="MSA" implementationClass="de.monticore.lang.montisecarc.highlighting.MSASyntaxHighlighterFactory" />
+      <lang.formatter language="MSA" implementationClass="de.monticore.lang.montisecarc.formatting.MSAFormattingModelBuilder" />
+    <lang.commenter language="MSA" implementationClass="de.monticore.lang.montisecarc.commenter.MSACommenter" />
+    <colorSettingsPage implementation="de.monticore.lang.montisecarc.highlighting.MSAColorSettingsPage" />
+    <codeStyleSettingsProvider implementation="de.monticore.lang.montisecarc.formatting.settings.MSACodeStyleSettingsProvider" />
+    <lang.braceMatcher language="MSA" implementationClass="de.monticore.lang.montisecarc.MSABraceMatcher" />
+    <lang.foldingBuilder language="MSA" implementationClass="de.monticore.lang.montisecarc.folding.MSAFoldingBuilder" />
+
+    <!-- Annotator -->
+    <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAAnnotator" />
+    <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidSemanticAnnotator" />
+
+    <completion.contributor language="MSA" implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor" />
+    <psi.referenceContributor language="MSA" implementation="de.monticore.lang.montisecarc.references.MSAReferenceContributor" />
+    <langCodeStyleSettingsProvider implementation="de.monticore.lang.montisecarc.formatting.settings.MSALanguageCodeStyleSettingsProvider" />
+    <lang.findUsagesProvider language="MSA" implementationClass="de.monticore.lang.montisecarc.usage.MSAFindUsageProvider" />
+    <lang.quoteHandler language="MSA" implementationClass="de.monticore.lang.montisecarc.MSAQuoteHandler"/>
+
+    <!-- Live Templates -->
+    <defaultLiveTemplatesProvider implementation="de.monticore.lang.montisecarc.templates.MSALiveTemplatesProvider" />
+    <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$Component" />
+      <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$Port" />
+
+    <!-- Indices -->
+    <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSANamedElementIndex" />
+    <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAPortIndex" />
+    <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex" />
+   </extensions>
+
+  <actions>
+    <action id="MSA.NewMSAFile" class="de.monticore.lang.montisecarc.actions.NewMSAFileAction"
+            text="MSA file" description="Create new MSA file">
+      <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after"/>
+    </action>
+    <action id="MSAGenerateGraph" class="de.monticore.lang.montisecarc.actions.MSAGenerateGraph"
+            text="Generate Graph" description="Generate Graph from MSA File">
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+    </action>
+  </actions>
+
+</idea-plugin>
