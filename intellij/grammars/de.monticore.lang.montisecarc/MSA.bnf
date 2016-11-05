@@ -103,7 +103,7 @@ ComponentInstanceDeclaration ::= Stereotype? InputFilter? ReferenceType ("(" Qua
 private ComponentInstance ::=  ComponentInstanceName (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
 PortDeclaration ::= Stereotype? port PortElement ( COMMA PortElement )* semi {pin=2}
-PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } ReferenceType [PortInstanceName] {
+PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } (ID '.')* ID [PortInstanceName] {
     pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
     implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
