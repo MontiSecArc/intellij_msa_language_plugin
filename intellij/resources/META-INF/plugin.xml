@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>de.monticore.lang.montisecarc</id>
   <name>MSA</name>
-  <version>1.0</version>
+  <version>0.7.5</version>
   <vendor email="thomas.buning@rwth-aachen.de" url="https://www.monticore.de">RWTH Aachen</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,7 @@
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
   <idea-version since-build="141.0"/>
+  <depends>com.neueda4j.intellij.plugin.cypher</depends>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->

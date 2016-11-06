@@ -11,12 +11,15 @@ public interface MSAComponentSignature extends MSACompositeElement {
   MSAComponentInstanceName getComponentInstanceName();
 
   @NotNull
-  MSAComponentName getComponentName();
+  List<MSAComponentNameWithType> getComponentNameWithTypeList();
 
   @NotNull
-  List<MSAReferenceType> getReferenceTypeList();
+  List<MSAJavaClassReference> getJavaClassReferenceList();
+
+  @NotNull
+  MSAComponentNameWithType getComponentName();
 
   @Nullable
-  MSATypeParameters getTypeParameters();
+  MSAComponentNameWithType getComponentExtensionName();
 
 }

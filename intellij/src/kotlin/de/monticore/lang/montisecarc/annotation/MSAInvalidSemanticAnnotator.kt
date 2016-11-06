@@ -19,14 +19,6 @@ class MSAInvalidSemanticAnnotator : Annotator {
             if(o.portInstanceName != null) {
                 checkInstanceName(holder, o.portInstanceName!!, portInstanceName)
             }
-
-            if(o.referenceType != null) {
-                val lastReference = o.referenceType!!.referenceTypeList.orEmpty()
-                if (lastReference.isNotEmpty()) {
-
-                    checkTypeName(holder, lastReference.last(), lastReference.last().text)
-                }
-            }
         }
 
         override fun visitComponentSignature(o: MSAComponentSignature) {

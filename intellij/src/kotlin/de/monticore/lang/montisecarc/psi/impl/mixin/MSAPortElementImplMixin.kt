@@ -41,7 +41,7 @@ abstract class MSAPortElementImplMixin: MSAStubbedNamedElementImpl<MSAPortElemen
 
     override fun getName(): String? {
 
-        val portName = this.portInstanceName?.text ?: this.referenceType?.text?.decapitalize()
+        val portName = this.portInstanceName?.text ?: this.javaClassReference?.text?.decapitalize()
         return portName
     }
 }

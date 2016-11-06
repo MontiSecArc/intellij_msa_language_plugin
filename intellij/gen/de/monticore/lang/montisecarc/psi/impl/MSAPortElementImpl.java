@@ -36,14 +36,14 @@ public class MSAPortElementImpl extends MSAPortElementImplMixin implements MSAPo
 
   @Override
   @Nullable
-  public MSAPortInstanceName getPortInstanceName() {
-    return PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class);
+  public MSAJavaClassReference getJavaClassReference() {
+    return PsiTreeUtil.getChildOfType(this, MSAJavaClassReference.class);
   }
 
   @Override
   @Nullable
-  public MSAReferenceType getReferenceType() {
-    return PsiTreeUtil.getChildOfType(this, MSAReferenceType.class);
+  public MSAPortInstanceName getPortInstanceName() {
+    return PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class);
   }
 
   @Override

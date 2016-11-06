@@ -15,7 +15,7 @@ plugins {
 }
 
 group 'de.monticore.lang'
-version '1.0-SNAPSHOT'
+version '0.7.3'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -47,5 +47,6 @@ dependencies {
 intellij {
     pluginName 'MSA'
     version "2016.2.5"
+    plugins ['com.neueda4j.intellij.plugin.cypher:2.1.2']
 }
 

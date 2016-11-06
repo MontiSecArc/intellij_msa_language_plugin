@@ -1,22 +1,13 @@
 package de.monticore.lang.montisecarc.psi.impl
 
-import com.intellij.codeInsight.completion.JavaClassNameCompletionContributor
-import com.intellij.codeInsight.completion.JavaLookupElementBuilder
-import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiReference
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
-import com.intellij.psi.impl.source.resolve.reference.impl.providers.JavaClassReference
-import com.intellij.psi.impl.source.resolve.reference.impl.providers.JavaClassReferenceProvider
-import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.MSAFileElementType
 import de.monticore.lang.montisecarc.psi.*
 import de.monticore.lang.montisecarc.psi.util.elementType
-import de.monticore.lang.montisecarc.references.MSAReferenceContributor
 
 /**
  *  Copyright 2016 thomasbuning
@@ -88,11 +79,6 @@ class MSAPsiImplUtil {
         @JvmStatic fun getName(element: MSAComponentInstanceDeclaration): String {
 
             return element.componentInstanceNameList.map { it.text }.joinToString()
-        }
-
-        @JvmStatic fun getReferences(element: MSAReferenceType): Array<out PsiReference> {
-
-            return ReferenceProvidersRegistry.getReferencesFromProviders(element)
         }
 
         @JvmStatic fun getReferences(element: MSAPortInstanceName): Array<out PsiReference> {
@@ -182,9 +168,33 @@ class MSAPsiImplUtil {
             }
         }
 
+        @JvmStatic fun getQualifiedName(element: MSAComponentInstanceDeclaration): String {
+
+            val name = element.componentNameWithTypeList.map { it.componentName.name }.joinToString()
+
+            val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+
+            if(wrappingComponent == null) {
+
+                val msaFile = PsiTreeUtil.getParentOfType(element, MSAFile::class.java) as MSAFile
+
+                val packageIdentifier = msaFile.getPackage()?.text.orEmpty().replace("package ", "").replace(";", "")
+                if(!packageIdentifier.isNullOrEmpty()) {
+
+                    return arrayOf(packageIdentifier, name).joinToString(".")
+                } else {
+
+                    return name
+                }
+            } else {
+
+                return arrayOf(wrappingComponent.qualifiedName, name).joinToString(".")
+            }
+        }
+
         @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
 
-            return element.componentSignature?.componentName?.text.orEmpty()
+            return element.componentSignature?.componentNameWithTypeList?.map { it.componentName.name }.orEmpty().joinToString()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {
@@ -230,6 +240,41 @@ class MSAPsiImplUtil {
         }
 
         @JvmStatic fun getAbsoluteTrustLevel(element: MSAComponentDeclaration): Int {
+
+            var trustlevel = element.trustLevel
+
+            var parent = element.parent
+            while(parent.elementType != MSAFileElementType) {
+
+                if(parent.elementType == MSACompositeElementTypes.COMPONENT_DECLARATION) {
+
+                    trustlevel += (parent as MSAComponentDeclaration).trustLevel
+                }
+
+                parent = parent.parent
+            }
+            return trustlevel
+        }
+
+        @JvmStatic fun getTrustLevel(element: MSAComponentInstanceDeclaration): Int {
+
+            if(element.componentNameWithTypeList.last().references.isEmpty()) {
+                return 0
+            }
+
+            val psiReference = element.componentNameWithTypeList.last().references[0]
+            if(psiReference != null) {
+
+                val component = psiReference.resolve()
+                if(component != null && component is MSAComponentDeclaration) {
+
+                    return component.trustLevel
+                }
+            }
+            return 0
+        }
+
+        @JvmStatic fun getAbsoluteTrustLevel(element: MSAComponentInstanceDeclaration): Int {
 
             var trustlevel = element.trustLevel
 

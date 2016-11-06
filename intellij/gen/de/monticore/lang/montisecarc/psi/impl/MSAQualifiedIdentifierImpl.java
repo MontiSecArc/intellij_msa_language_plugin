@@ -9,18 +9,15 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
-import com.intellij.psi.PsiReference;
-import kotlin.jvm.JvmStatic;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAReferenceTypeImpl extends MSACompositeElementImpl implements MSAReferenceType {
+public class MSAQualifiedIdentifierImpl extends MSACompositeElementImpl implements MSAQualifiedIdentifier {
 
-  public MSAReferenceTypeImpl(ASTNode node) {
+  public MSAQualifiedIdentifierImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitReferenceType(this);
+    visitor.visitQualifiedIdentifier(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -30,20 +27,14 @@ public class MSAReferenceTypeImpl extends MSACompositeElementImpl implements MSA
 
   @Override
   @NotNull
-  public List<MSAComponentName> getComponentNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentName.class);
+  public List<MSAComponentInstanceName> getComponentInstanceNameList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentInstanceName.class);
   }
 
   @Override
   @NotNull
-  public List<MSAReferenceType> getReferenceTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAReferenceType.class);
-  }
-
-  @JvmStatic
-  @NotNull
-  public PsiReference[] getReferences() {
-    return MSAPsiImplUtil.getReferences(this);
+  public MSAPortInstanceName getPortInstanceName() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class));
   }
 
 }

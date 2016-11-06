@@ -7,10 +7,16 @@ import com.intellij.psi.PsiElement;
 
 public interface MSATrustLevelRelationStatement extends MSACompositeElement {
 
-  @NotNull
-  List<MSAComponentInstanceName> getComponentInstanceNameList();
-
   @Nullable
   MSAStereotype getStereotype();
+
+  @NotNull
+  List<MSATrustLevelIdentifier> getTrustLevelIdentifierList();
+
+  @Nullable
+  MSATrustLevelIdentifier getStartComponent();
+
+  @Nullable
+  MSATrustLevelIdentifier getTargetComponent();
 
 }

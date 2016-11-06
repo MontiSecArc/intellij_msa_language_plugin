@@ -33,7 +33,7 @@ object MSAElementFactory {
 
     // ToDo: Anders erzeugen!
     fun createIdentifier(project: Project, name: String): PsiElement =
-            createFromText<MSAPortElement>(project, "mod $name;")!!.referenceType!!.firstChild
+            createFromText<MSAPortElement>(project, "mod $name;")!!.javaClassReference!!
 
     private inline fun <reified T : MSACompositeElement> createFromText(project: Project, code: String): T? =
             PsiFileFactory.getInstance(project)

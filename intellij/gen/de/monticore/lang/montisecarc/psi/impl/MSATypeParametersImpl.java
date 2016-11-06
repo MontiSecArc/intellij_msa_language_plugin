@@ -27,14 +27,8 @@ public class MSATypeParametersImpl extends MSACompositeElementImpl implements MS
 
   @Override
   @NotNull
-  public List<MSAComponentName> getComponentNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentName.class);
-  }
-
-  @Override
-  @NotNull
-  public List<MSAReferenceType> getReferenceTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAReferenceType.class);
+  public List<MSAJavaClassReference> getJavaClassReferenceList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAJavaClassReference.class);
   }
 
 }

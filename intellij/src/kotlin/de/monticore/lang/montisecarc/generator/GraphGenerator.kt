@@ -1,268 +1,182 @@
 package de.monticore.lang.montisecarc.generator
 
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiRecursiveElementWalkingVisitor
+import com.intellij.psi.tree.IElementType
 import com.intellij.util.containers.isNullOrEmpty
-import de.monticore.lang.montisecarc.psi.*
-import de.monticore.lang.montisecarc.psi.util.elementType
+import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
 import java.net.URL
 
 /**
- * Created by thomasbuning on 30.10.16.
+ * Copyright 2016 thomasbuning
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 class GraphGenerator {
+
+    private val files = mutableListOf<PsiFile>()
+    private val registeredGenerators = mutableMapOf<IElementType, List<Pair<MSAGenerator, (Any) -> Unit>>>()
+    private val trustLevels = mutableSetOf<Int>()
+    private val referencedPortElements = mutableSetOf<String>()
+    private val nodes = mutableListOf<String>()
+    private val connectors = mutableListOf<String>()
+    private var psiRecursiveElementWalkingVisitor: MSAPsiRecursiveElementWalkingVisitor? = null
 
     private fun getUrl(path: String): URL? {
 
         return this.javaClass.classLoader.getResource(path)
     }
 
-    fun createGraph(psiFile: PsiFile): String {
+    fun createGraph(): String {
 
-        return generate(psiFile)
-    }
-
-    private fun generatePortElement(portElement: MSAPortElement): Pair<String, String> {
-        val model = mutableMapOf<String, Any>()
-
-        //<@node instance_name="${instance_name}" type_name="${type_name}" is_critical="${is_critical}" access_roles="${access_roles}" extra="${extra_arguments}" />
-
-        //${instance_name}_${type_name}
-        val (referenceType, portInstanceName) = getPortIdentifiers(portElement)
-        val componentIdentifier = createComponentIdentifier(portElement.enclosingComponent)
-        val identifier = createPortIdentifier(portElement)
-        model.put("id", identifier)
-        model.put("instance_name", portInstanceName.orEmpty())
-        model.put("type_name", referenceType.orEmpty())
-        model.put("is_critical", portElement.isCritical)
-
-        val portAccessRoles = portElement.enclosingComponent?.componentBody?.accessStatementList?.map { it.portAccessRoleList.filter { it.portInstanceName.text == portInstanceName }.map { "'${it.portInstanceName.text}'" }.joinToString() }.orEmpty().joinToString()
-
-        model.put("access_roles", portAccessRoles)
-
-        val port = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/PortMacro.ftl")?.path.orEmpty(), model)
-
-        //${instance_name}_${component_name}_${type_name}
-        var connector = ""
-        if (!identifier.isNullOrBlank() && !componentIdentifier.isNullOrBlank()) {
-            //<@connector p1="${start_port}" p2="${target_port}" relationship_type="${relationship_type}" />
-            val connector_model = mutableMapOf<String, Any>()
-            connector_model.put("relationship_type", ":CONNECT")
-
-            if (portElement.direction == "IN") {
-                connector_model.put("start_port", identifier)
-                connector_model.put("target_port", componentIdentifier)
-            } else {
-                connector_model.put("start_port", componentIdentifier)
-                connector_model.put("target_port", identifier)
-            }
-            connector = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
-        }
-
-        return Pair(port, connector)
-    }
-
-    private fun createPortIdentifier(portElement: MSAPortElement): String {
-        val (referenceType, portInstanceName) = getPortIdentifiers(portElement)
-        val enclosingComponent = portElement.enclosingComponent
-        val componentIdentifier = createComponentIdentifier(enclosingComponent)
-        return arrayOf(componentIdentifier, referenceType, portInstanceName).joinToString("_")
-    }
-
-    private fun createComponentIdentifier(enclosingComponent: MSAComponentDeclaration?): String {
-        var componentIdentifier = ""
-        if (enclosingComponent != null) {
-
-            componentIdentifier += enclosingComponent.qualifiedName.replace(".", "_") + "_" + enclosingComponent.instanceName
-        }
-        return componentIdentifier
-    }
-
-    private fun getPortIdentifiers(portElement: MSAPortElement): Pair<String?, String?> {
-        val referenceType = portElement.referenceType?.text
-        val portInstanceName = portElement.portInstanceName?.text ?: referenceType?.decapitalize()
-        return Pair(referenceType, portInstanceName)
-    }
-
-
-    private fun generateComponentElement(componentDeclaration: MSAComponentDeclaration): Triple<String, String, Int> {
-        val model = mutableMapOf<String, Any>()
-
-        //<@node instance_name="${instance_name}" type_name="${type_name}" access_roles="${access_roles}" extra="${extra_arguments}" />
-        val instanceName = componentDeclaration.instanceName
-        val componentIdentifier = createComponentIdentifier(componentDeclaration)
-        model.put("id", componentIdentifier)
-        model.put("instance_name", instanceName.orEmpty())
-        model.put("type_name", componentDeclaration.qualifiedName)
-        val accessRoles = componentDeclaration.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
-        model.put("access_roles", accessRoles.orEmpty())
-
-        val extras = mutableMapOf<String, String>()
-        val configurationStatementList = componentDeclaration.componentBody?.configurationStatementList
-        if(!configurationStatementList.isNullOrEmpty()) {
-
-            val config = configurationStatementList!!.first().id?.text
-            if(!config.isNullOrEmpty()) {
-                extras.put("configuration", config!!)
-            }
-        }
-        val cpeStatementList = componentDeclaration.componentBody?.cpeStatementList
-        if(!cpeStatementList.isNullOrEmpty()) {
-
-            val cpe = cpeStatementList!!.first().string?.text
-            if(!cpe.isNullOrEmpty()) {
-                extras.put("cpe", cpe!!.replace("\"", ""))
-            }
-        }
-
-        val accessControlStatementList = componentDeclaration.componentBody?.accessControlStatementList
-        if(!accessControlStatementList.isNullOrEmpty()) {
-
-            val findChildByType = accessControlStatementList!!.first().node.findChildByType(MSATokenElementTypes.ON)
-            if(findChildByType != null) {
-
-                extras.put("access_control", "on")
-            } else {
-
-                extras.put("access_control", "off")
-            }
-        }
-
-        model.put("extra_arguments", extras)
-
-        val component = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ComponentMacro.ftl")?.path.orEmpty(), model)
-
-        return Triple(component, componentIdentifier, componentDeclaration.absoluteTrustLevel)
-    }
-
-    private fun createConnector(start: String, target: String): String {
-
-        val connector_model = mutableMapOf<String, Any>()
-        connector_model.put("relationship_type", ":TRUST")
-        connector_model.put("start_port", start)
-        connector_model.put("target_port", target)
-        return FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
+        return files.map { generate(it) }.joinToString("")
     }
 
     private fun generate(parseFile: PsiFile): String {
-        val components = mutableListOf<String>()
-        val ports = mutableListOf<String>()
-        val trustlevelNodes = mutableListOf<String>()
-        val trustlevels = mutableMapOf<Int, List<String>>()
-        val connectors = mutableListOf<String>()
 
-        parseFile.accept(object : PsiRecursiveElementWalkingVisitor() {
+        if (psiRecursiveElementWalkingVisitor != null) {
+            parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
-            override fun visitElement(element: PsiElement?) {
-                super.visitElement(element)
+            trustLevels.forEach {
+                nodes.add(TrustLevelGenerator.generateTrustLevelNode(it))
+            }
 
-                if (element == null) {
+            referencedPortElements.filter {
+                var portElementIsIncluded = false
 
-                    return
-                }
+                for (node in nodes) {
 
-                when (element.elementType) {
+                    if(node.contains(it)) {
 
-                    MSACompositeElementTypes.PORT_ELEMENT -> {
-                        val (port, connector) = generatePortElement(element as MSAPortElement)
-                        ports.add(port)
-                        connectors.add(connector)
-
-                    }
-                    MSACompositeElementTypes.COMPONENT_DECLARATION -> {
-                        val (componentElement, componentIdentifier, trustlevel) = generateComponentElement(element as MSAComponentDeclaration)
-                        components.add(componentElement)
-
-                        val componentIdentifierList = trustlevels[trustlevel].orEmpty()
-                        val newComponentIdentifierList = listOf(componentIdentifier) + componentIdentifierList
-                        trustlevels.put(trustlevel, newComponentIdentifierList)
-                    }
-                    MSACompositeElementTypes.CONNECTOR -> {
-                        val connector = generateConnectorElement(element as MSAConnector)
-                        connectors.addAll(connector)
+                        portElementIsIncluded = true
+                        break
                     }
                 }
+
+                portElementIsIncluded
+            }.forEach {
+
             }
-        })
 
+            nodes.addAll(connectors)
 
-        for ((trustLevel, componentIdentifiers) in trustlevels) {
-
-            var trustLevelId:String
-            var trustLevelString:String
-            if(trustLevel >= 0) {
-
-                trustLevelId = "tP$trustLevel"
-                trustLevelString = "+$trustLevel"
-            } else {
-
-                trustLevelId = "tM$trustLevel"
-                trustLevelString = "-$trustLevel"
+            if(nodes.isNullOrEmpty()) {
+                return ""
             }
-            val model = mutableMapOf<String, Any>()
-            model.put("id", trustLevelId)
-            model.put("instance_name", trustLevelString)
-            model.put("level", trustLevel)
-            val trustLevelNode = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/TrustlevelMacro.ftl")?.path.orEmpty(), model)
-            trustlevelNodes.add(trustLevelNode)
 
-            for (componentIdentifier in componentIdentifiers) {
-
-                connectors.add(createConnector(componentIdentifier, trustLevelId))
-                connectors.add(createConnector(trustLevelId, componentIdentifier))
-            }
+            //CREATE ${nodes};
+            val model = mutableMapOf<String, String>()
+            model.put("nodes", nodes.filter { !it.isNullOrEmpty() }.joinToString())
+            val graph = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/Create.ftl")?.path.orEmpty(), model)
+            return graph
         }
-
-        val model = mutableMapOf<String, String>()
-
-        //CREATE ${components}, ${ports}, ${trustlevel} ${connectors};
-        model.put("components", components.joinToString())
-        model.put("ports", ports.joinToString())
-        model.put("trustlevel", trustlevelNodes.joinToString())
-        model.put("connectors", connectors.filter { !it.isNullOrEmpty() }.joinToString())
-        val graph = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/Create.ftl")?.path.orEmpty(), model)
-        return graph
+        return ""
     }
 
-    private fun generateConnectorElement(msaConnector: MSAConnector): List<String> {
+    fun addFile(psiFile: PsiFile) = files.add(psiFile)
 
-        var encrypted = ":UNENCRYPTED"
-        if (msaConnector.node.findChildByType(MSATokenElementTypes.ENCRYPTED) != null) {
+    fun registerGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit) {
+        val pair = listOf(Pair(generator, callback))
+        if (registeredGenerators.contains(elementType)) {
 
-            encrypted = ":ENCRYPTED"
+            registeredGenerators.put(elementType, registeredGenerators[elementType]!! + pair)
+
+        } else {
+
+            registeredGenerators.put(elementType, pair)
         }
 
-        val connectors = mutableListOf<String>()
+        psiRecursiveElementWalkingVisitor = MSAPsiRecursiveElementWalkingVisitor(registeredGenerators)
+    }
 
-        val sourcePort = msaConnector.connectSource.portInstanceName.referencedPortElement ?: return emptyList()
+    fun registerDefaultGenerators() {
 
-        for (msaConnectTarget in msaConnector.connectTargetList) {
-
-            val targetPort = msaConnectTarget.portInstanceName.referencedPortElement ?: continue
-
-            val sourcePortIdentifier = createPortIdentifier(sourcePort)
-            val targetPortIdentifier = createPortIdentifier(targetPort)
-            //<@connector p1="${start_port}" p2="${target_port}" relationship_type="${relationship_type}" />
-
-            val connector_model = mutableMapOf<String, Any>()
-            connector_model.put("relationship_type", encrypted)
-
-            if(sourcePort.direction == targetPort.direction) {
-                continue
+        fun extractStringsFromList(addTo: MutableList<String>): (Any) -> Unit {
+            return {
+                connector ->
+                if (connector is List<*>) {
+                    connector.forEach {
+                        if (it is String) {
+                            addTo.add(it)
+                        }
+                    }
+                }
             }
-
-            if (targetPort.direction == "IN") {
-                connector_model.put("start_port", sourcePortIdentifier)
-                connector_model.put("target_port", targetPortIdentifier)
-            } else {
-                connector_model.put("start_port", targetPortIdentifier)
-                connector_model.put("target_port", sourcePortIdentifier)
-            }
-            val connector = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
-            connectors.add(connector)
         }
 
-        return connectors
+        fun extractStringsFromListAndReferences(addTo: MutableList<String>, references: MutableSet<String>): (Any) -> Unit {
+            return {
+                connector ->
+                if (connector is Pair<*,*>) {
+
+                    val nodeConnector = connector.first as List<*>
+                    val referencedPorts = connector.second as List<*>
+                    nodeConnector.forEach {
+                        if (it is String) {
+                            addTo.add(it)
+                        }
+                    }
+                    referencedPorts.forEach {
+                        if(it is String) {
+
+                            references.add(it)
+                        }
+                    }
+                }
+            }
+        }
+
+        fun extractString(addTo: MutableList<String>): (Any) -> Unit {
+            return {
+                component ->
+                if (component is String) {
+                    addTo.add(component)
+                }
+            }
+        }
+
+        fun extractTrustLevel(): (Any) -> Unit {
+            return {
+
+                componentTrustLevel ->
+                if (componentTrustLevel is Pair<*, *>) {
+
+                    if (componentTrustLevel.first is Int && componentTrustLevel.second is List<*>) {
+
+                        val componentIdentifier = componentTrustLevel.second as List<*>
+                        componentIdentifier.forEach { if(it is String) { connectors.add(it) } }
+                        val trustLevel = componentTrustLevel.first as Int
+                        trustLevels.add(trustLevel)
+                    }
+                }
+            }
+        }
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentDeclarationGenerator(), extractString(nodes))
+
+        registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementGenerator(), extractString(nodes))
+
+        registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementConnectorGenerator(), extractStringsFromList(connectors))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceDeclarationGenerator(), extractStringsFromList(nodes))
+
+        registerGenerator(MSACompositeElementTypes.IDENTITY_STATEMENT, IdentityStatementGenerator(), extractStringsFromList(connectors))
+
+        registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorGenerator(), extractStringsFromListAndReferences(connectors, referencedPortElements))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceTrustLevelGenerator(), extractTrustLevel())
     }
 }
+

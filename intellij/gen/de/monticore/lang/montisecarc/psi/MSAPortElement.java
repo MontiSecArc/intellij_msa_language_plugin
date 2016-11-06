@@ -11,10 +11,10 @@ import kotlin.jvm.JvmStatic;
 public interface MSAPortElement extends MSANamedElement, StubBasedPsiElement<MSAPortElementStub> {
 
   @Nullable
-  MSAPortInstanceName getPortInstanceName();
+  MSAJavaClassReference getJavaClassReference();
 
   @Nullable
-  MSAReferenceType getReferenceType();
+  MSAPortInstanceName getPortInstanceName();
 
   @Nullable
   PsiElement getId();
