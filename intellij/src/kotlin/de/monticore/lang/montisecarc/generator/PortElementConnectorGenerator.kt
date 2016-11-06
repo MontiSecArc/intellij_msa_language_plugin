@@ -37,7 +37,7 @@ class PortElementConnectorGenerator : MSAGenerator() {
         }
         connector_model.put("relationship_type", direction)
 
-        return FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
+        return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
     }
 
     override fun generate(psiElement: PsiElement): Any? {

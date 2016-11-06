@@ -100,6 +100,6 @@ class ComponentInstanceDeclarationGenerator : MSAGenerator() {
 
         model.put("extra_arguments", extras)
 
-        return FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ComponentMacro.ftl")?.path.orEmpty(), model)
+        return FreeMarker.instance.generateModelOutput("ToGraph/ComponentMacro.ftl", model)
     }
 }

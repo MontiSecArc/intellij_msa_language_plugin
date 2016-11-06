@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>de.monticore.lang.montisecarc</id>
   <name>MSA</name>
-  <version>0.7.5</version>
+  <version>0.7.4</version>
   <vendor email="thomas.buning@rwth-aachen.de" url="https://www.monticore.de">RWTH Aachen</vendor>
 
   <description><![CDATA[

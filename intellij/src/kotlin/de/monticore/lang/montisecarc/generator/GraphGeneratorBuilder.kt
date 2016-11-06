@@ -32,6 +32,7 @@ class GraphGeneratorBuilder private constructor() {
         fun addFile(psiFile: PsiFile): GraphGeneratorBuilder {
 
             Holder.INSTANCE.psiFiles.add(psiFile)
+
             return Holder.INSTANCE
         }
 

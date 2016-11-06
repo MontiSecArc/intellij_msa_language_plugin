@@ -64,7 +64,7 @@ class PortElementGenerator : MSAGenerator() {
 
                 model.put("access_roles", portAccessRoles)
 
-                return FreeMarker.instance.generateModelOutput(getUrl("ToGraph/PortMacro.ftl")?.path.orEmpty(), model)
+                return FreeMarker.instance.generateModelOutput("ToGraph/PortMacro.ftl", model)
             }
         }
         return null
