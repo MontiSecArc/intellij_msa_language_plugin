@@ -10,31 +10,19 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
 
-public class MSAIdentityStatementImpl extends MSACompositeElementImpl implements MSAIdentityStatement {
+public class MSAJavaClassReferenceImpl extends MSACompositeElementImpl implements MSAJavaClassReference {
 
-  public MSAIdentityStatementImpl(ASTNode node) {
+  public MSAJavaClassReferenceImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitIdentityStatement(this);
+    visitor.visitJavaClassReference(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof MSAVisitor) accept((MSAVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public List<MSAIdentityIdentifier> getIdentityIdentifierList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAIdentityIdentifier.class);
-  }
-
-  @Override
-  @Nullable
-  public MSAStereotype getStereotype() {
-    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
   }
 
 }

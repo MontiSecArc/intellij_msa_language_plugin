@@ -27,7 +27,7 @@ object MSAPortStubElementType : MSANamedStubElementType<MSAPortElementStub, MSAP
         if (psi.direction == "IN") {
             directionIsIn = true
         }
-        return MSAPortElementStub(parentStub, this, psi.portInstanceName?.text, psi.referenceType?.text, directionIsIn)
+        return MSAPortElementStub(parentStub, this, psi.portInstanceName?.text, psi.javaClassReference?.text, directionIsIn)
     }
 
     override fun createPsi(stub: MSAPortElementStub): MSAPortElement =

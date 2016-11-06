@@ -14,22 +14,29 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
   List<MSAComponentInstanceName> getComponentInstanceNameList();
 
   @NotNull
+  List<MSAComponentNameWithType> getComponentNameWithTypeList();
+
+  @NotNull
   List<MSAConnector> getConnectorList();
 
   @NotNull
-  List<MSAPortInstanceName> getPortInstanceNameList();
-
-  @NotNull
-  MSAReferenceType getReferenceType();
+  List<MSAJavaClassReference> getJavaClassReferenceList();
 
   @NotNull
   List<MSAStereotype> getStereotypeList();
 
-  @Nullable
-  PsiElement getId();
-
   @JvmStatic
   @NotNull
   String getName();
+
+  @JvmStatic
+  @NotNull
+  String getQualifiedName();
+
+  @JvmStatic
+  int getTrustLevel();
+
+  @JvmStatic
+  int getAbsoluteTrustLevel();
 
 }

@@ -42,20 +42,20 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
 
   @Override
   @NotNull
+  public List<MSAComponentNameWithType> getComponentNameWithTypeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithType.class);
+  }
+
+  @Override
+  @NotNull
   public List<MSAConnector> getConnectorList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAConnector.class);
   }
 
   @Override
   @NotNull
-  public List<MSAPortInstanceName> getPortInstanceNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAPortInstanceName.class);
-  }
-
-  @Override
-  @NotNull
-  public MSAReferenceType getReferenceType() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAReferenceType.class));
+  public List<MSAJavaClassReference> getJavaClassReferenceList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAJavaClassReference.class);
   }
 
   @Override
@@ -64,16 +64,26 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAStereotype.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
-  }
-
   @JvmStatic
   @NotNull
   public String getName() {
     return MSAPsiImplUtil.getName(this);
+  }
+
+  @JvmStatic
+  @NotNull
+  public String getQualifiedName() {
+    return MSAPsiImplUtil.getQualifiedName(this);
+  }
+
+  @JvmStatic
+  public int getTrustLevel() {
+    return MSAPsiImplUtil.getTrustLevel(this);
+  }
+
+  @JvmStatic
+  public int getAbsoluteTrustLevel() {
+    return MSAPsiImplUtil.getAbsoluteTrustLevel(this);
   }
 
 }

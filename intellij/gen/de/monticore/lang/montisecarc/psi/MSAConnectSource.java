@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MSAConnectSource extends MSACompositeElement {
 
   @NotNull
-  List<MSAComponentInstanceName> getComponentInstanceNameList();
-
-  @NotNull
-  MSAPortInstanceName getPortInstanceName();
+  MSAQualifiedIdentifier getQualifiedIdentifier();
 
 }

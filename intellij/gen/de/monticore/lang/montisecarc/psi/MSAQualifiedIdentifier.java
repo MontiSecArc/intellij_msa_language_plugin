@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MSATypeParameters extends MSACompositeElement {
+public interface MSAQualifiedIdentifier extends MSACompositeElement {
 
   @NotNull
-  List<MSAJavaClassReference> getJavaClassReferenceList();
+  List<MSAComponentInstanceName> getComponentInstanceNameList();
+
+  @NotNull
+  MSAPortInstanceName getPortInstanceName();
 
 }

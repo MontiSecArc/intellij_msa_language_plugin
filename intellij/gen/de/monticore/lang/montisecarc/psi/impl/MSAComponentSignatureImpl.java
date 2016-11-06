@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
+import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 public class MSAComponentSignatureImpl extends MSACompositeElementImpl implements MSAComponentSignature {
 
@@ -33,20 +34,28 @@ public class MSAComponentSignatureImpl extends MSACompositeElementImpl implement
 
   @Override
   @NotNull
-  public MSAComponentName getComponentName() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentName.class));
+  public List<MSAComponentNameWithType> getComponentNameWithTypeList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithType.class);
   }
 
   @Override
   @NotNull
-  public List<MSAReferenceType> getReferenceTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAReferenceType.class);
+  public List<MSAJavaClassReference> getJavaClassReferenceList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAJavaClassReference.class);
+  }
+
+  @Override
+  @NotNull
+  public MSAComponentNameWithType getComponentName() {
+    List<MSAComponentNameWithType> p1 = getComponentNameWithTypeList();
+    return p1.get(0);
   }
 
   @Override
   @Nullable
-  public MSATypeParameters getTypeParameters() {
-    return PsiTreeUtil.getChildOfType(this, MSATypeParameters.class);
+  public MSAComponentNameWithType getComponentExtensionName() {
+    List<MSAComponentNameWithType> p1 = getComponentNameWithTypeList();
+    return p1.size() < 2 ? null : p1.get(1);
   }
 
 }

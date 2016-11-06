@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
+import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 public class MSATrustLevelRelationStatementImpl extends MSACompositeElementImpl implements MSATrustLevelRelationStatement {
 
@@ -26,15 +27,29 @@ public class MSATrustLevelRelationStatementImpl extends MSACompositeElementImpl 
   }
 
   @Override
+  @Nullable
+  public MSAStereotype getStereotype() {
+    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
+  }
+
+  @Override
   @NotNull
-  public List<MSAComponentInstanceName> getComponentInstanceNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentInstanceName.class);
+  public List<MSATrustLevelIdentifier> getTrustLevelIdentifierList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSATrustLevelIdentifier.class);
   }
 
   @Override
   @Nullable
-  public MSAStereotype getStereotype() {
-    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
+  public MSATrustLevelIdentifier getStartComponent() {
+    List<MSATrustLevelIdentifier> p1 = getTrustLevelIdentifierList();
+    return p1.size() < 1 ? null : p1.get(0);
+  }
+
+  @Override
+  @Nullable
+  public MSATrustLevelIdentifier getTargetComponent() {
+    List<MSATrustLevelIdentifier> p1 = getTrustLevelIdentifierList();
+    return p1.size() < 2 ? null : p1.get(1);
   }
 
 }

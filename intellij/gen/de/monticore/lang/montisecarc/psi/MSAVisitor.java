@@ -42,6 +42,10 @@ public class MSAVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitComponentNameWithType(@NotNull MSAComponentNameWithType o) {
+    visitCompositeElement(o);
+  }
+
   public void visitComponentSignature(@NotNull MSAComponentSignature o) {
     visitCompositeElement(o);
   }
@@ -66,11 +70,19 @@ public class MSAVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitIdentityIdentifier(@NotNull MSAIdentityIdentifier o) {
+    visitCompositeElement(o);
+  }
+
   public void visitIdentityStatement(@NotNull MSAIdentityStatement o) {
     visitCompositeElement(o);
   }
 
   public void visitImportDeclaration(@NotNull MSAImportDeclaration o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitJavaClassReference(@NotNull MSAJavaClassReference o) {
     visitCompositeElement(o);
   }
 
@@ -98,7 +110,7 @@ public class MSAVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
-  public void visitReferenceType(@NotNull MSAReferenceType o) {
+  public void visitQualifiedIdentifier(@NotNull MSAQualifiedIdentifier o) {
     visitCompositeElement(o);
   }
 
@@ -107,6 +119,10 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitStereotype(@NotNull MSAStereotype o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTrustLevelIdentifier(@NotNull MSATrustLevelIdentifier o) {
     visitCompositeElement(o);
   }
 

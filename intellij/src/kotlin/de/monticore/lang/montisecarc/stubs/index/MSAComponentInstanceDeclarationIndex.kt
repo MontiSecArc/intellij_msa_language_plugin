@@ -16,7 +16,7 @@ class MSAComponentInstanceDeclarationIndex: StringStubIndexExtension<MSAComponen
 
     override fun getKey(): StubIndexKey<String, MSAComponentDeclaration> = KEY
 
-    companion object {
+    companion  object {
         val KEY: StubIndexKey<String, MSAComponentDeclaration> = StubIndexKey.createIndexKey("de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex")
     }
 }

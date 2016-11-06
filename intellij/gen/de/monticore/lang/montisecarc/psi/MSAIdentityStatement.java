@@ -8,10 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface MSAIdentityStatement extends MSACompositeElement {
 
   @NotNull
-  List<MSAComponentInstanceName> getComponentInstanceNameList();
-
-  @NotNull
-  List<MSAPortInstanceName> getPortInstanceNameList();
+  List<MSAIdentityIdentifier> getIdentityIdentifierList();
 
   @Nullable
   MSAStereotype getStereotype();

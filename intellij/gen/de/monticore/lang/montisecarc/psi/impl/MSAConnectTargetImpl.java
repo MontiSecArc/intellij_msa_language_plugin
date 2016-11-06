@@ -27,14 +27,8 @@ public class MSAConnectTargetImpl extends MSACompositeElementImpl implements MSA
 
   @Override
   @NotNull
-  public List<MSAComponentInstanceName> getComponentInstanceNameList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentInstanceName.class);
-  }
-
-  @Override
-  @NotNull
-  public MSAPortInstanceName getPortInstanceName() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class));
+  public MSAQualifiedIdentifier getQualifiedIdentifier() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAQualifiedIdentifier.class));
   }
 
 }
