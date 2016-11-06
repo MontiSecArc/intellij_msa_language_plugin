@@ -84,7 +84,7 @@ class IdentityStatementGenerator : MSAGenerator() {
                     connector_model.put("relationship_type", link)
                     connector_model.put("start_port", startIdentifier!!)
                     connector_model.put("target_port", stopIdentifier!!)
-                    val connector = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
+                    val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
 
                     connectors.add(connector)
                 }

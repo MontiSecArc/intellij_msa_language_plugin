@@ -77,7 +77,7 @@ class GraphGenerator {
             //CREATE ${nodes};
             val model = mutableMapOf<String, String>()
             model.put("nodes", nodes.filter { !it.isNullOrEmpty() }.joinToString())
-            val graph = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/Create.ftl")?.path.orEmpty(), model)
+            val graph = FreeMarker.instance.generateModelOutput("ToGraph/Create.ftl", model)
             return graph
         }
         return ""

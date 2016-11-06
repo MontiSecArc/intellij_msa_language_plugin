@@ -58,7 +58,7 @@ class ConnectorGenerator : MSAGenerator() {
                 connector_model.put("start_port", targetPortIdentifier)
                 connector_model.put("target_port", sourcePortIdentifier)
             }
-            val connector = FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
+            val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
             connectors.add(connector)
         }
 

@@ -1,12 +1,9 @@
 package de.monticore.lang.montisecarc.generator
 
-import com.google.common.collect.ImmutableMap
+import com.intellij.util.PathUtil
 import freemarker.template.Configuration
-import freemarker.template.TemplateExceptionHandler
 import java.io.File
-import java.io.OutputStreamWriter
 import java.io.StringWriter
-import java.util.*
 
 /**
  * Created by thomasbuning on 30.10.16.
@@ -17,7 +14,7 @@ class FreeMarker {
     init {
 
         with(cfg) {
-            setDirectoryForTemplateLoading(File("/"))
+            setDirectoryForTemplateLoading(File(PathUtil.getJarPathForClass(FreeMarker::class.java)))
             defaultEncoding = "UTF-8"
             templateExceptionHandler = freemarker.template.TemplateExceptionHandler.RETHROW_HANDLER
         }

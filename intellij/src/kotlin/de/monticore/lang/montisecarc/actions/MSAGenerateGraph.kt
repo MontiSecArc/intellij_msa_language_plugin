@@ -1,9 +1,9 @@
 package de.monticore.lang.montisecarc.actions
 
+import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKeys
-import com.intellij.psi.PsiFile
 import de.monticore.lang.montisecarc.generator.GraphGeneratorBuilder
 import de.monticore.lang.montisecarc.visualization.GraphDatabase
 
@@ -26,12 +26,29 @@ import de.monticore.lang.montisecarc.visualization.GraphDatabase
 class MSAGenerateGraph: AnAction() {
     override fun actionPerformed(e: AnActionEvent?) {
 
-        val psiFile = e?.dataContext?.getData(DataKeys.PSI_FILE.name) as PsiFile
+        if(e == null) {
 
-        val createGraph = GraphGeneratorBuilder
-                .addFile(psiFile)
-                .build()
-                .createGraph()
-        GraphDatabase.instance.createDatabase(createGraph)
+            PluginManager.getLogger().error("Event Null")
+        } else {
+
+            val file = e.getData(DataKeys.PSI_FILE)
+
+            if(file != null) {
+
+                try {
+                    val createGraph = GraphGeneratorBuilder
+                            .addFile(file)
+                            .build()
+                            .createGraph()
+                    GraphDatabase.instance.createDatabase(createGraph)
+                } catch (e: Exception) {
+                    PluginManager.getLogger().error(e)
+                }
+            } else {
+
+                PluginManager.getLogger().error("PsiFile Null")
+            }
+
+        }
     }
 }

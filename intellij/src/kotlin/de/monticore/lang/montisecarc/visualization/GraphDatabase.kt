@@ -1,5 +1,6 @@
 package de.monticore.lang.montisecarc.visualization
 
+import com.intellij.ide.plugins.PluginManager
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.factory.GraphDatabaseFactory
 import org.neo4j.graphdb.factory.GraphDatabaseSettings
@@ -19,6 +20,7 @@ class GraphDatabase {
                 .setConfig(bolt.address, "localhost:7687")
                 .newGraphDatabase()
 
+
         registerShutdownHook(graphDb)
     }
 
@@ -36,6 +38,8 @@ class GraphDatabase {
         }
 
         graphDb!!.execute("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n, r")
+
+        PluginManager.getLogger().warn(graphQuery)
         graphDb!!.execute(graphQuery)
     }
 

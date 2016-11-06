@@ -55,7 +55,7 @@ abstract class TrustLevelGenerator: MSAGenerator() {
             model.put("id", TrustLevelGenerator.getTrustLevelIdentifier(trustLevel))
             model.put("instance_name", TrustLevelGenerator.getTrustLevelString(trustLevel))
             model.put("level", trustLevel)
-            return FreeMarker.instance.generateModelOutput(getUrl("ToGraph/TrustlevelMacro.ftl")?.path.orEmpty(), model)
+            return FreeMarker.instance.generateModelOutput("ToGraph/TrustlevelMacro.ftl", model)
         }
 
         private fun getUrl(path: String): URL? {
@@ -70,7 +70,7 @@ abstract class TrustLevelGenerator: MSAGenerator() {
         connector_model.put("relationship_type", ":TRUST")
         connector_model.put("start_port", source)
         connector_model.put("target_port", target)
-        return FreeMarker.instance.generateModelOutput(getUrl("ToGraph/ConnectorMacro.ftl")?.path.orEmpty(), connector_model)
+        return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
     }
 
     fun createConnector(trustLevel: Int, componentIdentifier: String): List<String> {
