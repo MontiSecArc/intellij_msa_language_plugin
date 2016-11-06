@@ -29,4 +29,4 @@ build:
   allow_failure: false
   artifacts:
     paths:
-        - intellij/build/libs/*.jar
+        - intellij/build/distributions/*.jar
