@@ -81,7 +81,7 @@ ComponentDeclaration ::= Stereotype? component ComponentSignature ComponentBody 
                                 pin=2
                                 methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
-                                stubClass="de.monticore.lang.montisecarc.stubs.nodes.MSAComponentDeclarationStub"
+                                stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
@@ -97,7 +97,7 @@ ComponentInstanceDeclaration ::= Stereotype? InputFilter? ComponentNamesWithType
         pin=3
         methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel]
         implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
-        stubClass="de.monticore.lang.montisecarc.stubs.nodes.MSAComponentInstanceStub"
+        stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
         mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin"
     }
@@ -109,7 +109,7 @@ PortDeclaration ::= Stereotype? port PortElement ( COMMA PortElement )* semi {pi
 PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } JavaClassReference [PortInstanceName] {
     pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
     implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
-    stubClass="de.monticore.lang.montisecarc.stubs.nodes.MSAPortElementStub"
+    stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
     elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
     mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin"
     recoverWhile=port_element_recover

@@ -21,23 +21,23 @@ import de.monticore.lang.montisecarc.psi.MSAPortElement
  */
 class PortElementConnectorGenerator : MSAGenerator() {
 
-    private fun getModel(direction: String, componentIdentifier: String, portIdentifier: String): String {
+    companion object {
+        fun getModel(direction: String, componentIdentifier: String, portIdentifier: String): String {
 
-        val connector_model = mutableMapOf<String, Any>()
-        var direction = ":IN"
-        if (direction == "OUT") {
+            val connector_model = mutableMapOf<String, Any>()
+            if (direction == "OUT") {
 
-            connector_model.put("start_port", componentIdentifier)
-            connector_model.put("target_port", portIdentifier)
-            direction = ":OUT"
-        } else {
+                connector_model.put("start_port", componentIdentifier)
+                connector_model.put("target_port", portIdentifier)
+            } else {
 
-            connector_model.put("start_port", portIdentifier)
-            connector_model.put("target_port", componentIdentifier)
+                connector_model.put("start_port", portIdentifier)
+                connector_model.put("target_port", componentIdentifier)
+            }
+            connector_model.put("relationship_type", ":$direction")
+
+            return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
         }
-        connector_model.put("relationship_type", direction)
-
-        return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
     }
 
     override fun generate(psiElement: PsiElement): Any? {
@@ -46,7 +46,7 @@ class PortElementConnectorGenerator : MSAGenerator() {
 
             val portIdentifier = PortElementGenerator.createPortIdentifier(psiElement)
 
-            if (psiElement.enclosingComponent != null) {
+            if (psiElement.enclosingComponent != null && !psiElement.enclosingComponent?.instanceName.isNullOrEmpty()) {
                 val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(psiElement.enclosingComponent!!)
 
                 return listOf(getModel(psiElement.direction, componentIdentifier, portIdentifier))

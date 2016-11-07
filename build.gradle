@@ -1,5 +1,5 @@
 group 'de.monticore.lang'
-version '0.7.4'
+version '0.7.5'
 
 project.ext {
     kotlin_version = '1.0.4'
