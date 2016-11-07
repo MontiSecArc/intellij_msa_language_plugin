@@ -1,10 +1,12 @@
 package de.monticore.lang.montisecarc.generator
 
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import com.intellij.util.containers.isNullOrEmpty
+import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
+import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
-import java.net.URL
 
 /**
  * Copyright 2016 thomasbuning
@@ -27,19 +29,25 @@ class GraphGenerator {
     private val files = mutableListOf<PsiFile>()
     private val registeredGenerators = mutableMapOf<IElementType, List<Pair<MSAGenerator, (Any) -> Unit>>>()
     private val trustLevels = mutableSetOf<Int>()
-    private val referencedPortElements = mutableSetOf<String>()
     private val nodes = mutableListOf<String>()
     private val connectors = mutableListOf<String>()
     private var psiRecursiveElementWalkingVisitor: MSAPsiRecursiveElementWalkingVisitor? = null
-
-    private fun getUrl(path: String): URL? {
-
-        return this.javaClass.classLoader.getResource(path)
-    }
+    private var referencedComponentInstances = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
 
     fun createGraph(): String {
 
         return files.map { generate(it) }.joinToString("")
+    }
+
+    private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean {
+
+        for (componentQualifiedName in componentQualifiedNames) {
+
+            if(componentQualifiedName.contains(qualifiedName) && componentQualifiedName != qualifiedName) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun generate(parseFile: PsiFile): String {
@@ -47,30 +55,22 @@ class GraphGenerator {
         if (psiRecursiveElementWalkingVisitor != null) {
             parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
+            val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
+            referencedComponentInstances.forEach {
+
+                if(it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
+
+                    it.second.accept(psiRecursiveElementWalkingVisitor!!)
+                }
+            }
+
             trustLevels.forEach {
                 nodes.add(TrustLevelGenerator.generateTrustLevelNode(it))
             }
 
-            referencedPortElements.filter {
-                var portElementIsIncluded = false
-
-                for (node in nodes) {
-
-                    if(node.contains(it)) {
-
-                        portElementIsIncluded = true
-                        break
-                    }
-                }
-
-                portElementIsIncluded
-            }.forEach {
-
-            }
-
             nodes.addAll(connectors)
 
-            if(nodes.isNullOrEmpty()) {
+            if (nodes.isNullOrEmpty()) {
                 return ""
             }
 
@@ -114,23 +114,25 @@ class GraphGenerator {
             }
         }
 
-        fun extractStringsFromListAndReferences(addTo: MutableList<String>, references: MutableSet<String>): (Any) -> Unit {
+        fun extractStringsFromListAndReferences(addTo: MutableList<String>, references: MutableList<Pair<PsiFile, MSAComponentDeclaration>>): (Any) -> Unit {
             return {
                 connector ->
-                if (connector is Pair<*,*>) {
+                if (connector is Triple<*, *, *>) {
 
-                    val nodeConnector = connector.first as List<*>
-                    val referencedPorts = connector.second as List<*>
-                    nodeConnector.forEach {
-                        if (it is String) {
-                            addTo.add(it)
-                        }
-                    }
-                    referencedPorts.forEach {
-                        if(it is String) {
+                    try {
+                        val containingFile = connector.first as PsiFile
+                        val referencedComponentInstance = connector.second as MSAComponentDeclaration
+                        val nodes = connector.third as List<*>
 
-                            references.add(it)
+
+                        nodes.forEach {
+                            if (it is String) {
+                                addTo.add(it)
+                            }
                         }
+
+                        references.add(Pair(containingFile, referencedComponentInstance))
+                    } catch(e: Exception) {
                     }
                 }
             }
@@ -154,7 +156,11 @@ class GraphGenerator {
                     if (componentTrustLevel.first is Int && componentTrustLevel.second is List<*>) {
 
                         val componentIdentifier = componentTrustLevel.second as List<*>
-                        componentIdentifier.forEach { if(it is String) { connectors.add(it) } }
+                        componentIdentifier.forEach {
+                            if (it is String) {
+                                connectors.add(it)
+                            }
+                        }
                         val trustLevel = componentTrustLevel.first as Int
                         trustLevels.add(trustLevel)
                     }
@@ -168,15 +174,76 @@ class GraphGenerator {
 
         registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementConnectorGenerator(), extractStringsFromList(connectors))
 
-        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceDeclarationGenerator(), extractStringsFromList(nodes))
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceDeclarationGenerator(), extractStringsFromListAndReferences(nodes, referencedComponentInstances))
 
         registerGenerator(MSACompositeElementTypes.IDENTITY_STATEMENT, IdentityStatementGenerator(), extractStringsFromList(connectors))
 
-        registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorGenerator(), extractStringsFromListAndReferences(connectors, referencedPortElements))
+        registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorGenerator(), extractStringsFromList(connectors))
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceTrustLevelGenerator(), extractTrustLevel())
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstancePortElementGenerator(), {
+
+            pair ->
+            if(pair is Pair<*,*>) {
+
+                val portElementNodes = pair.first as List<*>
+                val portConnectors = pair.second as List<*>
+
+                portElementNodes.map {
+                    if(it is String) {
+
+                        nodes.add(it)
+                    }
+                }
+
+                portConnectors.map {
+                    if(it is String) {
+
+                        connectors.add(it)
+                    }
+                }
+            }
+        })
     }
+}
+
+class ComponentInstancePortElementGenerator : MSAGenerator() {
+    override fun generate(psiElement: PsiElement): Any? {
+
+        if(psiElement is MSAComponentInstanceDeclaration) {
+            val componentName = psiElement.componentNameWithTypeList.last().componentName
+            if(componentName.references.isNotEmpty()) {
+
+                val componentDeclaration = componentName.references[0].resolve()
+                if(componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
+
+                    val portElementNodes = mutableListOf<String>()
+                    val connectors = mutableListOf<String>()
+                    for (msaPortDeclaration in componentDeclaration.componentBody?.portDeclarationList.orEmpty()) {
+
+                        for (msaPortElement in msaPortDeclaration.portElementList) {
+                            val portElementNode = PortElementGenerator.createPortElementNode(msaPortElement)
+                            portElementNodes.add(portElementNode)
+                            val portIdentifier = PortElementGenerator.createPortIdentifier(msaPortElement)
+
+                            for (msaComponentInstanceName in psiElement.componentInstanceNameList) {
+
+                                val componentIdentifier = ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(psiElement, msaComponentInstanceName.name)
+
+                                val connector = PortElementConnectorGenerator.getModel(msaPortElement.direction, componentIdentifier, portIdentifier)
+                                connectors.add(connector)
+                            }
+                        }
+                    }
+                    return Pair(portElementNodes, connectors)
+                }
+            }
+        }
+        return null
+    }
+
 }
 

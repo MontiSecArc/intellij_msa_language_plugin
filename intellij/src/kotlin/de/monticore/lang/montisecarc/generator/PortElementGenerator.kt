@@ -42,29 +42,33 @@ class PortElementGenerator : MSAGenerator() {
             val portInstanceName = portElement.portInstanceName?.text ?: referenceType?.decapitalize()
             return Pair(referenceType, portInstanceName)
         }
+
+        fun createPortElementNode(psiElement: MSAPortElement): String {
+            val model = mutableMapOf<String, Any>()
+
+            //<@node instance_name="${instance_name}" type_name="${type_name}" is_critical="${is_critical}" access_roles="${access_roles}" extra="${extra_arguments}" />
+
+            //${instance_name}_${type_name}
+            val (referenceType, portInstanceName) = getPortIdentifiers(psiElement)
+            val identifier = createPortIdentifier(psiElement)
+            model.put("id", identifier)
+            model.put("instance_name", portInstanceName.orEmpty())
+            model.put("type_name", referenceType.orEmpty())
+            model.put("is_critical", psiElement.isCritical)
+
+            val portAccessRoles = psiElement.enclosingComponent?.componentBody?.accessStatementList?.map { it.portAccessRoleList.filter { it.qualifiedIdentifier.portInstanceName.text == portInstanceName }.map { "'${it.qualifiedIdentifier.portInstanceName.text}'" }.joinToString() }.orEmpty().joinToString()
+
+            model.put("access_roles", portAccessRoles)
+
+            return FreeMarker.instance.generateModelOutput("ToGraph/PortMacro.ftl", model)
+        }
     }
 
     override fun generate(psiElement: PsiElement): String? {
 
         if (psiElement is MSAPortElement) {
             if (!psiElement.enclosingComponent?.instanceName.isNullOrEmpty()) {
-                val model = mutableMapOf<String, Any>()
-
-                //<@node instance_name="${instance_name}" type_name="${type_name}" is_critical="${is_critical}" access_roles="${access_roles}" extra="${extra_arguments}" />
-
-                //${instance_name}_${type_name}
-                val (referenceType, portInstanceName) = getPortIdentifiers(psiElement)
-                val identifier = createPortIdentifier(psiElement)
-                model.put("id", identifier)
-                model.put("instance_name", portInstanceName.orEmpty())
-                model.put("type_name", referenceType.orEmpty())
-                model.put("is_critical", psiElement.isCritical)
-
-                val portAccessRoles = psiElement.enclosingComponent?.componentBody?.accessStatementList?.map { it.portAccessRoleList.filter { it.qualifiedIdentifier.portInstanceName.text == portInstanceName }.map { "'${it.qualifiedIdentifier.portInstanceName.text}'" }.joinToString() }.orEmpty().joinToString()
-
-                model.put("access_roles", portAccessRoles)
-
-                return FreeMarker.instance.generateModelOutput("ToGraph/PortMacro.ftl", model)
+                return createPortElementNode(psiElement)
             }
         }
         return null

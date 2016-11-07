@@ -46,10 +46,12 @@ class ComponentInstanceDeclarationGenerator : MSAGenerator() {
 
             if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-                return psiElement.componentInstanceNameList.map {
+                val generatedNodes = psiElement.componentInstanceNameList.map {
 
                     generateComponentInstanceElement(msaComponentDeclaration, psiElement, it.name)
                 }
+
+                return Triple(msaComponentDeclaration.containingFile, msaComponentDeclaration, generatedNodes)
             }
         }
         return null
