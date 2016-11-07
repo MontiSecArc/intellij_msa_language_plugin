@@ -29,4 +29,4 @@ build:
   allow_failure: false
   artifacts:
     paths:
-        - intellij/build/distributions/*.zip
+        - intellij/build/distributions/MSA-0.7.5.zip
