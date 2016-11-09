@@ -1,11 +1,9 @@
 package de.monticore.lang.montisecarc.generator
 
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
-import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
 
 /**
@@ -210,40 +208,5 @@ class GraphGenerator {
     }
 }
 
-class ComponentInstancePortElementGenerator : MSAGenerator() {
-    override fun generate(psiElement: PsiElement): Any? {
 
-        if(psiElement is MSAComponentInstanceDeclaration) {
-            val componentName = psiElement.componentNameWithTypeList.last().componentName
-            if(componentName.references.isNotEmpty()) {
-
-                val componentDeclaration = componentName.references[0].resolve()
-                if(componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
-
-                    val portElementNodes = mutableListOf<String>()
-                    val connectors = mutableListOf<String>()
-                    for (msaPortDeclaration in componentDeclaration.componentBody?.portDeclarationList.orEmpty()) {
-
-                        for (msaPortElement in msaPortDeclaration.portElementList) {
-                            val portElementNode = PortElementGenerator.createPortElementNode(msaPortElement)
-                            portElementNodes.add(portElementNode)
-                            val portIdentifier = PortElementGenerator.createPortIdentifier(msaPortElement)
-
-                            for (msaComponentInstanceName in psiElement.componentInstanceNameList) {
-
-                                val componentIdentifier = ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(psiElement, msaComponentInstanceName.name)
-
-                                val connector = PortElementConnectorGenerator.getModel(msaPortElement.direction, componentIdentifier, portIdentifier)
-                                connectors.add(connector)
-                            }
-                        }
-                    }
-                    return Pair(portElementNodes, connectors)
-                }
-            }
-        }
-        return null
-    }
-
-}
 

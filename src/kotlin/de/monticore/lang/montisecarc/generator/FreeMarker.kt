@@ -8,7 +8,7 @@ import java.io.StringWriter
 /**
  * Created by thomasbuning on 30.10.16.
  */
-class FreeMarker {
+class FreeMarker() {
 
     private var cfg = Configuration(Configuration.VERSION_2_3_23)
     init {

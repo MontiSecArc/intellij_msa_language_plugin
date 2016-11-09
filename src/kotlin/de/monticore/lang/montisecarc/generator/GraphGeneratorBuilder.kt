@@ -19,28 +19,24 @@ import com.intellij.psi.tree.IElementType
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GraphGeneratorBuilder private constructor() {
+class GraphGeneratorBuilder {
 
-    private object Holder { val INSTANCE = GraphGeneratorBuilder() }
     private val psiFiles = mutableListOf<PsiFile>()
 
     private val graphGenerators = mutableListOf<Triple<IElementType, MSAGenerator, (Any) -> Unit>>()
 
-    companion object {
-        val instance: GraphGeneratorBuilder by lazy { GraphGeneratorBuilder.Holder.INSTANCE }
 
-        fun addFile(psiFile: PsiFile): GraphGeneratorBuilder {
+    fun addFile(psiFile: PsiFile): GraphGeneratorBuilder {
 
-            Holder.INSTANCE.psiFiles.add(psiFile)
+        psiFiles.add(psiFile)
 
-            return Holder.INSTANCE
-        }
+        return this
+    }
 
-        fun addGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit): GraphGeneratorBuilder {
+    fun addGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit): GraphGeneratorBuilder {
 
-            Holder.INSTANCE.graphGenerators.add(Triple(elementType, generator, callback))
-            return Holder.INSTANCE
-        }
+        graphGenerators.add(Triple(elementType, generator, callback))
+        return this
     }
 
     fun build(registerDefaultGenerators: Boolean = true): GraphGenerator {
