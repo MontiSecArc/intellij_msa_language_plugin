@@ -1,0 +1,8 @@
+group 'de.monticore.lang'
+version '0.7.5'
+
+project.ext {
+    kotlin_version = '1.0.4'
+    java_version = '1.0.4'
+    intellij_version = 'IC-2016.2.3'
+}
