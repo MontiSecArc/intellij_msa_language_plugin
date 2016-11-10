@@ -35,7 +35,7 @@ class GraphGenerator {
 
     fun createGraph(): String {
 
-        return files.map { generate(it) }.joinToString("")
+        return files.map { generate(it) }.filter { !it.isNullOrEmpty() }.joinToString("")
     }
 
     private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean {
@@ -43,7 +43,7 @@ class GraphGenerator {
         return componentQualifiedNames.any { it.contains(qualifiedName) && it != qualifiedName }
     }
 
-    private fun generate(parseFile: PsiFile): String {
+    private fun generate(parseFile: PsiFile): String? {
 
         if (psiRecursiveElementWalkingVisitor != null) {
             ApplicationManager.getApplication().runReadAction({
@@ -76,7 +76,7 @@ class GraphGenerator {
             val graph = FreeMarker.instance.generateModelOutput("ToGraph/Create.ftl", model)
             return graph
         }
-        return ""
+        return null
     }
 
     fun addFile(psiFile: PsiFile) = files.add(psiFile)
