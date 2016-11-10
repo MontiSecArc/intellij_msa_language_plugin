@@ -14,7 +14,7 @@ buildscript {
 }
 
 group 'de.monticore.lang.montisecarc'
-version '0.7.6'
+version '0.7.7'
 
 apply plugin: 'org.jetbrains.intellij'
 intellij {

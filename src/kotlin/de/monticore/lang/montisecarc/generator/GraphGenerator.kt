@@ -1,5 +1,6 @@
 package de.monticore.lang.montisecarc.generator
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
 import com.intellij.util.containers.isNullOrEmpty
@@ -39,19 +40,15 @@ class GraphGenerator {
 
     private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean {
 
-        for (componentQualifiedName in componentQualifiedNames) {
-
-            if(componentQualifiedName.contains(qualifiedName) && componentQualifiedName != qualifiedName) {
-                return true
-            }
-        }
-        return false
+        return componentQualifiedNames.any { it.contains(qualifiedName) && it != qualifiedName }
     }
 
     private fun generate(parseFile: PsiFile): String {
 
         if (psiRecursiveElementWalkingVisitor != null) {
-            parseFile.accept(psiRecursiveElementWalkingVisitor!!)
+            ApplicationManager.getApplication().runReadAction({
+
+                parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
             val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
             referencedComponentInstances.forEach {
@@ -61,6 +58,7 @@ class GraphGenerator {
                     it.second.accept(psiRecursiveElementWalkingVisitor!!)
                 }
             }
+            })
 
             trustLevels.forEach {
                 nodes.add(TrustLevelGenerator.generateTrustLevelNode(it))
