@@ -50,14 +50,14 @@ class GraphGenerator {
 
                 parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
-            val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
-            referencedComponentInstances.forEach {
+                val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
+                referencedComponentInstances.forEach {
 
-                if(it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
+                    if (it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
 
-                    it.second.accept(psiRecursiveElementWalkingVisitor!!)
+                        it.second.accept(psiRecursiveElementWalkingVisitor!!)
+                    }
                 }
-            }
             })
 
             trustLevels.forEach {
@@ -183,20 +183,20 @@ class GraphGenerator {
         registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstancePortElementGenerator(), {
 
             pair ->
-            if(pair is Pair<*,*>) {
+            if (pair is Pair<*, *>) {
 
                 val portElementNodes = pair.first as List<*>
                 val portConnectors = pair.second as List<*>
 
                 portElementNodes.map {
-                    if(it is String) {
+                    if (it is String) {
 
                         nodes.add(it)
                     }
                 }
 
                 portConnectors.map {
-                    if(it is String) {
+                    if (it is String) {
 
                         connectors.add(it)
                     }

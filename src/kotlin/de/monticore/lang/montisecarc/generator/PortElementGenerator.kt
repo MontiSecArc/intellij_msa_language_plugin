@@ -55,6 +55,7 @@ class PortElementGenerator : MSAGenerator() {
             model.put("instance_name", portInstanceName.orEmpty())
             model.put("type_name", referenceType.orEmpty())
             model.put("is_critical", psiElement.isCritical)
+            model.put("element_offset", psiElement.textOffset)
 
             val portAccessRoles = psiElement.enclosingComponent?.componentBody?.accessStatementList?.map { it.portAccessRoleList.filter { it.qualifiedIdentifier.portInstanceName.text == portInstanceName }.map { "'${it.qualifiedIdentifier.portInstanceName.text}'" }.joinToString() }.orEmpty().joinToString()
 

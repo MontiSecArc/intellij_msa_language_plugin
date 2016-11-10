@@ -66,6 +66,7 @@ class ComponentInstanceDeclarationGenerator : MSAGenerator() {
         model.put("id", componentIdentifier.orEmpty())
         model.put("instance_name", instanceName)
         model.put("type_name", msaComponentDeclaration.qualifiedName)
+        model.put("element_offset", msaComponentInstanceName.textOffset)
         val accessRoles = msaComponentDeclaration.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
         model.put("access_roles", accessRoles.orEmpty())
 

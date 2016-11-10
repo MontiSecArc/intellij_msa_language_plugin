@@ -44,11 +44,14 @@ class ComponentDeclarationGenerator : MSAGenerator() {
                 val componentIdentifier = createComponentIdentifier(psiElement)
                 model.put("id", componentIdentifier)
                 model.put("instance_name", instanceName.orEmpty())
-                model.put("type_name", psiElement.qualifiedName)
-                val accessRoles = psiElement.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
-                model.put("access_roles", accessRoles.orEmpty())
 
                 val extras = mutableMapOf<String, String>()
+                extras.put("type_name", psiElement.qualifiedName)
+                extras.put("element_offset", psiElement.textOffset.toString())
+                val accessRoles = psiElement.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
+                extras.put("access_roles", accessRoles.orEmpty())
+
+
                 val configurationStatementList = psiElement.componentBody?.configurationStatementList
                 if (!configurationStatementList.isNullOrEmpty()) {
 

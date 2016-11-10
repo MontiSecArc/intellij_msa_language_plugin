@@ -43,6 +43,7 @@ class ConnectorGenerator : MSAGenerator() {
 
             val connector_model = mutableMapOf<String, Any>()
             connector_model.put("relationship_type", encrypted)
+            connector_model.put("element_offset", msaConnector.textOffset)
 
             if (sourcePort.direction == targetPort.direction) {
                 continue

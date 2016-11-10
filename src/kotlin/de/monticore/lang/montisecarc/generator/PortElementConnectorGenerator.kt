@@ -34,6 +34,7 @@ class PortElementConnectorGenerator : MSAGenerator() {
                 connector_model.put("start_port", portIdentifier)
                 connector_model.put("target_port", componentIdentifier)
             }
+            connector_model.put("relationship_type", "")
             connector_model.put("relationship_type", ":$direction")
 
             return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)

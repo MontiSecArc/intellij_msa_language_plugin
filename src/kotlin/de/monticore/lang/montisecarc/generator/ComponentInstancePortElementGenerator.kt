@@ -39,13 +39,9 @@ class ComponentInstancePortElementGenerator : MSAGenerator() {
                             portElementNodes.add(portElementNode)
                             val portIdentifier = PortElementGenerator.createPortIdentifier(msaPortElement)
 
-                            for (msaComponentInstanceName in psiElement.componentInstanceNameList) {
-
-                                val componentIdentifier = ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(psiElement, msaComponentInstanceName.name)
-
-                                val connector = PortElementConnectorGenerator.getModel(msaPortElement.direction, componentIdentifier, portIdentifier)
-                                connectors.add(connector)
-                            }
+                            psiElement.componentInstanceNameList
+                                    .map { ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(psiElement, it.name) }
+                                    .mapTo(connectors) { PortElementConnectorGenerator.getModel(msaPortElement.direction, it, portIdentifier) }
                         }
                     }
                     return Pair(portElementNodes, connectors)
