@@ -31,4 +31,4 @@ build:
     paths:
         - build/distributions/*.zip
   only:
-    - tags
+    - master
