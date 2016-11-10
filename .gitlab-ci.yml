@@ -29,6 +29,6 @@ build:
   allow_failure: false
   artifacts:
     paths:
-        - intellij/build/distributions/MSA-$CI_BUILD_TAG.zip
+        - build/distributions/*.zip
   only:
     - tags
