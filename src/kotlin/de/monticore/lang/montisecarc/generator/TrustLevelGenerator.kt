@@ -30,7 +30,7 @@ abstract class TrustLevelGenerator: MSAGenerator() {
                 trustLevelId = "tP$trustLevel"
             } else {
 
-                trustLevelId = "tM$trustLevel"
+                trustLevelId = "tM${Math.abs(trustLevel)}"
             }
 
             return trustLevelId
@@ -44,7 +44,7 @@ abstract class TrustLevelGenerator: MSAGenerator() {
                 trustLevelString = "+$trustLevel"
             } else {
 
-                trustLevelString = "-$trustLevel"
+                trustLevelString = "-${Math.abs(trustLevel)}"
             }
 
             return trustLevelString
