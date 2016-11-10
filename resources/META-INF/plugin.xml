@@ -1,7 +1,7 @@
 <idea-plugin version="4">
     <id>de.monticore.lang.montisecarc.MontiSecArcLanguagePlugin</id>
     <name>MontiSecArcLanguagePlugin</name>
-    <version>0.7.5</version>
+    <version>0.7.7</version>
     <vendor email="thomas.buning@rwth-aachen.de" url="https://www.monticore.de">RWTH Aachen</vendor>
 
     <description><![CDATA[
