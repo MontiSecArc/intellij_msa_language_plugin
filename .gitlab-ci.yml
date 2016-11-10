@@ -30,3 +30,5 @@ build:
   artifacts:
     paths:
         - intellij/build/distributions/MSA-0.7.5.zip
+  only:
+    - tags
