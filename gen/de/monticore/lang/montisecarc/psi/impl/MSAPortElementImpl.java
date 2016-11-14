@@ -46,12 +46,6 @@ public class MSAPortElementImpl extends MSAPortElementImplMixin implements MSAPo
     return PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
-  }
-
   @JvmStatic
   public boolean isCritical() {
     return MSAPsiImplUtil.isCritical(this);

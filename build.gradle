@@ -53,7 +53,6 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.25-incubating'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
 version = "$version.$buildNumber"

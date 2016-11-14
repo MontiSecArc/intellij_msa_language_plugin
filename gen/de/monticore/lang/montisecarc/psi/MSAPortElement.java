@@ -17,9 +17,6 @@ public interface MSAPortElement extends MSANamedElement, StubBasedPsiElement<MSA
   MSAPortInstanceName getPortInstanceName();
 
   @Nullable
-  PsiElement getId();
-
-  @Nullable
   String getName();
 
   @JvmStatic

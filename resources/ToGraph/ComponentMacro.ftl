@@ -4,5 +4,4 @@
 <#-- @ftlvariable name="type_name" type="java.lang.String" -->
 <#-- @ftlvariable name="instance_name" type="java.lang.String" -->
 <#macro node id instance_name>(${id}:Component {name: "${instance_name}" <#nested>})</#macro>
-<#assign extras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']>
 <@node id="${id}" instance_name="${instance_name}"><#list extra_arguments!{} as attrName, attrVal>, ${attrName}:"${attrVal}"</#list></@node>
