@@ -22,12 +22,13 @@ import de.monticore.lang.montisecarc.psi.MSATokenElementTypes
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class ComponentInstanceDeclarationGenerator : MSAGenerator() {
+class ComponentInstanceInstanceGenerator : MSAGenerator() {
 
     companion object {
-        fun createComponentInstanceIdentifier(msaComponentInstanceDeclaration: MSAComponentInstanceDeclaration): String {
 
-            return msaComponentInstanceDeclaration.qualifiedName.replace(".", "_")
+        fun createComponentInstanceIdentifier(msaComponentDeclaration: MSAComponentDeclaration, instanceName: String): String {
+
+            return ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration) + "_" + instanceName
         }
     }
 
@@ -55,7 +56,7 @@ class ComponentInstanceDeclarationGenerator : MSAGenerator() {
         val model = mutableMapOf<String, Any>()
 
         //<@node id="${id}" instance_name="${instance_name}"><#list extra_arguments!{} as attrName, attrVal>, ${attrName}:"${attrVal}"</#list></@node>
-        val componentIdentifier = createComponentInstanceIdentifier(msaComponentInstanceName)
+        val componentIdentifier = createComponentInstanceIdentifier(msaComponentDeclaration, instanceName)
         model.put("id", componentIdentifier)
         model.put("instance_name", instanceName)
 
@@ -98,6 +99,6 @@ class ComponentInstanceDeclarationGenerator : MSAGenerator() {
 
         model.put("extra_arguments", extras)
 
-        return FreeMarker.instance.generateModelOutput("ToGraph/ComponentMacro.ftl", model)
+        return FreeMarker.instance.generateModelOutput("ToGraph/InstanceMacro.ftl", model)
     }
 }

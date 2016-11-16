@@ -73,9 +73,7 @@ class PortElementGenerator : MSAGenerator() {
     override fun generate(psiElement: PsiElement): String? {
 
         if (psiElement is MSAPortElement) {
-            if (!psiElement.enclosingComponent?.instanceName.isNullOrEmpty()) {
-                return createPortElementNode(psiElement)
-            }
+            return createPortElementNode(psiElement)
         }
         return null
     }

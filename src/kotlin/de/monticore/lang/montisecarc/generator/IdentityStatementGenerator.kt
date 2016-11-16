@@ -48,10 +48,14 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaComponentDeclaration = componentInstanceName.references[0].resolve()
                     if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-                        startIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
+                        startIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
                     } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentInstanceDeclaration) {
 
-                        startIdentifier = ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(msaComponentDeclaration, componentInstanceName.name)
+                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeList.last().componentName.references[0].resolve()
+
+                        if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
+                            startIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name)
+                        }
                     }
                 }
             }
@@ -71,10 +75,14 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaComponentDeclaration = componentInstanceName.references[0].resolve()
                     if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-                        stopIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
+                        stopIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
                     } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentInstanceDeclaration) {
 
-                        stopIdentifier = ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(msaComponentDeclaration, componentInstanceName.name)
+                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeList.last().componentName.references[0].resolve()
+
+                        if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
+                            startIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name)
+                        }
                     }
                 }
 

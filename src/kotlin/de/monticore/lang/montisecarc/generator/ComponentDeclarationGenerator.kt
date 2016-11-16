@@ -52,7 +52,9 @@ class ComponentDeclarationGenerator : MSAGenerator() {
 
             val extras = mutableMapOf<String, String>()
             extras.put("type_name", psiElement.qualifiedName)
+            extras.put("trustlevel", psiElement.trustLevel.toString())
             extras.put("element_offset", psiElement.textOffset.toString())
+            extras.put("file_path", psiElement.containingFile.virtualFile.canonicalPath.orEmpty())
             val accessRoles = psiElement.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
             extras.put("access_roles", accessRoles.orEmpty())
 
