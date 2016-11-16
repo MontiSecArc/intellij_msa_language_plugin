@@ -24,10 +24,6 @@ class ComponentTrustLevelGenerator : TrustLevelGenerator() {
     override fun generate(psiElement: PsiElement): Any? {
 
         if(psiElement is MSAComponentDeclaration) {
-            if(psiElement.instanceName.isNullOrEmpty()) {
-
-                return null
-            }
             val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(psiElement)
             return Pair(psiElement.absoluteTrustLevel, createConnector(psiElement.absoluteTrustLevel, componentIdentifier))
         }

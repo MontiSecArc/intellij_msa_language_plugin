@@ -40,7 +40,7 @@ class ComponentInstancePortElementGenerator : MSAGenerator() {
                             val portIdentifier = PortElementGenerator.createPortIdentifier(msaPortElement)
 
                             psiElement.componentInstanceNameList
-                                    .map { ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(psiElement, it.name) }
+                                    .map { ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, it.name) }
                                     .mapTo(connectors) { PortElementConnectorGenerator.getModel(msaPortElement.direction, it, portIdentifier) }
                         }
                     }

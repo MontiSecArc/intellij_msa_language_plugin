@@ -1,7 +1,8 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
-import de.monticore.lang.montisecarc.psi.MSAPortElement
+import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
+import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 
 /**
  * Copyright 2016 thomasbuning
@@ -19,7 +20,7 @@ import de.monticore.lang.montisecarc.psi.MSAPortElement
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class PortElementConnectorGenerator : MSAGenerator() {
+class PortComponentInstanceConnectorGenerator : MSAGenerator() {
 
     companion object {
         fun getModel(direction: String, componentIdentifier: String, portIdentifier: String): String {
@@ -29,12 +30,12 @@ class PortElementConnectorGenerator : MSAGenerator() {
 
                 connector_model.put("start_port", componentIdentifier)
                 connector_model.put("target_port", portIdentifier)
-                connector_model.put("relationship_type", ":DECLARES_OUT")
+                connector_model.put("relationship_type", ":OUTGOING")
             } else {
 
                 connector_model.put("start_port", portIdentifier)
                 connector_model.put("target_port", componentIdentifier)
-                connector_model.put("relationship_type", ":DECLARES_IN")
+                connector_model.put("relationship_type", ":INGOING")
             }
 
             return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
@@ -42,15 +43,24 @@ class PortElementConnectorGenerator : MSAGenerator() {
     }
 
     override fun generate(psiElement: PsiElement): Any? {
+        if(psiElement is MSAComponentInstanceDeclaration) {
 
-        if (psiElement is MSAPortElement) {
+            val msaComponentDeclaration = psiElement.componentNameWithTypeList.last().componentName.references[0].resolve()
 
-            val portIdentifier = PortElementGenerator.createPortIdentifier(psiElement)
+            if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-            if (psiElement.enclosingComponent != null) {
-                val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(psiElement.enclosingComponent!!)
+                return psiElement.componentInstanceNameList.filter { it.name.isNotEmpty() }.flatMap {
 
-                return listOf(getModel(psiElement.direction, componentIdentifier, portIdentifier))
+                    val componentIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentDeclaration, it.name)
+
+                    msaComponentDeclaration.componentBody?.portDeclarationList.orEmpty().flatMap {
+                        it.portElementList.map {
+                            val portIdentifier = PortElementGenerator.createPortIdentifier(it)
+
+                            getModel(it.direction, componentIdentifier, portIdentifier)
+                        }
+                    }
+                }
             }
         }
         return null

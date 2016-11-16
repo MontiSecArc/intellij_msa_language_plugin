@@ -41,7 +41,7 @@ object MSAComponentInstanceStubElementType : MSANamedStubElementType<MSAComponen
 
     override fun createStub(psi: MSAComponentInstanceDeclaration, parentStub: StubElement<*>?): MSAComponentInstanceStub {
 
-        val name = psi.componentInstanceNameList.map { it.text }.joinToString()
+        val name = psi.componentInstanceNameList.map { it.text }.joinToString(",")
         return MSAComponentInstanceStub(parentStub, this, name)
     }
 

@@ -35,23 +35,30 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
 
         val imports = PsiTreeUtil.getChildrenOfType(element.containingFile, MSAImportDeclaration::class.java)?.map { it.text.replace("import ", "").replace(";", "") }.orEmpty()
 
+        val pathForComponentName = element.containingFile.virtualFile.canonicalPath
+
         StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
 
             val referencePackage = it.qualifiedName
-            for (import in imports) {
 
-                if (import.indexOf("*") > 0) {
+            if (it.containingFile.virtualFile.canonicalPath == pathForComponentName) {
+                found.add(it)
+            } else {
+                for (import in imports) {
 
-                    if (referencePackage.substringBeforeLast(".") == import.substringBeforeLast(".")) {
+                    if (import.indexOf("*") > 0) {
 
-                        found.add(it)
-                        break
-                    }
-                } else {
-                    if (import.contains(referencePackage)) {
+                        if (referencePackage.substringBeforeLast(".") == import.substringBeforeLast(".")) {
 
-                        found.add(it)
-                        break
+                            found.add(it)
+                            break
+                        }
+                    } else {
+                        if (import.contains(referencePackage)) {
+
+                            found.add(it)
+                            break
+                        }
                     }
                 }
             }
