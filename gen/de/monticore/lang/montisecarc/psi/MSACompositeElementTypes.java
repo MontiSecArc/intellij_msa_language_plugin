@@ -29,6 +29,7 @@ public interface MSACompositeElementTypes {
   IElementType IDENTITY_STATEMENT = new MSACompositeElementType("IDENTITY_STATEMENT");
   IElementType IMPORT_DECLARATION = new MSACompositeElementType("IMPORT_DECLARATION");
   IElementType JAVA_CLASS_REFERENCE = new MSACompositeElementType("JAVA_CLASS_REFERENCE");
+  IElementType JAVA_REFERENCE = new MSACompositeElementType("JAVA_REFERENCE");
   IElementType LEVEL = new MSACompositeElementType("LEVEL");
   IElementType PACKAGE_CLAUSE = new MSACompositeElementType("PACKAGE_CLAUSE");
   IElementType PORT_ACCESS_ROLE = new MSACompositeElementType("PORT_ACCESS_ROLE");
@@ -105,6 +106,9 @@ public interface MSACompositeElementTypes {
       }
       else if (type == JAVA_CLASS_REFERENCE) {
         return new MSAJavaClassReferenceImpl(node);
+      }
+      else if (type == JAVA_REFERENCE) {
+        return new MSAJavaReferenceImpl(node);
       }
       else if (type == LEVEL) {
         return new MSALevelImpl(node);

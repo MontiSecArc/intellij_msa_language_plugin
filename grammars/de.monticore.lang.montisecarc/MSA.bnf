@@ -115,7 +115,8 @@ PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } JavaClassReference [
     recoverWhile=port_element_recover
 }
 private port_element_recover ::= !(';' | ',' | InputFilter | CRITICAL)
-JavaClassReference ::= (ID DOT)* ID
+JavaClassReference ::= (JavaReference DOT)* JavaReference { methods=[getReferences] }
+JavaReference ::= ID { methods=[getReferences]}
 
 private SimpleConnectPortStatement ::= Stereotype? Connector
 Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}

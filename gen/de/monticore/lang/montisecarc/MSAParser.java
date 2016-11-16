@@ -84,6 +84,9 @@ public class MSAParser implements PsiParser, LightPsiParser {
     else if (t == JAVA_CLASS_REFERENCE) {
       r = JavaClassReference(b, 0);
     }
+    else if (t == JAVA_REFERENCE) {
+      r = JavaReference(b, 0);
+    }
     else if (t == LEVEL) {
       r = LEVEL(b, 0);
     }
@@ -1090,19 +1093,19 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (ID DOT)* ID
+  // (JavaReference DOT)* JavaReference
   public static boolean JavaClassReference(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "JavaClassReference")) return false;
     if (!nextTokenIs(b, ID)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = JavaClassReference_0(b, l + 1);
-    r = r && consumeToken(b, ID);
+    r = r && JavaReference(b, l + 1);
     exit_section_(b, m, JAVA_CLASS_REFERENCE, r);
     return r;
   }
 
-  // (ID DOT)*
+  // (JavaReference DOT)*
   private static boolean JavaClassReference_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "JavaClassReference_0")) return false;
     int c = current_position_(b);
@@ -1114,13 +1117,26 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ID DOT
+  // JavaReference DOT
   private static boolean JavaClassReference_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "JavaClassReference_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, ID, DOT);
+    r = JavaReference(b, l + 1);
+    r = r && consumeToken(b, DOT);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ID
+  public static boolean JavaReference(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "JavaReference")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ID);
+    exit_section_(b, m, JAVA_REFERENCE, r);
     return r;
   }
 
