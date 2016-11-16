@@ -43,6 +43,7 @@ class ConnectorGenerator : MSAGenerator() {
 
             val connector_model = mutableMapOf<String, Any>()
             connector_model.put("relationship_type", encrypted)
+            connector_model.put("element_offset", msaConnector.textOffset)
 
             if (sourcePort.direction == targetPort.direction) {
                 continue
@@ -55,6 +56,12 @@ class ConnectorGenerator : MSAGenerator() {
                 connector_model.put("start_port", targetPortIdentifier)
                 connector_model.put("target_port", sourcePortIdentifier)
             }
+
+            val extras = mutableMapOf<String, String>()
+            extras.put("element_offset", msaConnector.textOffset.toString())
+            extras.put("file_path", msaConnector.containingFile.virtualFile.canonicalPath.orEmpty())
+            connector_model.put("extra_arguments", extras)
+
             val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
             connectors.add(connector)
         }

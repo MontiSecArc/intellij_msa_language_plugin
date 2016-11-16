@@ -25,12 +25,9 @@ class ComponentInstanceTrustLevelGenerator : TrustLevelGenerator() {
 
         if(psiElement is MSAComponentInstanceDeclaration) {
 
-            for (msaComponentInstanceName in psiElement.componentInstanceNameList) {
-
-                val instanceIdentifier = ComponentInstanceDeclarationGenerator.createComponentInstanceIdentifier(psiElement) + "_" + msaComponentInstanceName.name
-
-                return Pair(psiElement.absoluteTrustLevel, createConnector(psiElement.absoluteTrustLevel, instanceIdentifier))
-            }
+            //psiElement.componentInstanceNameList
+            //        .map { ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(psiElement, it.name) }
+            //        .forEach { return Pair(psiElement.absoluteTrustLevel, createConnector(psiElement.absoluteTrustLevel, it)) }
         }
         return null
     }

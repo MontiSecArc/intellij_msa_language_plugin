@@ -13,13 +13,11 @@ buildscript {
 }
 
 group 'de.monticore.lang.montisecarc'
-version '0.7.7'
 
 apply plugin: 'org.jetbrains.intellij'
 intellij {
     pluginName name
     version ideaVersion
-
 
     downloadSources Boolean.valueOf(downloadIdeaSources)
     // FIXME: hack to support both IDEA 15 and IDEA 16.
@@ -53,7 +51,6 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.25-incubating'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
 version = "$version.$buildNumber"

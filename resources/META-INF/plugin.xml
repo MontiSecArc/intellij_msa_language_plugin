@@ -46,6 +46,8 @@
         <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidSemanticAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidPackageAnnotator"/>
 
         <completion.contributor language="MSA"
                                 implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>
@@ -70,6 +72,10 @@
         <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex"/>
         <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex"/>
 
+        <!-- Inspection -->
+        <localInspection level="WARNING" enabledByDefault="true"
+                         implementationClass="de.monticore.lang.montisecarc.inspections.MSAPortTypMissingImplementationInspection"
+                         displayName="Unresolved Port Type Reference" language="MSA" groupName="MSA"/>
     </extensions>
 
     <actions>

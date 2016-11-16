@@ -35,7 +35,7 @@ class GraphGenerator {
 
     fun createGraph(): String {
 
-        return files.map { generate(it) }.joinToString("")
+        return files.map { generate(it) }.filter { !it.isNullOrEmpty() }.joinToString("")
     }
 
     private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean {
@@ -43,21 +43,21 @@ class GraphGenerator {
         return componentQualifiedNames.any { it.contains(qualifiedName) && it != qualifiedName }
     }
 
-    private fun generate(parseFile: PsiFile): String {
+    private fun generate(parseFile: PsiFile): String? {
 
         if (psiRecursiveElementWalkingVisitor != null) {
             ApplicationManager.getApplication().runReadAction({
 
                 parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
-            val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
-            referencedComponentInstances.forEach {
+                val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
+                referencedComponentInstances.forEach {
 
-                if(it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
+                    if (it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
 
-                    it.second.accept(psiRecursiveElementWalkingVisitor!!)
+                        it.second.accept(psiRecursiveElementWalkingVisitor!!)
+                    }
                 }
-            }
             })
 
             trustLevels.forEach {
@@ -67,7 +67,7 @@ class GraphGenerator {
             nodes.addAll(connectors)
 
             if (nodes.isNullOrEmpty()) {
-                return ""
+                return null
             }
 
             //CREATE ${nodes};
@@ -76,7 +76,7 @@ class GraphGenerator {
             val graph = FreeMarker.instance.generateModelOutput("ToGraph/Create.ftl", model)
             return graph
         }
-        return ""
+        return null
     }
 
     fun addFile(psiFile: PsiFile) = files.add(psiFile)
@@ -166,11 +166,23 @@ class GraphGenerator {
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentDeclarationGenerator(), extractString(nodes))
 
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentInstanceGenerator(), extractString(nodes))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentDeclarationConnectorGenerator(), extractStringsFromList(connectors))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, PortComponentInstanceDeclarationConnectorGenerator(), extractStringsFromList(connectors))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentHierarchyConnectorGenerator(), extractStringsFromList(connectors))
+
         registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementGenerator(), extractString(nodes))
 
         registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementConnectorGenerator(), extractStringsFromList(connectors))
 
-        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceDeclarationGenerator(), extractStringsFromListAndReferences(nodes, referencedComponentInstances))
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceInstanceGenerator(), extractStringsFromListAndReferences(nodes, referencedComponentInstances))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, PortComponentInstanceConnectorGenerator(), extractStringsFromList(connectors))
+
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceDeclarationConnectorGenerator(), extractStringsFromList(connectors))
 
         registerGenerator(MSACompositeElementTypes.IDENTITY_STATEMENT, IdentityStatementGenerator(), extractStringsFromList(connectors))
 
@@ -178,33 +190,28 @@ class GraphGenerator {
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
 
-        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceTrustLevelGenerator(), extractTrustLevel())
-
-        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstancePortElementGenerator(), {
+        /*registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstancePortElementGenerator(), {
 
             pair ->
-            if(pair is Pair<*,*>) {
+            if (pair is Pair<*, *>) {
 
                 val portElementNodes = pair.first as List<*>
                 val portConnectors = pair.second as List<*>
 
                 portElementNodes.map {
-                    if(it is String) {
+                    if (it is String) {
 
                         nodes.add(it)
                     }
                 }
 
                 portConnectors.map {
-                    if(it is String) {
+                    if (it is String) {
 
                         connectors.add(it)
                     }
                 }
             }
-        })
+        })*/
     }
 }
-
-
-

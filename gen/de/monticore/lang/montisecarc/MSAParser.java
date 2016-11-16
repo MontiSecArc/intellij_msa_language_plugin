@@ -84,6 +84,9 @@ public class MSAParser implements PsiParser, LightPsiParser {
     else if (t == JAVA_CLASS_REFERENCE) {
       r = JavaClassReference(b, 0);
     }
+    else if (t == JAVA_REFERENCE) {
+      r = JavaReference(b, 0);
+    }
     else if (t == LEVEL) {
       r = LEVEL(b, 0);
     }
@@ -416,18 +419,17 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // Stereotype? InputFilter? ComponentNamesWithTypes ComponentParameters ComponentInstance (COMMA ComponentInstance)* semi
+  // Stereotype? ComponentNamesWithTypes ComponentParameters ComponentInstance (COMMA ComponentInstance)* semi
   public static boolean ComponentInstanceDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentInstanceDeclaration")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, COMPONENT_INSTANCE_DECLARATION, "<component instance declaration>");
     r = ComponentInstanceDeclaration_0(b, l + 1);
-    r = r && ComponentInstanceDeclaration_1(b, l + 1);
     r = r && ComponentNamesWithTypes(b, l + 1);
+    r = r && ComponentParameters(b, l + 1);
     p = r; // pin = 3
-    r = r && report_error_(b, ComponentParameters(b, l + 1));
-    r = p && report_error_(b, ComponentInstance(b, l + 1)) && r;
-    r = p && report_error_(b, ComponentInstanceDeclaration_5(b, l + 1)) && r;
+    r = r && report_error_(b, ComponentInstance(b, l + 1));
+    r = p && report_error_(b, ComponentInstanceDeclaration_4(b, l + 1)) && r;
     r = p && semi(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
@@ -440,28 +442,21 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // InputFilter?
-  private static boolean ComponentInstanceDeclaration_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentInstanceDeclaration_1")) return false;
-    InputFilter(b, l + 1);
-    return true;
-  }
-
   // (COMMA ComponentInstance)*
-  private static boolean ComponentInstanceDeclaration_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentInstanceDeclaration_5")) return false;
+  private static boolean ComponentInstanceDeclaration_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentInstanceDeclaration_4")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!ComponentInstanceDeclaration_5_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "ComponentInstanceDeclaration_5", c)) break;
+      if (!ComponentInstanceDeclaration_4_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "ComponentInstanceDeclaration_4", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // COMMA ComponentInstance
-  private static boolean ComponentInstanceDeclaration_5_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentInstanceDeclaration_5_0")) return false;
+  private static boolean ComponentInstanceDeclaration_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentInstanceDeclaration_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);
@@ -653,38 +648,30 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // InputFilter? ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters?
+  // ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters?
   public static boolean ComponentSignature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentSignature")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, COMPONENT_SIGNATURE, "<component signature>");
-    r = ComponentSignature_0(b, l + 1);
-    r = r && ComponentNameWithType(b, l + 1);
+    r = ComponentNameWithType(b, l + 1);
+    r = r && ComponentParameters(b, l + 1);
     p = r; // pin = 2
-    r = r && report_error_(b, ComponentParameters(b, l + 1));
-    r = p && report_error_(b, ComponentSignature_3(b, l + 1)) && r;
-    r = p && ComponentSignature_4(b, l + 1) && r;
+    r = r && report_error_(b, ComponentSignature_2(b, l + 1));
+    r = p && ComponentSignature_3(b, l + 1) && r;
     exit_section_(b, l, m, r, p, signature_recover_parser_);
     return r || p;
   }
 
-  // InputFilter?
-  private static boolean ComponentSignature_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentSignature_0")) return false;
-    InputFilter(b, l + 1);
-    return true;
-  }
-
   // (extends ComponentNameWithType)?
-  private static boolean ComponentSignature_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentSignature_3")) return false;
-    ComponentSignature_3_0(b, l + 1);
+  private static boolean ComponentSignature_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentSignature_2")) return false;
+    ComponentSignature_2_0(b, l + 1);
     return true;
   }
 
   // extends ComponentNameWithType
-  private static boolean ComponentSignature_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentSignature_3_0")) return false;
+  private static boolean ComponentSignature_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentSignature_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EXTENDS);
@@ -694,8 +681,8 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   // ComponentInstanceWithParameters?
-  private static boolean ComponentSignature_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentSignature_4")) return false;
+  private static boolean ComponentSignature_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentSignature_3")) return false;
     ComponentInstanceWithParameters(b, l + 1);
     return true;
   }
@@ -1078,31 +1065,19 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LPAREN filter ID RPAREN
-  static boolean InputFilter(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "InputFilter")) return false;
-    if (!nextTokenIs(b, LPAREN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LPAREN, FILTER, ID, RPAREN);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // (ID DOT)* ID
+  // (JavaReference DOT)* JavaReference
   public static boolean JavaClassReference(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "JavaClassReference")) return false;
     if (!nextTokenIs(b, ID)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = JavaClassReference_0(b, l + 1);
-    r = r && consumeToken(b, ID);
+    r = r && JavaReference(b, l + 1);
     exit_section_(b, m, JAVA_CLASS_REFERENCE, r);
     return r;
   }
 
-  // (ID DOT)*
+  // (JavaReference DOT)*
   private static boolean JavaClassReference_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "JavaClassReference_0")) return false;
     int c = current_position_(b);
@@ -1114,13 +1089,26 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ID DOT
+  // JavaReference DOT
   private static boolean JavaClassReference_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "JavaClassReference_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, ID, DOT);
+    r = JavaReference(b, l + 1);
+    r = r && consumeToken(b, DOT);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ID
+  public static boolean JavaReference(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "JavaReference")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ID);
+    exit_section_(b, m, JAVA_REFERENCE, r);
     return r;
   }
 
@@ -1313,7 +1301,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ['critical' | InputFilter] { 'in' | 'out' } JavaClassReference [PortInstanceName]
+  // 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName]
   public static boolean PortElement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PortElement")) return false;
     boolean r, p;
@@ -1327,22 +1315,11 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // ['critical' | InputFilter]
+  // 'critical'?
   private static boolean PortElement_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PortElement_0")) return false;
-    PortElement_0_0(b, l + 1);
+    consumeToken(b, CRITICAL);
     return true;
-  }
-
-  // 'critical' | InputFilter
-  private static boolean PortElement_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "PortElement_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, CRITICAL);
-    if (!r) r = InputFilter(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   // 'in' | 'out'
@@ -1763,7 +1740,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !(';' | ',' | InputFilter | CRITICAL)
+  // !(';' | ',' | CRITICAL)
   static boolean port_element_recover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "port_element_recover")) return false;
     boolean r;
@@ -1773,14 +1750,13 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ';' | ',' | InputFilter | CRITICAL
+  // ';' | ',' | CRITICAL
   private static boolean port_element_recover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "port_element_recover_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, SEMICOLON);
     if (!r) r = consumeToken(b, COMMA);
-    if (!r) r = InputFilter(b, l + 1);
     if (!r) r = consumeToken(b, CRITICAL);
     exit_section_(b, m, null, r);
     return r;

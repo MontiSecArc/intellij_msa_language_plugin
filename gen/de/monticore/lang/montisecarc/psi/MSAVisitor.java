@@ -86,6 +86,10 @@ public class MSAVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitJavaReference(@NotNull MSAJavaReference o) {
+    visitCompositeElement(o);
+  }
+
   public void visitLevel(@NotNull MSALevel o) {
     visitCompositeElement(o);
   }

@@ -96,6 +96,16 @@ class MSAPsiImplUtil {
             return ReferenceProvidersRegistry.getReferencesFromProviders(element)
         }
 
+        @JvmStatic fun getReferences(element: MSAJavaReference): Array<out PsiReference> {
+
+            return ReferenceProvidersRegistry.getReferencesFromProviders(element)
+        }
+
+        @JvmStatic fun getReferences(element: MSAJavaClassReference): Array<out PsiReference> {
+
+            return ReferenceProvidersRegistry.getReferencesFromProviders(element)
+        }
+
         @JvmStatic fun getReferencedPortElement(element: MSAPortInstanceName): MSAPortElement? {
 
             val referencesFromProviders = ReferenceProvidersRegistry.getReferencesFromProviders(element)

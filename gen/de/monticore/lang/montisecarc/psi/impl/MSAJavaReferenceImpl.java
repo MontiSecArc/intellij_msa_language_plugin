@@ -13,14 +13,14 @@ import com.intellij.psi.PsiReference;
 import kotlin.jvm.JvmStatic;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAJavaClassReferenceImpl extends MSACompositeElementImpl implements MSAJavaClassReference {
+public class MSAJavaReferenceImpl extends MSACompositeElementImpl implements MSAJavaReference {
 
-  public MSAJavaClassReferenceImpl(ASTNode node) {
+  public MSAJavaReferenceImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitJavaClassReference(this);
+    visitor.visitJavaReference(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -30,8 +30,8 @@ public class MSAJavaClassReferenceImpl extends MSACompositeElementImpl implement
 
   @Override
   @NotNull
-  public List<MSAJavaReference> getJavaReferenceList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAJavaReference.class);
+  public PsiElement getId() {
+    return notNullChild(findChildByType(ID));
   }
 
   @JvmStatic

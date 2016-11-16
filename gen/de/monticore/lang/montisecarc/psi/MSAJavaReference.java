@@ -7,10 +7,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAJavaClassReference extends MSACompositeElement {
+public interface MSAJavaReference extends MSACompositeElement {
 
   @NotNull
-  List<MSAJavaReference> getJavaReferenceList();
+  PsiElement getId();
 
   @JvmStatic
   @NotNull

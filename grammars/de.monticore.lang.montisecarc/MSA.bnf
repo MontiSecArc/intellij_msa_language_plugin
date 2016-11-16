@@ -86,14 +86,14 @@ ComponentDeclaration ::= Stereotype? component ComponentSignature ComponentBody 
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
 
-ComponentSignature ::= InputFilter? ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=2 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
+ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=2 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
 
 ComponentBody ::= LBRACE (Statement | ComponentDeclaration)* RBRACE {pin=1}
 
-ComponentInstanceDeclaration ::= Stereotype? InputFilter? ComponentNamesWithTypes ComponentParameters ComponentInstance (COMMA ComponentInstance)* semi {
+ComponentInstanceDeclaration ::= Stereotype? ComponentNamesWithTypes ComponentParameters ComponentInstance (COMMA ComponentInstance)* semi {
         pin=3
         methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel]
         implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
@@ -106,7 +106,7 @@ private ComponentInstanceWithParameters ::= ComponentInstanceName ("(" ID ("," I
 private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
 PortDeclaration ::= Stereotype? port PortElement ( COMMA PortElement )* semi {pin=2}
-PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } JavaClassReference [PortInstanceName] {
+PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
     pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
     implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
@@ -114,8 +114,9 @@ PortElement ::= ['critical' | InputFilter] { 'in' | 'out' } JavaClassReference [
     mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin"
     recoverWhile=port_element_recover
 }
-private port_element_recover ::= !(';' | ',' | InputFilter | CRITICAL)
-JavaClassReference ::= (ID DOT)* ID
+private port_element_recover ::= !(';' | ',' | CRITICAL)
+JavaClassReference ::= (JavaReference DOT)* JavaReference { methods=[getReferences] }
+JavaReference ::= ID { methods=[getReferences]}
 
 private SimpleConnectPortStatement ::= Stereotype? Connector
 Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}
@@ -161,8 +162,6 @@ private Statement ::=
     | IdentityStatement
 {recoverWhile=statement_recover}
 private statement_recover ::= !('<<' | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
-
-private InputFilter ::= LPAREN filter ID RPAREN
 
 Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
 private StereoValue ::= ID ("=" STRING)?

@@ -60,4 +60,9 @@ object MSAElementFactory {
         val file = createFile(project, newName)
         return file.firstChild as MSAConnectTarget
     }
+
+    fun createPackageStatement(project: Project, actualPackage: String): MSAPackageClause {
+        val file = createFile(project, "package $actualPackage;")
+        return file.firstChild as MSAPackageClause
+    }
 }

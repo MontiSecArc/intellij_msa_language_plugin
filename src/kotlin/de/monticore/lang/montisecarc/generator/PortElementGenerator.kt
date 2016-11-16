@@ -53,12 +53,18 @@ class PortElementGenerator : MSAGenerator() {
             val identifier = createPortIdentifier(psiElement)
             model.put("id", identifier)
             model.put("instance_name", portInstanceName.orEmpty())
-            model.put("type_name", referenceType.orEmpty())
-            model.put("is_critical", psiElement.isCritical)
+
+            val extras = mutableMapOf<String, String>()
+            extras.put("type_name", referenceType.orEmpty())
+            extras.put("is_critical", psiElement.isCritical.toString())
+            extras.put("element_offset", psiElement.textOffset.toString())
+            extras.put("file_path", psiElement.containingFile.virtualFile.canonicalPath.orEmpty())
 
             val portAccessRoles = psiElement.enclosingComponent?.componentBody?.accessStatementList?.map { it.portAccessRoleList.filter { it.qualifiedIdentifier.portInstanceName.text == portInstanceName }.map { "'${it.qualifiedIdentifier.portInstanceName.text}'" }.joinToString() }.orEmpty().joinToString()
 
-            model.put("access_roles", portAccessRoles)
+            extras.put("access_roles", portAccessRoles)
+
+            model.put("extra_arguments", extras)
 
             return FreeMarker.instance.generateModelOutput("ToGraph/PortMacro.ftl", model)
         }
@@ -67,9 +73,7 @@ class PortElementGenerator : MSAGenerator() {
     override fun generate(psiElement: PsiElement): String? {
 
         if (psiElement is MSAPortElement) {
-            if (!psiElement.enclosingComponent?.instanceName.isNullOrEmpty()) {
-                return createPortElementNode(psiElement)
-            }
+            return createPortElementNode(psiElement)
         }
         return null
     }
