@@ -25,6 +25,9 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
   @NotNull
   List<MSAStereotype> getStereotypeList();
 
+  @NotNull
+  List<MSASuppressAnnotation> getSuppressAnnotationList();
+
   @JvmStatic
   @NotNull
   String getName();

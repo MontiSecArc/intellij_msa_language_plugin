@@ -13,4 +13,7 @@ public interface MSAPortDeclaration extends MSACompositeElement {
   @Nullable
   MSAStereotype getStereotype();
 
+  @NotNull
+  List<MSASuppressAnnotation> getSuppressAnnotationList();
+
 }

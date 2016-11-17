@@ -9,39 +9,20 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAConfigurationStatementImpl extends MSACompositeElementImpl implements MSAConfigurationStatement {
+public class MSASuppressAnnotationKeywordImpl extends MSACompositeElementImpl implements MSASuppressAnnotationKeyword {
 
-  public MSAConfigurationStatementImpl(ASTNode node) {
+  public MSASuppressAnnotationKeywordImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitConfigurationStatement(this);
+    visitor.visitSuppressAnnotationKeyword(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof MSAVisitor) accept((MSAVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public MSAStereotype getStereotype() {
-    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
-  }
-
-  @Override
-  @Nullable
-  public MSASuppressAnnotation getSuppressAnnotation() {
-    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
   }
 
 }

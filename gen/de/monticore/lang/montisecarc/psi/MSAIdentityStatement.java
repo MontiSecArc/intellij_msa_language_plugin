@@ -13,4 +13,7 @@ public interface MSAIdentityStatement extends MSACompositeElement {
   @Nullable
   MSAStereotype getStereotype();
 
+  @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
 }

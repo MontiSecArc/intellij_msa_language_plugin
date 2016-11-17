@@ -10,4 +10,7 @@ public interface MSAAutoConnectStatement extends MSACompositeElement {
   @Nullable
   MSAStereotype getStereotype();
 
+  @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
 }

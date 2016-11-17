@@ -13,11 +13,14 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
   @Nullable
   MSAComponentBody getComponentBody();
 
-  @Nullable
+  @NotNull
   MSAComponentSignature getComponentSignature();
 
   @Nullable
   MSAStereotype getStereotype();
+
+  @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
 
   @JvmStatic
   @NotNull

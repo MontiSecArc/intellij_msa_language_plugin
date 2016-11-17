@@ -2,7 +2,6 @@
 package de.monticore.lang.montisecarc.psi;
 
 import com.intellij.psi.tree.TokenSet;
-import de.monticore.lang.montisecarc.psi.*;
 
 public interface MSATokenElementTypes {
 
@@ -63,6 +62,8 @@ public interface MSATokenElementTypes {
 
   MSATokenType ON = new MSATokenType("on");
   MSATokenType OFF = new MSATokenType("off");
+
+  MSATokenType SUPPRESS_POLICY_TOKEN = new MSAKeywordTokenType("@SuppressPolicy");
 
   // Comments
   MSATokenType SINGLE_LINE_COMMENT = new MSACommentTokenType("SINGLE_LINE_COMMENT");

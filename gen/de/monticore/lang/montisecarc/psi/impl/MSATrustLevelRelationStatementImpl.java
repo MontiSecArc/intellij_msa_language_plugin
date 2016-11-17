@@ -33,6 +33,12 @@ public class MSATrustLevelRelationStatementImpl extends MSACompositeElementImpl 
   }
 
   @Override
+  @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  }
+
+  @Override
   @NotNull
   public List<MSATrustLevelIdentifier> getTrustLevelIdentifierList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSATrustLevelIdentifier.class);

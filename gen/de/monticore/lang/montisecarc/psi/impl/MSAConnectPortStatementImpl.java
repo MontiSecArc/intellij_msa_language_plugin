@@ -37,4 +37,10 @@ public class MSAConnectPortStatementImpl extends MSACompositeElementImpl impleme
     return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
   }
 
+  @Override
+  @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  }
+
 }

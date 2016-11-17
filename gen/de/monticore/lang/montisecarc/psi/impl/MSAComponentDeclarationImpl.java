@@ -41,15 +41,21 @@ public class MSAComponentDeclarationImpl extends MSAComponentDeclarationImplMixi
   }
 
   @Override
-  @Nullable
+  @NotNull
   public MSAComponentSignature getComponentSignature() {
-    return PsiTreeUtil.getChildOfType(this, MSAComponentSignature.class);
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentSignature.class));
   }
 
   @Override
   @Nullable
   public MSAStereotype getStereotype() {
     return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
+  }
+
+  @Override
+  @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
   }
 
   @JvmStatic

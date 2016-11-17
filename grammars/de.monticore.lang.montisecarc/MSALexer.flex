@@ -3,7 +3,6 @@ package de.monticore.lang.montisecarc;
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 %%
 
@@ -73,15 +72,13 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "component"                { return COMPONENT; }
   "extends"                  { return EXTENDS; }
   "port"                     { return PORT; }
-  "WEAK_AUTH"               { return WEAK_AUTH; }
-  "STRONG_AUTH"             { return STRONG_AUTH; }
+  "WEAK_AUTH"                { return WEAK_AUTH; }
+  "STRONG_AUTH"              { return STRONG_AUTH; }
   "connect"                  { return CONNECT; }
   "trustlevel"               { return TRUSTLEVEL; }
   "trustlevelrelation"       { return TRUSTLEVELRELATION; }
-  "CONNECTOR"                { return CONNECTOR; }
-  "filter"                   { return FILTER; }
-  "super"                    { return SUPER; }
 
+  {WHITE_SPACE}              { return WHITE_SPACE; }
   {SINGLE_LINE_COMMENT}      { return SINGLE_LINE_COMMENT; }
   {MULTI_LINE_COMMENT}       { return MULTI_LINE_COMMENT; }
   {NUMBER}                   { return NUMBER; }

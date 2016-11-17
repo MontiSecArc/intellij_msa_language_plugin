@@ -11,6 +11,9 @@ public interface MSACPEStatement extends MSACompositeElement {
   MSAStereotype getStereotype();
 
   @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
+  @Nullable
   PsiElement getString();
 
 }
