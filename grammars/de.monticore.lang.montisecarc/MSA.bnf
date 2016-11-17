@@ -68,18 +68,18 @@ File ::= [PackageClause] (ImportDeclaration)* ComponentDeclaration?
 private semi ::= SEMICOLON_SYNTHETIC | SEMICOLON | <<eof>> { name="semicolon" }
 
 PackageClause ::= package (DOT | ID)+ semi {pin=1 recoverWhile=package_recover}
-private package_recover ::= !(';' | '<<' | <<eof>> | import | component | SuppressAnnotation)
+private package_recover ::= !(';' | '<<' | <<eof>> | import | component | SUPPRESS_POLICY_TOKEN)
 
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
-private import_recover ::= !('<<' | component | import | semi | SuppressAnnotation)
+private import_recover ::= !('<<' | component | import | semi | SUPPRESS_POLICY_TOKEN)
 
 ComponentName ::= ID { methods=[getName setName getReferences] }
 ComponentInstanceName ::= ID { methods=[getName setName getReferences] }
 RoleName ::= ID { methods=[] }
 PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
 
-ComponentDeclaration ::= Prefix?  component ComponentSignature ComponentBody {
-                                pin=3
+ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
+                                pin=2
                                 methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
@@ -87,12 +87,12 @@ ComponentDeclaration ::= Prefix?  component ComponentSignature ComponentBody {
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
 
-ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=2 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
+ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
 
-ComponentBody ::= LBRACE (Statement | ComponentDeclaration)* RBRACE {pin=1}
+ComponentBody ::= LBRACE (Statement)* RBRACE {pin=1}
 
 ComponentInstanceDeclaration ::= Prefix?  ComponentNamesWithTypes ComponentParameters SuppressAnnotation? ComponentInstance (COMMA SuppressAnnotation? ComponentInstance)* semi {
         pin=3
@@ -106,7 +106,7 @@ private ComponentNamesWithTypes ::= ComponentNameWithType (DOT ComponentNameWith
 private ComponentInstanceWithParameters ::= ComponentInstanceName ("(" ID ("," ID)* ")")?
 private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
-PortDeclaration ::= Prefix? port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
+PortDeclaration ::= Prefix port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
 PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
     pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
     implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
@@ -142,7 +142,7 @@ PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAR
 
 AccessControlStatement ::= Prefix? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
-IdentityStatement ::= Prefix? IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
+IdentityStatement ::= Prefix IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
 IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName?
 
 CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
@@ -150,19 +150,20 @@ CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
 ConfigurationStatement ::= Prefix? CONFIGURATION ID semi { pin=2 }
 
 private Statement ::=
- TrustLevelStatement |
-                                TrustLevelRelationStatement |
-                                CPEStatement |
-                                ConfigurationStatement |
-                                AutoConnectStatement |
-                                AccessControlStatement |
+    ComponentDeclaration |
+    TrustLevelStatement |
+    TrustLevelRelationStatement |
+    CPEStatement |
+    ConfigurationStatement |
+    AutoConnectStatement |
+    AccessControlStatement |
     PortDeclaration |
-    ComponentInstanceDeclaration
-    | ConnectPortStatement
-    | AccessStatement
-    | IdentityStatement
+    ComponentInstanceDeclaration |
+    ConnectPortStatement |
+    AccessStatement |
+    IdentityStatement
 {recoverWhile=statement_recover}
-private statement_recover ::= !('<<' | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
+private statement_recover ::= !( '<<' | SUPPRESS_POLICY_TOKEN | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
 
 Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
 private StereoValue ::= ID ("=" STRING)?
@@ -172,8 +173,8 @@ private TypeVariableDeclaration ::= ID (extends JavaClassReference)?
 
 private Parameter ::= JavaClassReference ID ("=" ID)?
 
-private Prefix ::= Stereotype? SuppressAnnotation?
+private Prefix ::= SuppressAnnotation? Stereotype?
 
-SuppressAnnotation ::= SuppressAnnotationKeyword '(' Policy (COMMA Policy)* ')'
+SuppressAnnotation ::= SuppressAnnotationKeyword '(' Policy (COMMA Policy)* ')' {pin=1}
 SuppressAnnotationKeyword ::= SUPPRESS_POLICY_TOKEN
 Policy ::= STRING

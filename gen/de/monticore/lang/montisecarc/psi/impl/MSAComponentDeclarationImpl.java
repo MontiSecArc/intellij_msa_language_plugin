@@ -41,9 +41,9 @@ public class MSAComponentDeclarationImpl extends MSAComponentDeclarationImplMixi
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MSAComponentSignature getComponentSignature() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentSignature.class));
+    return PsiTreeUtil.getChildOfType(this, MSAComponentSignature.class);
   }
 
   @Override

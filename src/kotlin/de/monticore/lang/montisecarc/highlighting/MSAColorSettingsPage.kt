@@ -56,13 +56,14 @@ class MSAColorSettingsPage : ColorSettingsPage {
                 "import secarc.supermarket.imp.CashDesk;\n" +
                 "import secarc.supermarket.imp.WebSite;\n" +
                 "\n" +
-                "@SupressPolicy(\"PolicyIdentifier\")" +
+                "@SupressPolicy(\"PolicyIdentifier\")\n" +
                 "component Supermarket {\n" +
                 "\n" +
                 "	trustlevel +0;\n" +
                 "	accesscontrol off;\n" +
                 "	\n" +
                 "	// cash desk ports	\n" +
+                "   @SupressPolicy(\"PolicyIdentifier\")\n" +
                 "	port\n" +
                 "		in Event newSale,\n" +
                 "		in Image barcode,\n" +
