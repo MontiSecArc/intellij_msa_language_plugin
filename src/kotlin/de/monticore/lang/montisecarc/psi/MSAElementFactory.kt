@@ -37,7 +37,7 @@ object MSAElementFactory {
 
     private inline fun <reified T : MSACompositeElement> createFromText(project: Project, code: String): T? =
             PsiFileFactory.getInstance(project)
-                    .createFileFromText("DUMMY.rs", MSALanguage.instance, code)
+                    .createFileFromText("DUMMY.secarc", MSALanguage.instance, code)
                     ?.childOfType<T>()
 
     fun createFile(project: Project, text: String): MSAFile {
@@ -64,5 +64,12 @@ object MSAElementFactory {
     fun createPackageStatement(project: Project, actualPackage: String): MSAPackageClause {
         val file = createFile(project, "package $actualPackage;")
         return file.firstChild as MSAPackageClause
+    }
+
+    fun createSuppressPolicyAnnotation(project: Project, commentText: String): PsiElement {
+
+        val msaFile = createFile(project, commentText + " component A {}")
+
+        return msaFile.firstChild.firstChild
     }
 }
