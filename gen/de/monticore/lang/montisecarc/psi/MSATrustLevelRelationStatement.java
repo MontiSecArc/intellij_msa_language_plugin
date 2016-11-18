@@ -10,6 +10,9 @@ public interface MSATrustLevelRelationStatement extends MSACompositeElement {
   @Nullable
   MSAStereotype getStereotype();
 
+  @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
   @NotNull
   List<MSATrustLevelIdentifier> getTrustLevelIdentifierList();
 

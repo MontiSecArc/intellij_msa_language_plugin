@@ -34,6 +34,12 @@ public class MSACPEStatementImpl extends MSACompositeElementImpl implements MSAC
 
   @Override
   @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getString() {
     return findChildByType(STRING);
   }

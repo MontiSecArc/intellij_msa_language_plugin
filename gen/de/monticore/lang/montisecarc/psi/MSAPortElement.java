@@ -29,4 +29,9 @@ public interface MSAPortElement extends MSANamedElement, StubBasedPsiElement<MSA
   @Nullable
   MSAComponentDeclaration getEnclosingComponent();
 
+  void addPolicyViolation(String violation);
+
+  @NotNull
+  List<String> getPolicyViolations();
+
 }

@@ -1,18 +1,17 @@
 package de.monticore.lang.montisecarc.highlighting
 
+import com.intellij.ide.highlighter.JavaHighlightingColors
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
+import com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import de.monticore.lang.montisecarc.MSALexerAdapter
-
-import com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey
-import com.intellij.psi.TokenType
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
 import de.monticore.lang.montisecarc.psi.MSATokenElementTypes
-import de.monticore.lang.montisecarc.psi.impl.MSAPsiImplUtil
 
 /**
  *  Copyright 2016 thomasbuning
@@ -50,7 +49,7 @@ class MSASyntaxHighlighter: SyntaxHighlighterBase() {
         val TYPES = createTextAttributesKey("MSA_TYPE", DefaultLanguageHighlighterColors.INSTANCE_FIELD)
         val COMPONENT_NAME = createTextAttributesKey("MSA_COMPONENT_NAME", DefaultLanguageHighlighterColors.CLASS_NAME)
         val COMPONENT_INSTANCE_NAME = createTextAttributesKey("MSA_COMPONENT_INSTANCE_NAME", DefaultLanguageHighlighterColors.CLASS_REFERENCE)
-
+        val SUPPRESSION_ANNOTATION_KEYWORD = createTextAttributesKey("MSA_SUPPRESSION_ANNOTATION_KEYWORD", JavaHighlightingColors.ANNOTATION_NAME_ATTRIBUTES)
     }
     private val KEY_KEYS = arrayOf(KEY)
     private val STRING_KEYS = arrayOf(STRING)
@@ -83,6 +82,7 @@ class MSASyntaxHighlighter: SyntaxHighlighterBase() {
             MSATokenElementTypes.LBRACK, MSATokenElementTypes.RBRACK -> return arrayOf(BRACKETS)
             MSATokenElementTypes.LBRACE, MSATokenElementTypes.RBRACE -> return arrayOf(BRACES)
             MSATokenElementTypes.LPAREN, MSATokenElementTypes.RPAREN -> return arrayOf(PARENTHESES)
+            MSATokenElementTypes.SUPPRESS_POLICY_TOKEN, MSATokenElementTypes.AT -> return arrayOf(SUPPRESSION_ANNOTATION_KEYWORD)
         }
 
         return EMPTY_KEYS

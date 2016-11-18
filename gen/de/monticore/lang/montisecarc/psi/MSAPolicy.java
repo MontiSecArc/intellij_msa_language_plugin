@@ -5,18 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MSATrustLevelStatement extends MSACompositeElement {
+public interface MSAPolicy extends MSACompositeElement {
 
-  @Nullable
-  MSALevel getLevel();
-
-  @Nullable
-  MSAStereotype getStereotype();
-
-  @Nullable
-  MSASuppressAnnotation getSuppressAnnotation();
-
-  @Nullable
+  @NotNull
   PsiElement getString();
 
 }

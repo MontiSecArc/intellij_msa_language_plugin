@@ -25,6 +25,9 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
   @NotNull
   List<MSAStereotype> getStereotypeList();
 
+  @NotNull
+  List<MSASuppressAnnotation> getSuppressAnnotationList();
+
   @JvmStatic
   @NotNull
   String getName();
@@ -38,5 +41,10 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
 
   @JvmStatic
   int getAbsoluteTrustLevel();
+
+  void addPolicyViolation(String violation);
+
+  @NotNull
+  List<String> getPolicyViolations();
 
 }

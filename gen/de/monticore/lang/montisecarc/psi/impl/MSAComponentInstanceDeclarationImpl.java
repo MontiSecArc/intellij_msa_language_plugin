@@ -64,6 +64,12 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAStereotype.class);
   }
 
+  @Override
+  @NotNull
+  public List<MSASuppressAnnotation> getSuppressAnnotationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSASuppressAnnotation.class);
+  }
+
   @JvmStatic
   @NotNull
   public String getName() {

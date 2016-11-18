@@ -49,6 +49,8 @@
     WEAK                 =  'weak'
     CPE                  =  'cpe'
     CONFIGURATION        =  'configuration'
+    SUPPRESS_POLICY_TOKEN = 'SuppressPolicy'
+    AT                  =   '@'
     WHITE_SPACE='regexp:\s+'
      SINGLE_LINE_COMMENT = "regexp:(//|#)[^\r\n]*"
      MULTI_LINE_COMMENT = "regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*+/)"
@@ -67,35 +69,35 @@ File ::= [PackageClause] (ImportDeclaration)* ComponentDeclaration?
 private semi ::= SEMICOLON_SYNTHETIC | SEMICOLON | <<eof>> { name="semicolon" }
 
 PackageClause ::= package (DOT | ID)+ semi {pin=1 recoverWhile=package_recover}
-private package_recover ::= !(';' | '<<' | <<eof>> | import | component)
+private package_recover ::= !(';' | '<<' | <<eof>> | import | component | AT)
 
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
-private import_recover ::= !('<<' | component | import | semi)
+private import_recover ::= !('<<' | component | import | semi | AT)
 
 ComponentName ::= ID { methods=[getName setName getReferences] }
 ComponentInstanceName ::= ID { methods=[getName setName getReferences] }
 RoleName ::= ID { methods=[] }
 PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
 
-ComponentDeclaration ::= Stereotype? component ComponentSignature ComponentBody {
+ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
+                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
 
-ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=2 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
+ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
 
-ComponentBody ::= LBRACE (Statement | ComponentDeclaration)* RBRACE {pin=1}
+ComponentBody ::= LBRACE (Statement)* RBRACE {pin=1}
 
-ComponentInstanceDeclaration ::= Stereotype? ComponentNamesWithTypes ComponentParameters ComponentInstance (COMMA ComponentInstance)* semi {
+ComponentInstanceDeclaration ::= Prefix?  ComponentNamesWithTypes ComponentParameters SuppressAnnotation? ComponentInstance (COMMA SuppressAnnotation? ComponentInstance)* semi {
         pin=3
-        methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel]
+        methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
         implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
         stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -105,9 +107,9 @@ private ComponentNamesWithTypes ::= ComponentNameWithType (DOT ComponentNameWith
 private ComponentInstanceWithParameters ::= ComponentInstanceName ("(" ID ("," ID)* ")")?
 private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
-PortDeclaration ::= Stereotype? port PortElement ( COMMA PortElement )* semi {pin=2}
+PortDeclaration ::= Prefix port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
 PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
-    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
+    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent addPolicyViolation getPolicyViolations]
     implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
     elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -118,50 +120,51 @@ private port_element_recover ::= !(';' | ',' | CRITICAL)
 JavaClassReference ::= (JavaReference DOT)* JavaReference { methods=[getReferences] }
 JavaReference ::= ID { methods=[getReferences]}
 
-private SimpleConnectPortStatement ::= Stereotype? Connector
+private SimpleConnectPortStatement ::= Prefix? Connector
 Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}
 
 ConnectSource ::= QualifiedIdentifier
 ConnectTarget ::= QualifiedIdentifier
 QualifiedIdentifier ::= (ComponentInstanceName DOT)* PortInstanceName { pin=2 }
 
-ConnectPortStatement ::= Stereotype? connect Connector semi { pin=2 }
+ConnectPortStatement ::= Prefix? connect Connector semi { pin=2 }
 
-TrustLevelStatement ::= Stereotype? trustlevel LEVEL [STRING] semi { pin=2 }
+TrustLevelStatement ::= Prefix? trustlevel LEVEL [STRING] semi { pin=2 }
 LEVEL ::= [ PLUS | MINUS ] NUMBER
 
-TrustLevelRelationStatement ::= Stereotype? trustlevelrelation TrustLevelIdentifier { EQUAL | LESS | GREATER } TrustLevelIdentifier semi { pin=2 methods=[StartComponent="/TrustLevelIdentifier[0]" TargetComponent="/TrustLevelIdentifier[1]"] }
+TrustLevelRelationStatement ::= Prefix? trustlevelrelation TrustLevelIdentifier { EQUAL | LESS | GREATER } TrustLevelIdentifier semi { pin=2 methods=[StartComponent="/TrustLevelIdentifier[0]" TargetComponent="/TrustLevelIdentifier[1]"] }
 TrustLevelIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName
 
-AutoConnectStatement ::= Stereotype? AUTOCONNECT [ENCRYPTED | UNENCRYPTED] { TYPE | port | OFF } semi { pin=2 }
+AutoConnectStatement ::= Prefix? AUTOCONNECT [ENCRYPTED | UNENCRYPTED] { TYPE | port | OFF } semi { pin=2 }
 
-AccessStatement ::= Stereotype? ACCESS AccessRoles ( COMMA AccessRoles )* semi { pin=2 }
+AccessStatement ::= Prefix? ACCESS AccessRoles ( COMMA AccessRoles )* semi { pin=2 }
 private AccessRoles ::= PortAccessRole | RoleName
 PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAREN)
 
-AccessControlStatement ::= Stereotype? ACCESSCONTROL { ON | OFF } semi { pin=2 }
+AccessControlStatement ::= Prefix? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
-IdentityStatement ::= Stereotype? IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
+IdentityStatement ::= Prefix IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
 IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName?
 
-CPEStatement ::= Stereotype? CPE STRING semi { pin=2 }
+CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
 
-ConfigurationStatement ::= Stereotype? CONFIGURATION ID semi { pin=2 }
+ConfigurationStatement ::= Prefix? CONFIGURATION ID semi { pin=2 }
 
 private Statement ::=
- TrustLevelStatement |
-                                TrustLevelRelationStatement |
-                                CPEStatement |
-                                ConfigurationStatement |
-                                AutoConnectStatement |
-                                AccessControlStatement |
+    ComponentDeclaration |
+    TrustLevelStatement |
+    TrustLevelRelationStatement |
+    CPEStatement |
+    ConfigurationStatement |
+    AutoConnectStatement |
+    AccessControlStatement |
     PortDeclaration |
-    ComponentInstanceDeclaration
-    | ConnectPortStatement
-    | AccessStatement
-    | IdentityStatement
+    ComponentInstanceDeclaration |
+    ConnectPortStatement |
+    AccessStatement |
+    IdentityStatement
 {recoverWhile=statement_recover}
-private statement_recover ::= !('<<' | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
+private statement_recover ::= !( '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
 
 Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
 private StereoValue ::= ID ("=" STRING)?
@@ -170,3 +173,9 @@ TypeParameters ::= LESS TypeVariableDeclaration (COMMA TypeVariableDeclaration)*
 private TypeVariableDeclaration ::= ID (extends JavaClassReference)?
 
 private Parameter ::= JavaClassReference ID ("=" ID)?
+
+private Prefix ::= SuppressAnnotation? Stereotype?
+
+SuppressAnnotation ::= SuppressAnnotationKeyword '(' Policy (COMMA Policy)* ')' {pin=1}
+SuppressAnnotationKeyword ::= AT SUPPRESS_POLICY_TOKEN {pin=1}
+Policy ::= STRING

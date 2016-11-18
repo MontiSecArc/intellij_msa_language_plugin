@@ -32,7 +32,6 @@ class MSASpacingProcessor(val child1: Block?, val child2: Block, val myNode: AST
             return null
         }
 
-
         val node2 = child2.node
         val type2 = node2.elementType
 
@@ -72,6 +71,17 @@ class MSASpacingProcessor(val child1: Block?, val child2: Block, val myNode: AST
         if(type1 == MSACompositeElementTypes.PORT_DECLARATION || type1 == MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION) {
 
             return addLineBreak(1)
+        }
+
+        if(type1 == MSACompositeElementTypes.SUPPRESS_ANNOTATION) {
+
+            if(type2 == MSATokenElementTypes.COMPONENT || type2 == MSATokenElementTypes.PORT ) {
+
+                return addLineBreak(1)
+            } else {
+
+                return oneSpace()
+            }
         }
 
         return null
