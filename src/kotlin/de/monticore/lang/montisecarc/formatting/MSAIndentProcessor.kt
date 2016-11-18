@@ -33,6 +33,7 @@ class MSAIndentProcessor {
 
             val elementType = node.elementType
             val prevSibling = UsefulPsiTreeUtil.getPrevSiblingSkipWhiteSpacesAndComments(node)
+            val nextSibling = UsefulPsiTreeUtil.getNextSiblingSkipWhiteSpacesAndComments(node)
             val prevSiblingType = prevSibling?.elementType
             val parent = node.treeParent
             val parentType = parent?.elementType
@@ -63,7 +64,7 @@ class MSAIndentProcessor {
                     }
                 }
             }
-            if (parentType === MSACompositeElementTypes.PORT_DECLARATION) {
+            if (parentType === MSACompositeElementTypes.PORT_DECLARATION && elementType != MSACompositeElementTypes.SUPPRESS_ANNOTATION && prevSiblingType != MSACompositeElementTypes.SUPPRESS_ANNOTATION) {
                 /*val prev = UsefulPsiTreeUtil.getPrevSiblingSkipWhiteSpacesCommentsAndComma(node)
                 if(prev == null || prev.elementType != MSATokenElementTypesPORT_ELEMENT) {
                     return Indent.getNoneIndent()
@@ -116,6 +117,17 @@ class UsefulPsiTreeUtil {
 
             while (result != null && (isWhitespaceOrComment(result.psi) || result.elementType == MSATokenElementTypes.COMMA)) {
                 result = result.treePrev
+            }
+            return result
+        }
+
+        fun getNextSiblingSkipWhiteSpacesAndComments(sibling: ASTNode?): ASTNode? {
+
+            if (sibling == null) return null
+            var result: ASTNode? = sibling.treeNext
+
+            while (result != null && isWhitespaceOrComment(result.psi)) {
+                result = result.treeNext
             }
             return result
         }
