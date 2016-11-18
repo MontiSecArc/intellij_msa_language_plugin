@@ -63,7 +63,8 @@ public interface MSATokenElementTypes {
   MSATokenType ON = new MSATokenType("on");
   MSATokenType OFF = new MSATokenType("off");
 
-  MSATokenType SUPPRESS_POLICY_TOKEN = new MSAKeywordTokenType("@SuppressPolicy");
+  MSATokenType SUPPRESS_POLICY_TOKEN = new MSAKeywordTokenType("SuppressPolicy");
+  MSATokenType AT = new MSAKeywordTokenType("@");
 
   // Comments
   MSATokenType SINGLE_LINE_COMMENT = new MSACommentTokenType("SINGLE_LINE_COMMENT");

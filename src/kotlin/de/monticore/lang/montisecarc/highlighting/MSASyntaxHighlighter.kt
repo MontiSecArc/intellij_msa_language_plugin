@@ -49,7 +49,7 @@ class MSASyntaxHighlighter: SyntaxHighlighterBase() {
         val TYPES = createTextAttributesKey("MSA_TYPE", DefaultLanguageHighlighterColors.INSTANCE_FIELD)
         val COMPONENT_NAME = createTextAttributesKey("MSA_COMPONENT_NAME", DefaultLanguageHighlighterColors.CLASS_NAME)
         val COMPONENT_INSTANCE_NAME = createTextAttributesKey("MSA_COMPONENT_INSTANCE_NAME", DefaultLanguageHighlighterColors.CLASS_REFERENCE)
-        val SUPPRESSION_ANNOTATION = createTextAttributesKey("SUPPRESSION_ANNOTATION", JavaHighlightingColors.ANNOTATION_NAME_ATTRIBUTES)
+        val SUPPRESSION_ANNOTATION_KEYWORD = createTextAttributesKey("MSA_SUPPRESSION_ANNOTATION_KEYWORD", JavaHighlightingColors.ANNOTATION_NAME_ATTRIBUTES)
     }
     private val KEY_KEYS = arrayOf(KEY)
     private val STRING_KEYS = arrayOf(STRING)
@@ -82,7 +82,7 @@ class MSASyntaxHighlighter: SyntaxHighlighterBase() {
             MSATokenElementTypes.LBRACK, MSATokenElementTypes.RBRACK -> return arrayOf(BRACKETS)
             MSATokenElementTypes.LBRACE, MSATokenElementTypes.RBRACE -> return arrayOf(BRACES)
             MSATokenElementTypes.LPAREN, MSATokenElementTypes.RPAREN -> return arrayOf(PARENTHESES)
-            MSACompositeElementTypes.SUPPRESS_ANNOTATION_KEYWORD -> return arrayOf(SUPPRESSION_ANNOTATION)
+            MSATokenElementTypes.SUPPRESS_POLICY_TOKEN, MSATokenElementTypes.AT -> return arrayOf(SUPPRESSION_ANNOTATION_KEYWORD)
         }
 
         return EMPTY_KEYS

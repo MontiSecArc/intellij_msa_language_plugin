@@ -34,7 +34,7 @@ class MSAColorSettingsPage : ColorSettingsPage {
             AttributesDescriptor("Component Name", MSASyntaxHighlighter.COMPONENT_NAME),
             AttributesDescriptor("Parameters", MSASyntaxHighlighter.TYPES),
             AttributesDescriptor("Componenent Instance Name", MSASyntaxHighlighter.COMPONENT_INSTANCE_NAME),
-            AttributesDescriptor("Suppress Policy Annotation", MSASyntaxHighlighter.SUPPRESSION_ANNOTATION)
+            AttributesDescriptor("Suppress Policy Annotation", MSASyntaxHighlighter.SUPPRESSION_ANNOTATION_KEYWORD)
     )
 
     @Nullable
