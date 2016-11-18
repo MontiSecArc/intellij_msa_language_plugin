@@ -42,4 +42,9 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
   @JvmStatic
   int getAbsoluteTrustLevel();
 
+  void addPolicyViolation(String violation);
+
+  @NotNull
+  List<String> getPolicyViolations();
+
 }

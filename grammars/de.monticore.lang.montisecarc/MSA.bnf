@@ -81,7 +81,7 @@ PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getRefe
 
 ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel]
+                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -97,7 +97,7 @@ ComponentBody ::= LBRACE (Statement)* RBRACE {pin=1}
 
 ComponentInstanceDeclaration ::= Prefix?  ComponentNamesWithTypes ComponentParameters SuppressAnnotation? ComponentInstance (COMMA SuppressAnnotation? ComponentInstance)* semi {
         pin=3
-        methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel]
+        methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
         implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
         stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
@@ -109,7 +109,7 @@ private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleCon
 
 PortDeclaration ::= Prefix port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
 PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
-    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent]
+    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent addPolicyViolation getPolicyViolations]
     implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
     elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"

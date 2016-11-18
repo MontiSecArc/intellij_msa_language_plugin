@@ -44,4 +44,9 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
   @JvmStatic
   int getAbsoluteTrustLevel();
 
+  void addPolicyViolation(String violation);
+
+  @NotNull
+  List<String> getPolicyViolations();
+
 }
