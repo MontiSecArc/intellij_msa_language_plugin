@@ -204,7 +204,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
 
-            return element.componentSignature?.componentNameWithTypeList?.map { it.componentName.name }.orEmpty().joinToString()
+            return element.componentSignature?.componentName?.text.orEmpty()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {

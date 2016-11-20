@@ -30,9 +30,33 @@ import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
  */
 class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: TextRange, val instanceName: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
 
+    private fun getSuperComponents(component: MSAComponentDeclaration?) : Array<MSAComponentDeclaration> {
+
+        if(component == null) {
+            return emptyArray()
+        }
+
+        val superComponents = mutableListOf<MSAComponentDeclaration>()
+        var referenceToSuperComponent = component.componentSignature?.componentExtensionName?.componentName?.references
+        while(referenceToSuperComponent != null && referenceToSuperComponent.isNotEmpty()) {
+
+            val superComponent = referenceToSuperComponent[0].resolve()
+            if(superComponent != null && superComponent is MSAComponentDeclaration) {
+
+                superComponents.add(superComponent)
+                referenceToSuperComponent = superComponent.componentSignature?.componentExtensionName?.componentName?.references
+            } else {
+
+                return superComponents.toTypedArray()
+            }
+        }
+        return superComponents.toTypedArray()
+    }
+
     override fun multiResolve(incompleteCode: Boolean): Array<out com.intellij.psi.ResolveResult> {
 
         val parentComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+        val superComponents = getSuperComponents(parentComponent)
         val instanceDeclarationParent = PsiTreeUtil.getParentOfType(element, MSAComponentInstanceDeclaration::class.java)
         val prevComponentInstanceName = PsiTreeUtil.getPrevSiblingOfType(element, MSAComponentInstanceName::class.java)
         var wrappingComponentQualifiedName: String? = parentComponent?.qualifiedName
@@ -98,6 +122,14 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                 }
                 if (itComponentParent?.qualifiedName.equals(instanceComponentQualifiedName)) {
                     found.add(it)
+                }
+                for (superComponent in superComponents) {
+
+                    if(superComponent.qualifiedName == itComponentParent?.qualifiedName) {
+
+                        found.add(it)
+                        break
+                    }
                 }
                 true
             }

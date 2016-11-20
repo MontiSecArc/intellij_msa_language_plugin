@@ -41,10 +41,10 @@ class ComponentDeclarationGenerator : MSAGenerator() {
             val componentIdentifier = createComponentIdentifier(psiElement)
             model.put("id", componentIdentifier)
 
-            val componentNameWithTypeList = psiElement.componentSignature?.componentNameWithTypeList
-            if (!componentNameWithTypeList.isNullOrEmpty()) {
+            val componentNameWithTypeList = psiElement.componentSignature?.componentName
+            if (componentNameWithTypeList != null) {
 
-                model.put("instance_name", componentNameWithTypeList!!.last().componentName.name)
+                model.put("instance_name", componentNameWithTypeList!!.componentName.name)
 
             } else {
                 return null

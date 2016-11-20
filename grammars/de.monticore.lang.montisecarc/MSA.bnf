@@ -88,7 +88,8 @@ ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
 
-ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
+ComponentSignature ::= ComponentNameWithType ComponentParameters ComponentExtension? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType" ComponentExtensionName="/ComponentExtension/ComponentNameWithType"] recoverWhile=signature_recover}
+ComponentExtension ::= extends ComponentNameWithType
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
