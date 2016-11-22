@@ -8,6 +8,7 @@ import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentName
+import de.monticore.lang.montisecarc.psi.MSAFile
 import de.monticore.lang.montisecarc.psi.MSAImportDeclaration
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex
 
@@ -36,12 +37,15 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
         val imports = PsiTreeUtil.getChildrenOfType(element.containingFile, MSAImportDeclaration::class.java)?.map { it.text.replace("import ", "").replace(";", "") }.orEmpty()
 
         val pathForComponentName = element.containingFile.virtualFile.canonicalPath
+        val packageIdentifier = (element.containingFile as MSAFile).getPackage()?.packageIdentifier
 
         StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
 
             val referencePackage = it.qualifiedName
 
-            if (it.containingFile.virtualFile.canonicalPath == pathForComponentName) {
+            val itPackageIdentifier = (it.containingFile as MSAFile).getPackage()?.packageIdentifier
+
+            if (it.containingFile.virtualFile.canonicalPath == pathForComponentName || packageIdentifier == itPackageIdentifier) {
                 found.add(it)
             } else {
                 for (import in imports) {

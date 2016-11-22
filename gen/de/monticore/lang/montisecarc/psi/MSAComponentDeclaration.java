@@ -49,4 +49,7 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
   @NotNull
   List<String> getPolicyViolations();
 
+  @NotNull
+  MSAComponentDeclaration[] getSuperComponents();
+
 }

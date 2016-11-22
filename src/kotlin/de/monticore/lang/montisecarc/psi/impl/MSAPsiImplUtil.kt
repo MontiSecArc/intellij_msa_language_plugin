@@ -300,5 +300,24 @@ class MSAPsiImplUtil {
             }
             return trustlevel
         }
+
+        @JvmStatic fun getPackageIdentifier(element: MSAPackageClause): String? {
+
+            val identifier = element.text
+            if(identifier.isNullOrBlank()) {
+
+                return null
+            }
+
+            val packageIdentifier = identifier.replace("package", "").replace(";", "").trim()
+
+            if(packageIdentifier.isNullOrBlank()) {
+
+                return null
+            }
+            return packageIdentifier
+        }
+
+        @JvmStatic fun getPackageIdentifier(element: MSAFile): String? = element.getPackage()?.packageIdentifier
     }
 }
