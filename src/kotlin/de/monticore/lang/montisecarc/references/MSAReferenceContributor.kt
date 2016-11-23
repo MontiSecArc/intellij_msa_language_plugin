@@ -1,10 +1,12 @@
 package de.monticore.lang.montisecarc.references
 
+import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
+import de.monticore.lang.montisecarc.formatting.UsefulPsiTreeUtil
 import de.monticore.lang.montisecarc.psi.*
 import org.jetbrains.annotations.NotNull
 
@@ -24,6 +26,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 class MSAReferenceContributor : PsiReferenceContributor() {
+
+    private fun getPrevSiblingSkipWhiteSpacesAndComments(sibling: ASTNode?): ASTNode? {
+        if (sibling == null) return null
+        var result: ASTNode? = sibling.treePrev
+
+        while (result != null && UsefulPsiTreeUtil.isWhitespaceOrComment(result.psi)) {
+            result = result.treePrev
+        }
+        return result
+    }
+
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
 
 
@@ -79,8 +92,10 @@ class MSAReferenceContributor : PsiReferenceContributor() {
 
                 val msaComponentName = element as MSAComponentName
 
+                // Is in Extends
+                val extends = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentExtension::class.java)
                 val instanceDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentInstanceDeclaration::class.java)
-                if (instanceDeclaration != null) {
+                if (instanceDeclaration != null || extends != null) {
 
                     val componentName = msaComponentName.text
                     return arrayOf(MSAComponentNameReference(msaComponentName, TextRange(0, componentName.length), componentName))

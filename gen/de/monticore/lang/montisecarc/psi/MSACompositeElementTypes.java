@@ -14,6 +14,7 @@ public interface MSACompositeElementTypes {
   IElementType AUTO_CONNECT_STATEMENT = new MSACompositeElementType("AUTO_CONNECT_STATEMENT");
   IElementType COMPONENT_BODY = new MSACompositeElementType("COMPONENT_BODY");
   IElementType COMPONENT_DECLARATION = ElementFactoryKt.factory("COMPONENT_DECLARATION");
+  IElementType COMPONENT_EXTENSION = new MSACompositeElementType("COMPONENT_EXTENSION");
   IElementType COMPONENT_INSTANCE_DECLARATION = ElementFactoryKt.factory("COMPONENT_INSTANCE_DECLARATION");
   IElementType COMPONENT_INSTANCE_NAME = new MSACompositeElementType("COMPONENT_INSTANCE_NAME");
   IElementType COMPONENT_NAME = new MSACompositeElementType("COMPONENT_NAME");
@@ -64,6 +65,9 @@ public interface MSACompositeElementTypes {
       }
       else if (type == COMPONENT_DECLARATION) {
         return new MSAComponentDeclarationImpl(node);
+      }
+      else if (type == COMPONENT_EXTENSION) {
+        return new MSAComponentExtensionImpl(node);
       }
       else if (type == COMPONENT_INSTANCE_DECLARATION) {
         return new MSAComponentInstanceDeclarationImpl(node);

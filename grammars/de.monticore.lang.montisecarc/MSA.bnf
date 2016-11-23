@@ -64,11 +64,11 @@
   generateTokens=false
 }
 
-File ::= [PackageClause] (ImportDeclaration)* ComponentDeclaration?
+File ::= [PackageClause] (ImportDeclaration)* ComponentDeclaration? { methods=[getPackageIdentifier] }
 
 private semi ::= SEMICOLON_SYNTHETIC | SEMICOLON | <<eof>> { name="semicolon" }
 
-PackageClause ::= package (DOT | ID)+ semi {pin=1 recoverWhile=package_recover}
+PackageClause ::= package (DOT | ID)+ semi {pin=1 methods=[getPackageIdentifier] recoverWhile=package_recover}
 private package_recover ::= !(';' | '<<' | <<eof>> | import | component | AT)
 
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
@@ -81,14 +81,15 @@ PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getRefe
 
 ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
+                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations getSuperComponents]
                                 implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
 
-ComponentSignature ::= ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType[0]" ComponentExtensionName="/ComponentNameWithType[1]"] recoverWhile=signature_recover}
+ComponentSignature ::= ComponentNameWithType ComponentParameters ComponentExtension? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType" ComponentExtensionName="/ComponentExtension/ComponentNameWithType"] recoverWhile=signature_recover}
+ComponentExtension ::= extends ComponentNameWithType
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)

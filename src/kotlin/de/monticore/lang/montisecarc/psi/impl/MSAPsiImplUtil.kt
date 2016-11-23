@@ -204,7 +204,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
 
-            return element.componentSignature?.componentNameWithTypeList?.map { it.componentName.name }.orEmpty().joinToString()
+            return element.componentSignature?.componentName?.text.orEmpty()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {
@@ -218,7 +218,29 @@ class MSAPsiImplUtil {
             val trustLevelStatementList = element.componentBody?.trustLevelStatementList
             if (trustLevelStatementList.isNullOrEmpty()) {
 
-                if (element.parent.elementType == MSAFileElementType) {
+                var lvl: Int? = null
+                for (superComponent in element.superComponents) {
+
+                    val trustLevelList = superComponent.componentBody?.trustLevelStatementList.orEmpty()
+                    if(!trustLevelList.isNullOrEmpty()) {
+                        try {
+                            if(trustLevelList.first().level != null) {
+
+                                lvl = trustLevelList.first().level!!.number.text.toInt()
+                                break
+                            }
+                        } catch (ex: NumberFormatException) {
+
+                        }
+
+                    }
+                }
+
+                if (lvl != null) {
+
+                    return lvl
+                }
+                else if (element.parent.elementType == MSAFileElementType) {
 
                     return -1
                 } else {
@@ -300,5 +322,24 @@ class MSAPsiImplUtil {
             }
             return trustlevel
         }
+
+        @JvmStatic fun getPackageIdentifier(element: MSAPackageClause): String? {
+
+            val identifier = element.text
+            if(identifier.isNullOrBlank()) {
+
+                return null
+            }
+
+            val packageIdentifier = identifier.replace("package", "").replace(";", "").trim()
+
+            if(packageIdentifier.isNullOrBlank()) {
+
+                return null
+            }
+            return packageIdentifier
+        }
+
+        @JvmStatic fun getPackageIdentifier(element: MSAFile): String? = element.getPackage()?.packageIdentifier
     }
 }

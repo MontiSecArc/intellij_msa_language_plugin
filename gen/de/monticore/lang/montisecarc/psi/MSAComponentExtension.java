@@ -4,12 +4,10 @@ package de.monticore.lang.montisecarc.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
-import kotlin.jvm.JvmStatic;
 
-public interface MSAPackageClause extends MSACompositeElement {
+public interface MSAComponentExtension extends MSACompositeElement {
 
-  @JvmStatic
-  @Nullable
-  String getPackageIdentifier();
+  @NotNull
+  MSAComponentNameWithType getComponentNameWithType();
 
 }

@@ -28,14 +28,20 @@ public class MSAComponentSignatureImpl extends MSACompositeElementImpl implement
 
   @Override
   @Nullable
+  public MSAComponentExtension getComponentExtension() {
+    return PsiTreeUtil.getChildOfType(this, MSAComponentExtension.class);
+  }
+
+  @Override
+  @Nullable
   public MSAComponentInstanceName getComponentInstanceName() {
     return PsiTreeUtil.getChildOfType(this, MSAComponentInstanceName.class);
   }
 
   @Override
   @NotNull
-  public List<MSAComponentNameWithType> getComponentNameWithTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithType.class);
+  public MSAComponentNameWithType getComponentNameWithType() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentNameWithType.class));
   }
 
   @Override
@@ -47,15 +53,15 @@ public class MSAComponentSignatureImpl extends MSACompositeElementImpl implement
   @Override
   @NotNull
   public MSAComponentNameWithType getComponentName() {
-    List<MSAComponentNameWithType> p1 = getComponentNameWithTypeList();
-    return p1.get(0);
+    return getComponentNameWithType();
   }
 
   @Override
   @Nullable
   public MSAComponentNameWithType getComponentExtensionName() {
-    List<MSAComponentNameWithType> p1 = getComponentNameWithTypeList();
-    return p1.size() < 2 ? null : p1.get(1);
+    MSAComponentExtension p1 = getComponentExtension();
+    if (p1 == null) return null;
+    return p1.getComponentNameWithType();
   }
 
 }

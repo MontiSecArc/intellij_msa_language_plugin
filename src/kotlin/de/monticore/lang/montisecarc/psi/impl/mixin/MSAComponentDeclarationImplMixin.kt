@@ -26,4 +26,23 @@ abstract class MSAComponentDeclarationImplMixin: MSAStubbedNamedElementImpl<MSAC
 
         return foundPolicyViolations
     }
+
+    override fun getSuperComponents() : Array<MSAComponentDeclaration> {
+
+        val superComponents = mutableListOf<MSAComponentDeclaration>()
+        var referenceToSuperComponent = componentSignature?.componentExtensionName?.componentName?.references
+        while(referenceToSuperComponent != null && referenceToSuperComponent.isNotEmpty()) {
+
+            val superComponent = referenceToSuperComponent[0].resolve()
+            if(superComponent != null && superComponent is MSAComponentDeclaration) {
+
+                superComponents.add(superComponent)
+                referenceToSuperComponent = superComponent.componentSignature?.componentExtensionName?.componentName?.references
+            } else {
+
+                return superComponents.toTypedArray()
+            }
+        }
+        return superComponents.toTypedArray()
+    }
 }

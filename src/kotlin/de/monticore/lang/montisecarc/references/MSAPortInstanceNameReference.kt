@@ -33,6 +33,7 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
     override fun multiResolve(incompleteCode: Boolean): Array<out com.intellij.psi.ResolveResult> {
 
         val parentComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+        val superComponents = parentComponent?.superComponents.orEmpty()
         val instanceDeclarationParent = PsiTreeUtil.getParentOfType(element, MSAComponentInstanceDeclaration::class.java)
         val prevComponentInstanceName = PsiTreeUtil.getPrevSiblingOfType(element, MSAComponentInstanceName::class.java)
         var wrappingComponentQualifiedName: String? = parentComponent?.qualifiedName
@@ -98,6 +99,14 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                 }
                 if (itComponentParent?.qualifiedName.equals(instanceComponentQualifiedName)) {
                     found.add(it)
+                }
+                for (superComponent in superComponents) {
+
+                    if(superComponent.qualifiedName == itComponentParent?.qualifiedName) {
+
+                        found.add(it)
+                        break
+                    }
                 }
                 true
             }

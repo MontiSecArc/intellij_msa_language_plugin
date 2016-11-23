@@ -8,10 +8,13 @@ import com.intellij.psi.PsiElement;
 public interface MSAComponentSignature extends MSACompositeElement {
 
   @Nullable
+  MSAComponentExtension getComponentExtension();
+
+  @Nullable
   MSAComponentInstanceName getComponentInstanceName();
 
   @NotNull
-  List<MSAComponentNameWithType> getComponentNameWithTypeList();
+  MSAComponentNameWithType getComponentNameWithType();
 
   @NotNull
   List<MSAJavaClassReference> getJavaClassReferenceList();

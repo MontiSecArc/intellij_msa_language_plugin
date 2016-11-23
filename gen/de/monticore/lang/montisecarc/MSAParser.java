@@ -42,6 +42,9 @@ public class MSAParser implements PsiParser, LightPsiParser {
     else if (t == COMPONENT_DECLARATION) {
       r = ComponentDeclaration(b, 0);
     }
+    else if (t == COMPONENT_EXTENSION) {
+      r = ComponentExtension(b, 0);
+    }
     else if (t == COMPONENT_INSTANCE_DECLARATION) {
       r = ComponentInstanceDeclaration(b, 0);
     }
@@ -371,6 +374,19 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // extends ComponentNameWithType
+  public static boolean ComponentExtension(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentExtension")) return false;
+    if (!nextTokenIs(b, EXTENDS)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, EXTENDS);
+    r = r && ComponentNameWithType(b, l + 1);
+    exit_section_(b, m, COMPONENT_EXTENSION, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // ComponentInstanceWithParameters (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
   static boolean ComponentInstance(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentInstance")) return false;
@@ -672,7 +688,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ComponentNameWithType ComponentParameters (extends ComponentNameWithType)? ComponentInstanceWithParameters?
+  // ComponentNameWithType ComponentParameters ComponentExtension? ComponentInstanceWithParameters?
   public static boolean ComponentSignature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentSignature")) return false;
     boolean r, p;
@@ -686,22 +702,11 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // (extends ComponentNameWithType)?
+  // ComponentExtension?
   private static boolean ComponentSignature_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentSignature_2")) return false;
-    ComponentSignature_2_0(b, l + 1);
+    ComponentExtension(b, l + 1);
     return true;
-  }
-
-  // extends ComponentNameWithType
-  private static boolean ComponentSignature_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "ComponentSignature_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, EXTENDS);
-    r = r && ComponentNameWithType(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   // ComponentInstanceWithParameters?

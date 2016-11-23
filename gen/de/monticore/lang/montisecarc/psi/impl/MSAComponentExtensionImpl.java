@@ -9,17 +9,15 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
-import kotlin.jvm.JvmStatic;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAPackageClauseImpl extends MSACompositeElementImpl implements MSAPackageClause {
+public class MSAComponentExtensionImpl extends MSACompositeElementImpl implements MSAComponentExtension {
 
-  public MSAPackageClauseImpl(ASTNode node) {
+  public MSAComponentExtensionImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitPackageClause(this);
+    visitor.visitComponentExtension(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,10 +25,10 @@ public class MSAPackageClauseImpl extends MSACompositeElementImpl implements MSA
     else super.accept(visitor);
   }
 
-  @JvmStatic
-  @Nullable
-  public String getPackageIdentifier() {
-    return MSAPsiImplUtil.getPackageIdentifier(this);
+  @Override
+  @NotNull
+  public MSAComponentNameWithType getComponentNameWithType() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentNameWithType.class));
   }
 
 }
