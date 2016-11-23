@@ -42,8 +42,8 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
 
   @Override
   @NotNull
-  public List<MSAComponentNameWithType> getComponentNameWithTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithType.class);
+  public List<MSAComponentNameWithTypeProjection> getComponentNameWithTypeProjectionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithTypeProjection.class);
   }
 
   @Override

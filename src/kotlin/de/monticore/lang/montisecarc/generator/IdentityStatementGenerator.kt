@@ -51,7 +51,7 @@ class IdentityStatementGenerator : MSAGenerator() {
                         startIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
                     } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentInstanceDeclaration) {
 
-                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeList.last().componentName.references[0].resolve()
+                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
                         if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
                             startIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name)
@@ -78,7 +78,7 @@ class IdentityStatementGenerator : MSAGenerator() {
                         stopIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
                     } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentInstanceDeclaration) {
 
-                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeList.last().componentName.references[0].resolve()
+                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
                         if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
                             startIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name)

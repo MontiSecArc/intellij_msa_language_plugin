@@ -41,7 +41,7 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
 
         if (instanceDeclarationParent != null) {
 
-            val references = instanceDeclarationParent.componentNameWithTypeList.last().componentName.references
+            val references = instanceDeclarationParent.componentNameWithTypeProjectionList.last().componentName.references
             if (references.isNotEmpty()) {
 
                 (references[0] as MSAComponentNameReference).multiResolve(false)
@@ -66,7 +66,7 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                             wrappingComponentQualifiedName = element.qualifiedName
                         } else if (element is MSAComponentInstanceDeclaration) {
 
-                            val references = element.componentNameWithTypeList.last().componentName.references
+                            val references = element.componentNameWithTypeProjectionList.last().componentName.references
                             if (references.isNotEmpty()) {
 
                                 if (references[0] is MSAComponentNameReference) {

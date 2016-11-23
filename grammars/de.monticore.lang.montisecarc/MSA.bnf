@@ -89,8 +89,9 @@ ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 }
 
 ComponentSignature ::= ComponentNameWithType ComponentParameters ComponentExtension? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType" ComponentExtensionName="/ComponentExtension/ComponentNameWithType"] recoverWhile=signature_recover}
-ComponentExtension ::= extends ComponentNameWithType
+ComponentExtension ::= extends ComponentNameWithTypeProjection
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
+ComponentNameWithTypeProjection ::= ComponentName TypeProjections? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
 
@@ -104,7 +105,7 @@ ComponentInstanceDeclaration ::= Prefix?  ComponentNamesWithTypes ComponentParam
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
         mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin"
     }
-private ComponentNamesWithTypes ::= ComponentNameWithType (DOT ComponentNameWithType)* {pin=1}
+private ComponentNamesWithTypes ::= ComponentNameWithTypeProjection (DOT ComponentNameWithTypeProjection)* {pin=1}
 private ComponentInstanceWithParameters ::= ComponentInstanceName ("(" ID ("," ID)* ")")?
 private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
@@ -170,8 +171,10 @@ private statement_recover ::= !( '<<' | AT | semi | trustlevel | trustlevelrelat
 Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
 private StereoValue ::= ID ("=" STRING)?
 
+TypeProjections ::= LESS TypeProjection (COMMA TypeProjection)* GREATER
 TypeParameters ::= LESS TypeVariableDeclaration (COMMA TypeVariableDeclaration)* GREATER
-private TypeVariableDeclaration ::= ID (extends JavaClassReference)?
+TypeVariableDeclaration ::= ID (extends JavaClassReference)?
+TypeProjection ::= JavaClassReference
 
 private Parameter ::= JavaClassReference ID ("=" ID)?
 

@@ -36,7 +36,7 @@ class ComponentInstanceDeclarationConnectorGenerator : MSAGenerator() {
 
         if(psiElement is MSAComponentInstanceDeclaration) {
 
-            val msaComponentDeclaration = psiElement.componentNameWithTypeList.last().componentName.references[0].resolve()
+            val msaComponentDeclaration = psiElement.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
             if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 

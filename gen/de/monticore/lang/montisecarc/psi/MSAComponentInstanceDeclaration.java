@@ -14,7 +14,7 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
   List<MSAComponentInstanceName> getComponentInstanceNameList();
 
   @NotNull
-  List<MSAComponentNameWithType> getComponentNameWithTypeList();
+  List<MSAComponentNameWithTypeProjection> getComponentNameWithTypeProjectionList();
 
   @NotNull
   List<MSAConnector> getConnectorList();

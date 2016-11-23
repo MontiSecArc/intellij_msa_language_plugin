@@ -180,7 +180,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getQualifiedName(element: MSAComponentInstanceDeclaration): String {
 
-            val name = element.componentNameWithTypeList.map { it.componentName.name }.joinToString()
+            val name = element.componentNameWithTypeProjectionList.map { it.componentName.name }.joinToString()
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
@@ -204,7 +204,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
 
-            return element.componentSignature?.componentName?.text.orEmpty()
+            return element.componentSignature?.componentNameWithType?.componentName?.text.orEmpty()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {
@@ -290,11 +290,11 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getTrustLevel(element: MSAComponentInstanceDeclaration): Int {
 
-            if (element.componentNameWithTypeList.last().references.isEmpty()) {
+            if (element.componentNameWithTypeProjectionList.last().references.isEmpty()) {
                 return 0
             }
 
-            val psiReference = element.componentNameWithTypeList.last().references[0]
+            val psiReference = element.componentNameWithTypeProjectionList.last().references[0]
             if (psiReference != null) {
 
                 val component = psiReference.resolve()

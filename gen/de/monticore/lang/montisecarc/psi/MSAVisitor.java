@@ -50,6 +50,10 @@ public class MSAVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
+  public void visitComponentNameWithTypeProjection(@NotNull MSAComponentNameWithTypeProjection o) {
+    visitCompositeElement(o);
+  }
+
   public void visitComponentSignature(@NotNull MSAComponentSignature o) {
     visitCompositeElement(o);
   }
@@ -155,6 +159,18 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitTypeParameters(@NotNull MSATypeParameters o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeProjection(@NotNull MSATypeProjection o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeProjections(@NotNull MSATypeProjections o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeVariableDeclaration(@NotNull MSATypeVariableDeclaration o) {
     visitCompositeElement(o);
   }
 

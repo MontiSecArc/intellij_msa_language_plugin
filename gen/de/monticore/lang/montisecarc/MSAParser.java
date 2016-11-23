@@ -57,6 +57,9 @@ public class MSAParser implements PsiParser, LightPsiParser {
     else if (t == COMPONENT_NAME_WITH_TYPE) {
       r = ComponentNameWithType(b, 0);
     }
+    else if (t == COMPONENT_NAME_WITH_TYPE_PROJECTION) {
+      r = ComponentNameWithTypeProjection(b, 0);
+    }
     else if (t == COMPONENT_SIGNATURE) {
       r = ComponentSignature(b, 0);
     }
@@ -137,6 +140,15 @@ public class MSAParser implements PsiParser, LightPsiParser {
     }
     else if (t == TYPE_PARAMETERS) {
       r = TypeParameters(b, 0);
+    }
+    else if (t == TYPE_PROJECTION) {
+      r = TypeProjection(b, 0);
+    }
+    else if (t == TYPE_PROJECTIONS) {
+      r = TypeProjections(b, 0);
+    }
+    else if (t == TYPE_VARIABLE_DECLARATION) {
+      r = TypeVariableDeclaration(b, 0);
     }
     else {
       r = parse_root_(t, b, 0);
@@ -374,14 +386,14 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // extends ComponentNameWithType
+  // extends ComponentNameWithTypeProjection
   public static boolean ComponentExtension(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentExtension")) return false;
     if (!nextTokenIs(b, EXTENDS)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EXTENDS);
-    r = r && ComponentNameWithType(b, l + 1);
+    r = r && ComponentNameWithTypeProjection(b, l + 1);
     exit_section_(b, m, COMPONENT_EXTENSION, r);
     return r;
   }
@@ -607,20 +619,41 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ComponentNameWithType (DOT ComponentNameWithType)*
+  // ComponentName TypeProjections?
+  public static boolean ComponentNameWithTypeProjection(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentNameWithTypeProjection")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COMPONENT_NAME_WITH_TYPE_PROJECTION, null);
+    r = ComponentName(b, l + 1);
+    p = r; // pin = 1
+    r = r && ComponentNameWithTypeProjection_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // TypeProjections?
+  private static boolean ComponentNameWithTypeProjection_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ComponentNameWithTypeProjection_1")) return false;
+    TypeProjections(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // ComponentNameWithTypeProjection (DOT ComponentNameWithTypeProjection)*
   static boolean ComponentNamesWithTypes(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentNamesWithTypes")) return false;
     if (!nextTokenIs(b, ID)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_);
-    r = ComponentNameWithType(b, l + 1);
+    r = ComponentNameWithTypeProjection(b, l + 1);
     p = r; // pin = 1
     r = r && ComponentNamesWithTypes_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // (DOT ComponentNameWithType)*
+  // (DOT ComponentNameWithTypeProjection)*
   private static boolean ComponentNamesWithTypes_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentNamesWithTypes_1")) return false;
     int c = current_position_(b);
@@ -632,13 +665,13 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // DOT ComponentNameWithType
+  // DOT ComponentNameWithTypeProjection
   private static boolean ComponentNamesWithTypes_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ComponentNamesWithTypes_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, DOT);
-    r = r && ComponentNameWithType(b, l + 1);
+    r = r && ComponentNameWithTypeProjection(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1784,15 +1817,65 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // JavaClassReference
+  public static boolean TypeProjection(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "TypeProjection")) return false;
+    if (!nextTokenIs(b, ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = JavaClassReference(b, l + 1);
+    exit_section_(b, m, TYPE_PROJECTION, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // LESS TypeProjection (COMMA TypeProjection)* GREATER
+  public static boolean TypeProjections(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "TypeProjections")) return false;
+    if (!nextTokenIs(b, LESS)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LESS);
+    r = r && TypeProjection(b, l + 1);
+    r = r && TypeProjections_2(b, l + 1);
+    r = r && consumeToken(b, GREATER);
+    exit_section_(b, m, TYPE_PROJECTIONS, r);
+    return r;
+  }
+
+  // (COMMA TypeProjection)*
+  private static boolean TypeProjections_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "TypeProjections_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!TypeProjections_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "TypeProjections_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // COMMA TypeProjection
+  private static boolean TypeProjections_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "TypeProjections_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && TypeProjection(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // ID (extends JavaClassReference)?
-  static boolean TypeVariableDeclaration(PsiBuilder b, int l) {
+  public static boolean TypeVariableDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "TypeVariableDeclaration")) return false;
     if (!nextTokenIs(b, ID)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, ID);
     r = r && TypeVariableDeclaration_1(b, l + 1);
-    exit_section_(b, m, null, r);
+    exit_section_(b, m, TYPE_VARIABLE_DECLARATION, r);
     return r;
   }
 

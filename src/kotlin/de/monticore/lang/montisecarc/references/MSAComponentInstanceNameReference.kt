@@ -67,7 +67,7 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
 
         if (instanceDeclarationParent != null) {
 
-            val references = instanceDeclarationParent.componentNameWithTypeList.last().componentName.references
+            val references = instanceDeclarationParent.componentNameWithTypeProjectionList.last().componentName.references
             if (references.isNotEmpty()) {
 
                 (references[0] as MSAComponentNameReference).multiResolve(false)

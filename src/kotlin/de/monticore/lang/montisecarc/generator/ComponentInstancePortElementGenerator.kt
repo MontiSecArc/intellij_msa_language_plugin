@@ -24,7 +24,7 @@ class ComponentInstancePortElementGenerator : MSAGenerator() {
     override fun generate(psiElement: PsiElement): Any? {
 
         if(psiElement is MSAComponentInstanceDeclaration) {
-            val componentName = psiElement.componentNameWithTypeList.last().componentName
+            val componentName = psiElement.componentNameWithTypeProjectionList.last().componentName
             if(componentName.references.isNotEmpty()) {
 
                 val componentDeclaration = componentName.references[0].resolve()
