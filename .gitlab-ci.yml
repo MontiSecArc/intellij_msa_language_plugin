@@ -25,10 +25,10 @@ before_script:
 build:
   stage: build
   script:
-    - ./gradlew -g /cache/.gradle buildPlugin
+    - ./gradlew -g /cache/.gradle clean buildPlugin
   allow_failure: false
   artifacts:
     paths:
-        - intellij/build/distributions/MSA-$CI_BUILD_TAG.zip
+        - build/distributions/*.zip
   only:
-    - tags
+    - master

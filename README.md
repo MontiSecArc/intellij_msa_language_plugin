@@ -1,22 +1,6 @@
-# Functionality
-1. Add new MontiSecArc architecture from > New File > MSA File
-2. Annotations for semantic errors in the created architecture
-3. Auto-Completion for keywords
-4. Folding of component and port lists
-5. Automatic formatting of MSA files
-6. Syntax Highlighting
-7. Automatic brace matching
-
-# ToDo
-- Extend auto-completion
-    - Linking connect and component ports in auto-completion dialogs
-    - Extend supported keywords
-- Use language code style settings for formatting
-- Refactoring
-    - Refactor component names or instance names, port names
-- Find Usage
-    - Find usage of components and ports
-- Icons
+# MontiSecArc IntelliJ Language Plugin
+![Bildschirmfoto_2016-11-11_um_09.27.00](/uploads/bb4676c2ca848e1420f3d5ad710ce210/Bildschirmfoto_2016-11-11_um_09.27.00.png)
+This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
 
 # Troubleshooting
 
