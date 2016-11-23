@@ -179,4 +179,4 @@ private Prefix ::= SuppressAnnotation? Stereotype?
 
 SuppressAnnotation ::= SuppressAnnotationKeyword '(' Policy (COMMA Policy)* ')' {pin=1}
 SuppressAnnotationKeyword ::= AT SUPPRESS_POLICY_TOKEN {pin=1}
-Policy ::= STRING
+Policy ::= ID

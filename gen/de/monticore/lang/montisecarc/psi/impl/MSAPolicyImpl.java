@@ -28,8 +28,8 @@ public class MSAPolicyImpl extends MSACompositeElementImpl implements MSAPolicy 
 
   @Override
   @NotNull
-  public PsiElement getString() {
-    return notNullChild(findChildByType(STRING));
+  public PsiElement getId() {
+    return notNullChild(findChildByType(ID));
   }
 
 }

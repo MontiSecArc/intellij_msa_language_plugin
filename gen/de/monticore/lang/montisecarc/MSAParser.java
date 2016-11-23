@@ -1238,13 +1238,13 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STRING
+  // ID
   public static boolean Policy(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Policy")) return false;
-    if (!nextTokenIs(b, STRING)) return false;
+    if (!nextTokenIs(b, ID)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, STRING);
+    r = consumeToken(b, ID);
     exit_section_(b, m, POLICY, r);
     return r;
   }
