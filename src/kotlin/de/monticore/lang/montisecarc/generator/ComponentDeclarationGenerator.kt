@@ -55,7 +55,20 @@ class ComponentDeclarationGenerator : MSAGenerator() {
             extras.put("trustlevel", psiElement.trustLevel.toString())
             extras.put("element_offset", psiElement.textOffset.toString())
             extras.put("file_path", psiElement.containingFile.virtualFile.canonicalPath.orEmpty())
-            val accessRoles = psiElement.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
+            var accessRoles = psiElement.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
+            if(accessRoles.isNullOrEmpty()) {
+
+                for (superComponent in psiElement.superComponents) {
+
+                    val superComponentAccessRoles = superComponent.componentBody?.accessStatementList?.map { it.roleNameList.map { "'${it.text}'" }.joinToString() }?.joinToString()
+
+                    if(!superComponentAccessRoles.isNullOrEmpty()) {
+
+                        accessRoles = superComponentAccessRoles
+                        break
+                    }
+                }
+            }
             extras.put("access_roles", accessRoles.orEmpty())
 
 
@@ -86,6 +99,24 @@ class ComponentDeclarationGenerator : MSAGenerator() {
                 } else {
 
                     extras.put("access_control", "off")
+                }
+            } else {
+
+                for (superComponent in psiElement.superComponents) {
+
+                    val superComponentAccessControlStatementList = superComponent.componentBody?.accessControlStatementList
+
+                    if(!superComponentAccessControlStatementList.isNullOrEmpty()) {
+                        val findChildByType = superComponentAccessControlStatementList!!.first().node.findChildByType(MSATokenElementTypes.ON)
+                        if (findChildByType != null) {
+
+                            extras.put("access_control", "on")
+                        } else {
+
+                            extras.put("access_control", "off")
+                        }
+                        break
+                    }
                 }
             }
 

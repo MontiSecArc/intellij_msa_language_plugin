@@ -1,14 +1,14 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
-import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
 
 /**
- * Copyright 2016 thomasbuning
+ * Copyright 2016 Thomas Buning
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,20 +28,22 @@ class GraphGenerator {
     private val files = mutableListOf<PsiFile>()
     private val registeredGenerators = mutableMapOf<IElementType, List<Pair<MSAGenerator, (Any) -> Unit>>>()
     private val trustLevels = mutableSetOf<Int>()
-    private val nodes = mutableListOf<String>()
-    private val connectors = mutableListOf<String>()
+    private val nodes = mutableSetOf<String>()
+    private val connectors = mutableSetOf<String>()
     private var psiRecursiveElementWalkingVisitor: MSAPsiRecursiveElementWalkingVisitor? = null
     private var referencedComponentInstances = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
+    /**
+     * Key is the super component that needs to be replaced by the value
+     */
+    private var componentExtendHierarchy = mutableMapOf<String, String>()
 
     fun createGraph(): String {
 
         return files.map { generate(it) }.filter { !it.isNullOrEmpty() }.joinToString("")
     }
 
-    private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean {
-
-        return componentQualifiedNames.any { it.contains(qualifiedName) && it != qualifiedName }
-    }
+    private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean
+            = componentQualifiedNames.filter { it != qualifiedName }.any { qualifiedName.contains(it) }
 
     private fun generate(parseFile: PsiFile): String? {
 
@@ -50,14 +52,30 @@ class GraphGenerator {
 
                 parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
-                val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }
-                referencedComponentInstances.forEach {
+                val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }.union(superComponents.map { it.second.qualifiedName }).toList()
+                referencedComponentInstances.union(superComponents).forEach {
 
                     if (it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
 
                         it.second.accept(psiRecursiveElementWalkingVisitor!!)
                     }
                 }
+
+                /*
+                * - We got the original file (parseFile) and all files referenced by Instances
+                * - Now we need to collect all ports and components etc from superClasses and combine them in the extending class
+                * - Ports could be already imported from references, or components so it is needed to check if these are already included
+                * - SuperClasses don't need to be included because port etc. shall be combined in the extending class
+                * */
+                for ((superComponent, extendingComponent) in componentExtendHierarchy) {
+
+                    // Remove Super Components
+                    nodes.removeAll { it -> it.startsWith("($superComponent:Component") }
+
+                    // Fix Links
+                    connectors.mapInPlace { it.replace("($superComponent)", "($extendingComponent)") }
+                }
+
             })
 
             trustLevels.forEach {
@@ -66,7 +84,7 @@ class GraphGenerator {
 
             nodes.addAll(connectors)
 
-            if (nodes.isNullOrEmpty()) {
+            if (nodes.isEmpty()) {
                 return null
             }
 
@@ -77,6 +95,24 @@ class GraphGenerator {
             return graph
         }
         return null
+    }
+
+    inline fun <T> MutableSet<T>.mapInPlace(mutator: (T)->T) {
+        val iterate = this.iterator()
+        val nodesToUpdate = mutableListOf<Pair<T, T>>()
+        while (iterate.hasNext()) {
+            val oldValue = iterate.next()
+            val newValue = mutator(oldValue)
+            if (newValue !== oldValue) {
+
+                nodesToUpdate.add(Pair(oldValue, newValue))
+            }
+        }
+
+        for ((oldValue, newValue) in nodesToUpdate) {
+            this.remove(oldValue)
+            this.add(newValue)
+        }
     }
 
     fun addFile(psiFile: PsiFile) = files.add(psiFile)
@@ -95,9 +131,11 @@ class GraphGenerator {
         psiRecursiveElementWalkingVisitor = MSAPsiRecursiveElementWalkingVisitor(registeredGenerators)
     }
 
+    private val superComponents = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
+
     fun registerDefaultGenerators() {
 
-        fun extractStringsFromList(addTo: MutableList<String>): (Any) -> Unit {
+        fun extractStringsFromList(addTo: MutableSet<String>): (Any) -> Unit {
             return {
                 connector ->
                 if (connector is List<*>) {
@@ -110,7 +148,7 @@ class GraphGenerator {
             }
         }
 
-        fun extractStringsFromListAndReferences(addTo: MutableList<String>, references: MutableList<Pair<PsiFile, MSAComponentDeclaration>>): (Any) -> Unit {
+        fun extractStringsFromListAndReferences(addTo: MutableSet<String>, references: MutableList<Pair<PsiFile, MSAComponentDeclaration>>): (Any) -> Unit {
             return {
                 connector ->
                 if (connector is Triple<*, *, *>) {
@@ -134,7 +172,7 @@ class GraphGenerator {
             }
         }
 
-        fun extractString(addTo: MutableList<String>): (Any) -> Unit {
+        fun extractString(addTo: MutableSet<String>): (Any) -> Unit {
             return {
                 component ->
                 if (component is String) {
@@ -174,6 +212,29 @@ class GraphGenerator {
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentHierarchyConnectorGenerator(), extractStringsFromList(connectors))
 
+        registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, SuperComponentGenerator(), {
+
+            foundComponents ->
+            if (foundComponents is List<*>) {
+
+
+                foundComponents.forEach {
+
+                    if (it is Triple<*, *, *>) {
+
+                        if (it.first is PsiFile && it.second is MSAComponentDeclaration) {
+                            superComponents.add(Pair(it.first as PsiFile, it.second as MSAComponentDeclaration))
+
+                            if (it.third is MSAComponentDeclaration) {
+
+                                componentExtendHierarchy.put((it.second as MSAComponentDeclaration).qualifiedName.replace(".", "_"), (it.third as MSAComponentDeclaration).qualifiedName.replace(".", "_"))
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
         registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementGenerator(), extractString(nodes))
 
         registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, PortElementConnectorGenerator(), extractStringsFromList(connectors))
@@ -189,29 +250,20 @@ class GraphGenerator {
         registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorGenerator(), extractStringsFromList(connectors))
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
+    }
+}
 
-        /*registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstancePortElementGenerator(), {
+class SuperComponentGenerator : MSAGenerator() {
 
-            pair ->
-            if (pair is Pair<*, *>) {
+    override fun generate(psiElement: PsiElement): Any? {
 
-                val portElementNodes = pair.first as List<*>
-                val portConnectors = pair.second as List<*>
+        if (psiElement is MSAComponentDeclaration) {
 
-                portElementNodes.map {
-                    if (it is String) {
-
-                        nodes.add(it)
-                    }
-                }
-
-                portConnectors.map {
-                    if (it is String) {
-
-                        connectors.add(it)
-                    }
-                }
+            return psiElement.superComponents.map {
+                Triple(it.containingFile, it, psiElement)
             }
-        })*/
+        }
+
+        return null
     }
 }
