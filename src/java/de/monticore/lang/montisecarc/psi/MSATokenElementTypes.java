@@ -2,7 +2,6 @@
 package de.monticore.lang.montisecarc.psi;
 
 import com.intellij.psi.tree.TokenSet;
-import de.monticore.lang.montisecarc.psi.*;
 
 public interface MSATokenElementTypes {
 
@@ -64,12 +63,15 @@ public interface MSATokenElementTypes {
   MSATokenType ON = new MSATokenType("on");
   MSATokenType OFF = new MSATokenType("off");
 
+  MSATokenType SUPPRESS_POLICY_TOKEN = new MSAKeywordTokenType("SuppressPolicy");
+  MSATokenType AT = new MSAKeywordTokenType("@");
+
   // Comments
   MSATokenType SINGLE_LINE_COMMENT = new MSACommentTokenType("SINGLE_LINE_COMMENT");
   MSATokenType MULTI_LINE_COMMENT = new MSACommentTokenType("MULTI_LINE_COMMENT");
 
   TokenSet COMMENTS = TokenSet.create(SINGLE_LINE_COMMENT, MULTI_LINE_COMMENT);
-  TokenSet KEYWORDS = TokenSet.create(COMPONENT, PORT, CPE, CONFIGURATION, IDENTITY, CONNECT, TRUSTLEVEL, TRUSTLEVELRELATION, CRITICAL, ACCESS, ACCESSCONTROL, PACKAGE, IMPORT);
+  TokenSet KEYWORDS = TokenSet.create(COMPONENT, PORT, CPE, CONFIGURATION, IDENTITY, CONNECT, TRUSTLEVEL, TRUSTLEVELRELATION, CRITICAL, ACCESS, ACCESSCONTROL, PACKAGE, IMPORT, EXTENDS);
   TokenSet TYPES = TokenSet.create(UNENCRYPTED, ENCRYPTED, IN, OUT, ON, OFF, TYPE, STRONG, WEAK);
 
 }

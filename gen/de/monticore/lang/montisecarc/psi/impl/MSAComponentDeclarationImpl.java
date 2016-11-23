@@ -52,6 +52,12 @@ public class MSAComponentDeclarationImpl extends MSAComponentDeclarationImplMixi
     return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
   }
 
+  @Override
+  @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  }
+
   @JvmStatic
   @NotNull
   public String getName() {

@@ -11,14 +11,14 @@ import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAConfigurationStatementImpl extends MSACompositeElementImpl implements MSAConfigurationStatement {
+public class MSAPolicyImpl extends MSACompositeElementImpl implements MSAPolicy {
 
-  public MSAConfigurationStatementImpl(ASTNode node) {
+  public MSAPolicyImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitConfigurationStatement(this);
+    visitor.visitPolicy(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,21 +27,9 @@ public class MSAConfigurationStatementImpl extends MSACompositeElementImpl imple
   }
 
   @Override
-  @Nullable
-  public MSAStereotype getStereotype() {
-    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
-  }
-
-  @Override
-  @Nullable
-  public MSASuppressAnnotation getSuppressAnnotation() {
-    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
+  @NotNull
+  public PsiElement getString() {
+    return notNullChild(findChildByType(STRING));
   }
 
 }

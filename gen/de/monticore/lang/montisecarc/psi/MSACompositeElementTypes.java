@@ -14,6 +14,7 @@ public interface MSACompositeElementTypes {
   IElementType AUTO_CONNECT_STATEMENT = new MSACompositeElementType("AUTO_CONNECT_STATEMENT");
   IElementType COMPONENT_BODY = new MSACompositeElementType("COMPONENT_BODY");
   IElementType COMPONENT_DECLARATION = ElementFactoryKt.factory("COMPONENT_DECLARATION");
+  IElementType COMPONENT_EXTENSION = new MSACompositeElementType("COMPONENT_EXTENSION");
   IElementType COMPONENT_INSTANCE_DECLARATION = ElementFactoryKt.factory("COMPONENT_INSTANCE_DECLARATION");
   IElementType COMPONENT_INSTANCE_NAME = new MSACompositeElementType("COMPONENT_INSTANCE_NAME");
   IElementType COMPONENT_NAME = new MSACompositeElementType("COMPONENT_NAME");
@@ -32,6 +33,7 @@ public interface MSACompositeElementTypes {
   IElementType JAVA_REFERENCE = new MSACompositeElementType("JAVA_REFERENCE");
   IElementType LEVEL = new MSACompositeElementType("LEVEL");
   IElementType PACKAGE_CLAUSE = new MSACompositeElementType("PACKAGE_CLAUSE");
+  IElementType POLICY = new MSACompositeElementType("POLICY");
   IElementType PORT_ACCESS_ROLE = new MSACompositeElementType("PORT_ACCESS_ROLE");
   IElementType PORT_DECLARATION = new MSACompositeElementType("PORT_DECLARATION");
   IElementType PORT_ELEMENT = ElementFactoryKt.factory("PORT_ELEMENT");
@@ -39,6 +41,8 @@ public interface MSACompositeElementTypes {
   IElementType QUALIFIED_IDENTIFIER = new MSACompositeElementType("QUALIFIED_IDENTIFIER");
   IElementType ROLE_NAME = new MSACompositeElementType("ROLE_NAME");
   IElementType STEREOTYPE = new MSACompositeElementType("STEREOTYPE");
+  IElementType SUPPRESS_ANNOTATION = new MSACompositeElementType("SUPPRESS_ANNOTATION");
+  IElementType SUPPRESS_ANNOTATION_KEYWORD = new MSACompositeElementType("SUPPRESS_ANNOTATION_KEYWORD");
   IElementType TRUST_LEVEL_IDENTIFIER = new MSACompositeElementType("TRUST_LEVEL_IDENTIFIER");
   IElementType TRUST_LEVEL_RELATION_STATEMENT = new MSACompositeElementType("TRUST_LEVEL_RELATION_STATEMENT");
   IElementType TRUST_LEVEL_STATEMENT = new MSACompositeElementType("TRUST_LEVEL_STATEMENT");
@@ -61,6 +65,9 @@ public interface MSACompositeElementTypes {
       }
       else if (type == COMPONENT_DECLARATION) {
         return new MSAComponentDeclarationImpl(node);
+      }
+      else if (type == COMPONENT_EXTENSION) {
+        return new MSAComponentExtensionImpl(node);
       }
       else if (type == COMPONENT_INSTANCE_DECLARATION) {
         return new MSAComponentInstanceDeclarationImpl(node);
@@ -116,6 +123,9 @@ public interface MSACompositeElementTypes {
       else if (type == PACKAGE_CLAUSE) {
         return new MSAPackageClauseImpl(node);
       }
+      else if (type == POLICY) {
+        return new MSAPolicyImpl(node);
+      }
       else if (type == PORT_ACCESS_ROLE) {
         return new MSAPortAccessRoleImpl(node);
       }
@@ -136,6 +146,12 @@ public interface MSACompositeElementTypes {
       }
       else if (type == STEREOTYPE) {
         return new MSAStereotypeImpl(node);
+      }
+      else if (type == SUPPRESS_ANNOTATION) {
+        return new MSASuppressAnnotationImpl(node);
+      }
+      else if (type == SUPPRESS_ANNOTATION_KEYWORD) {
+        return new MSASuppressAnnotationKeywordImpl(node);
       }
       else if (type == TRUST_LEVEL_IDENTIFIER) {
         return new MSATrustLevelIdentifierImpl(node);

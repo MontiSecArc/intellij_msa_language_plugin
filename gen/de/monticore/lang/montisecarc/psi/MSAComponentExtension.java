@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MSAAccessControlStatement extends MSACompositeElement {
+public interface MSAComponentExtension extends MSACompositeElement {
 
-  @Nullable
-  MSAStereotype getStereotype();
-
-  @Nullable
-  MSASuppressAnnotation getSuppressAnnotation();
+  @NotNull
+  MSAComponentNameWithType getComponentNameWithType();
 
 }

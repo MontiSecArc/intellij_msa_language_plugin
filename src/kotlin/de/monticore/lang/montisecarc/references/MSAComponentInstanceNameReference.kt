@@ -37,6 +37,7 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
         val instanceDeclarationParent = PsiTreeUtil.getParentOfType(element, MSAComponentInstanceDeclaration::class.java)
         val parentComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
         val prevComponentInstanceName = PsiTreeUtil.getPrevSiblingOfType(element, MSAComponentInstanceName::class.java)
+        val superComponents = parentComponent?.superComponents.orEmpty()
         var wrappingComponentQualifiedName: String? = parentComponent?.qualifiedName
 
         if (prevComponentInstanceName != null) {
@@ -86,6 +87,14 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
                 }
                 if (itComponentParent?.qualifiedName.equals(instanceComponentQualifiedName)) {
                     found.add(it)
+                }
+                for (superComponent in superComponents) {
+
+                    if (superComponent.qualifiedName == itComponentParent?.qualifiedName) {
+
+                        found.add(it)
+                        break
+                    }
                 }
                 true
             }

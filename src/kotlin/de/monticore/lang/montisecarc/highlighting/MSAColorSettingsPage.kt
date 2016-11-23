@@ -25,7 +25,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-class MSAColorSettingsPage: ColorSettingsPage {
+class MSAColorSettingsPage : ColorSettingsPage {
 
     private val DESCRIPTORS = arrayOf(AttributesDescriptor("Key", MSASyntaxHighlighter.KEY),
             AttributesDescriptor("String", MSASyntaxHighlighter.STRING),
@@ -33,8 +33,9 @@ class MSAColorSettingsPage: ColorSettingsPage {
             AttributesDescriptor("Level", MSASyntaxHighlighter.LEVEL),
             AttributesDescriptor("Component Name", MSASyntaxHighlighter.COMPONENT_NAME),
             AttributesDescriptor("Parameters", MSASyntaxHighlighter.TYPES),
-            AttributesDescriptor("Componenent Instance Name", MSASyntaxHighlighter.COMPONENT_INSTANCE_NAME)
-            )
+            AttributesDescriptor("Componenent Instance Name", MSASyntaxHighlighter.COMPONENT_INSTANCE_NAME),
+            AttributesDescriptor("Suppress Policy Annotation", MSASyntaxHighlighter.SUPPRESSION_ANNOTATION_KEYWORD)
+    )
 
     @Nullable
     override fun getIcon(): Icon {
@@ -55,12 +56,14 @@ class MSAColorSettingsPage: ColorSettingsPage {
                 "import secarc.supermarket.imp.CashDesk;\n" +
                 "import secarc.supermarket.imp.WebSite;\n" +
                 "\n" +
+                "@SupressPolicy(\"PolicyIdentifier\")\n" +
                 "component Supermarket {\n" +
                 "\n" +
                 "	trustlevel +0;\n" +
                 "	accesscontrol off;\n" +
                 "	\n" +
                 "	// cash desk ports	\n" +
+                "   @SupressPolicy(\"PolicyIdentifier\")\n" +
                 "	port\n" +
                 "		in Event newSale,\n" +
                 "		in Image barcode,\n" +

@@ -11,6 +11,9 @@ public interface MSAConfigurationStatement extends MSACompositeElement {
   MSAStereotype getStereotype();
 
   @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
+  @Nullable
   PsiElement getId();
 
 }

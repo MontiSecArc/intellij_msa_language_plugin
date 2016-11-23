@@ -9,16 +9,15 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAConfigurationStatementImpl extends MSACompositeElementImpl implements MSAConfigurationStatement {
+public class MSASuppressAnnotationImpl extends MSACompositeElementImpl implements MSASuppressAnnotation {
 
-  public MSAConfigurationStatementImpl(ASTNode node) {
+  public MSASuppressAnnotationImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitConfigurationStatement(this);
+    visitor.visitSuppressAnnotation(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,21 +26,15 @@ public class MSAConfigurationStatementImpl extends MSACompositeElementImpl imple
   }
 
   @Override
-  @Nullable
-  public MSAStereotype getStereotype() {
-    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
+  @NotNull
+  public List<MSAPolicy> getPolicyList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAPolicy.class);
   }
 
   @Override
-  @Nullable
-  public MSASuppressAnnotation getSuppressAnnotation() {
-    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
+  @NotNull
+  public MSASuppressAnnotationKeyword getSuppressAnnotationKeyword() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSASuppressAnnotationKeyword.class));
   }
 
 }

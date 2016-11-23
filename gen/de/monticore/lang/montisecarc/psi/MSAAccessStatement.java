@@ -16,4 +16,7 @@ public interface MSAAccessStatement extends MSACompositeElement {
   @Nullable
   MSAStereotype getStereotype();
 
+  @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
 }

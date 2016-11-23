@@ -37,4 +37,10 @@ public class MSAPortDeclarationImpl extends MSACompositeElementImpl implements M
     return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
   }
 
+  @Override
+  @NotNull
+  public List<MSASuppressAnnotation> getSuppressAnnotationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSASuppressAnnotation.class);
+  }
+
 }

@@ -19,6 +19,9 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
   @Nullable
   MSAStereotype getStereotype();
 
+  @Nullable
+  MSASuppressAnnotation getSuppressAnnotation();
+
   @JvmStatic
   @NotNull
   String getName();
@@ -40,5 +43,13 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
 
   @JvmStatic
   int getAbsoluteTrustLevel();
+
+  void addPolicyViolation(String violation);
+
+  @NotNull
+  List<String> getPolicyViolations();
+
+  @NotNull
+  MSAComponentDeclaration[] getSuperComponents();
 
 }

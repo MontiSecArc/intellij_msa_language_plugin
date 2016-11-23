@@ -40,6 +40,12 @@ public class MSATrustLevelStatementImpl extends MSACompositeElementImpl implemen
 
   @Override
   @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getString() {
     return findChildByType(STRING);
   }

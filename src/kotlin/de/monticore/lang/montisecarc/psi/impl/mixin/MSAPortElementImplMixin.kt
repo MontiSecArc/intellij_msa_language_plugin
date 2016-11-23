@@ -5,10 +5,8 @@ import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.psi.MSAComponentBody
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
-import de.monticore.lang.montisecarc.psi.MSAComponentSignature
 import de.monticore.lang.montisecarc.psi.MSAPortElement
 import de.monticore.lang.montisecarc.psi.impl.MSAStubbedNamedElementImpl
-import de.monticore.lang.montisecarc.psi.util.elementType
 import de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub
 
 /**
@@ -43,5 +41,17 @@ abstract class MSAPortElementImplMixin: MSAStubbedNamedElementImpl<MSAPortElemen
 
         val portName = this.portInstanceName?.text ?: this.javaClassReference?.text?.decapitalize()
         return portName
+    }
+
+    private val foundPolicyViolations = mutableListOf<String>()
+
+    override fun addPolicyViolation(violation: String) {
+
+        foundPolicyViolations.add(violation)
+    }
+
+    override fun getPolicyViolations(): List<String> {
+
+        return foundPolicyViolations
     }
 }

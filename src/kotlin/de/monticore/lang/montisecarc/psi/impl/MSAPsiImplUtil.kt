@@ -110,10 +110,10 @@ class MSAPsiImplUtil {
 
             val referencesFromProviders = ReferenceProvidersRegistry.getReferencesFromProviders(element)
 
-            if(referencesFromProviders.isNotEmpty()) {
+            if (referencesFromProviders.isNotEmpty()) {
 
                 val resolve = referencesFromProviders[0].resolve()
-                if(resolve != null) {
+                if (resolve != null) {
                     return resolve as MSAPortElement
                 } else {
                     return null
@@ -126,7 +126,7 @@ class MSAPsiImplUtil {
 
             val children = element.parent.children
             val dropLast = children.dropLast(1)
-            if(dropLast.isEmpty()) {
+            if (dropLast.isEmpty()) {
                 return null
             } else {
                 return dropLast.joinToString { element -> element.text }
@@ -136,7 +136,7 @@ class MSAPsiImplUtil {
         @JvmStatic fun getDirection(element: MSAPortElement): String {
 
             val findChildByType = element.node.findChildByType(MSATokenElementTypes.IN)
-            if(findChildByType != null) {
+            if (findChildByType != null) {
 
                 return "IN"
             }
@@ -147,7 +147,7 @@ class MSAPsiImplUtil {
         @JvmStatic fun isCritical(element: MSAPortElement): Boolean {
 
             val findChildByType = element.node.findChildByType(MSATokenElementTypes.CRITICAL)
-            if(findChildByType != null) {
+            if (findChildByType != null) {
 
                 return true
             }
@@ -160,12 +160,12 @@ class MSAPsiImplUtil {
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
-            if(wrappingComponent == null) {
+            if (wrappingComponent == null) {
 
                 val msaFile = PsiTreeUtil.getParentOfType(element, MSAFile::class.java) as MSAFile
 
                 val packageIdentifier = msaFile.getPackage()?.text.orEmpty().replace("package ", "").replace(";", "")
-                if(!packageIdentifier.isNullOrEmpty()) {
+                if (!packageIdentifier.isNullOrEmpty()) {
 
                     return arrayOf(packageIdentifier, name).joinToString(".")
                 } else {
@@ -184,12 +184,12 @@ class MSAPsiImplUtil {
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
-            if(wrappingComponent == null) {
+            if (wrappingComponent == null) {
 
                 val msaFile = PsiTreeUtil.getParentOfType(element, MSAFile::class.java) as MSAFile
 
                 val packageIdentifier = msaFile.getPackage()?.text.orEmpty().replace("package ", "").replace(";", "")
-                if(!packageIdentifier.isNullOrEmpty()) {
+                if (!packageIdentifier.isNullOrEmpty()) {
 
                     return arrayOf(packageIdentifier, name).joinToString(".")
                 } else {
@@ -204,7 +204,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
 
-            return element.componentSignature?.componentNameWithTypeList?.map { it.componentName.name }.orEmpty().joinToString()
+            return element.componentSignature?.componentName?.text.orEmpty()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {
@@ -216,9 +216,31 @@ class MSAPsiImplUtil {
         @JvmStatic fun getTrustLevel(element: MSAComponentDeclaration): Int {
 
             val trustLevelStatementList = element.componentBody?.trustLevelStatementList
-            if(trustLevelStatementList.isNullOrEmpty()) {
+            if (trustLevelStatementList.isNullOrEmpty()) {
 
-                if(element.parent.elementType == MSAFileElementType) {
+                var lvl: Int? = null
+                for (superComponent in element.superComponents) {
+
+                    val trustLevelList = superComponent.componentBody?.trustLevelStatementList.orEmpty()
+                    if(!trustLevelList.isNullOrEmpty()) {
+                        try {
+                            if(trustLevelList.first().level != null) {
+
+                                lvl = trustLevelList.first().level!!.number.text.toInt()
+                                break
+                            }
+                        } catch (ex: NumberFormatException) {
+
+                        }
+
+                    }
+                }
+
+                if (lvl != null) {
+
+                    return lvl
+                }
+                else if (element.parent.elementType == MSAFileElementType) {
 
                     return -1
                 } else {
@@ -229,7 +251,7 @@ class MSAPsiImplUtil {
 
                 val level = trustLevelStatementList!!.first()!!.level
 
-                if(level != null) {
+                if (level != null) {
 
                     var lvl = 0
                     try {
@@ -238,7 +260,7 @@ class MSAPsiImplUtil {
 
                     }
 
-                    if(level.node.findChildByType(MSATokenElementTypes.MINUS) != null) {
+                    if (level.node.findChildByType(MSATokenElementTypes.MINUS) != null) {
                         lvl *= (-1)
                     }
 
@@ -254,9 +276,9 @@ class MSAPsiImplUtil {
             var trustlevel = element.trustLevel
 
             var parent = element.parent
-            while(parent.elementType != MSAFileElementType) {
+            while (parent.elementType != MSAFileElementType) {
 
-                if(parent.elementType == MSACompositeElementTypes.COMPONENT_DECLARATION) {
+                if (parent.elementType == MSACompositeElementTypes.COMPONENT_DECLARATION) {
 
                     trustlevel += (parent as MSAComponentDeclaration).trustLevel
                 }
@@ -268,15 +290,15 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getTrustLevel(element: MSAComponentInstanceDeclaration): Int {
 
-            if(element.componentNameWithTypeList.last().references.isEmpty()) {
+            if (element.componentNameWithTypeList.last().references.isEmpty()) {
                 return 0
             }
 
             val psiReference = element.componentNameWithTypeList.last().references[0]
-            if(psiReference != null) {
+            if (psiReference != null) {
 
                 val component = psiReference.resolve()
-                if(component != null && component is MSAComponentDeclaration) {
+                if (component != null && component is MSAComponentDeclaration) {
 
                     return component.trustLevel
                 }
@@ -289,9 +311,9 @@ class MSAPsiImplUtil {
             var trustlevel = element.trustLevel
 
             var parent = element.parent
-            while(parent.elementType != MSAFileElementType) {
+            while (parent.elementType != MSAFileElementType) {
 
-                if(parent.elementType == MSACompositeElementTypes.COMPONENT_DECLARATION) {
+                if (parent.elementType == MSACompositeElementTypes.COMPONENT_DECLARATION) {
 
                     trustlevel += (parent as MSAComponentDeclaration).trustLevel
                 }
@@ -300,5 +322,24 @@ class MSAPsiImplUtil {
             }
             return trustlevel
         }
+
+        @JvmStatic fun getPackageIdentifier(element: MSAPackageClause): String? {
+
+            val identifier = element.text
+            if(identifier.isNullOrBlank()) {
+
+                return null
+            }
+
+            val packageIdentifier = identifier.replace("package", "").replace(";", "").trim()
+
+            if(packageIdentifier.isNullOrBlank()) {
+
+                return null
+            }
+            return packageIdentifier
+        }
+
+        @JvmStatic fun getPackageIdentifier(element: MSAFile): String? = element.getPackage()?.packageIdentifier
     }
 }

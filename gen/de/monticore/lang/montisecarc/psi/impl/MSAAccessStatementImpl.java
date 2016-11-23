@@ -43,4 +43,10 @@ public class MSAAccessStatementImpl extends MSACompositeElementImpl implements M
     return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
   }
 
+  @Override
+  @Nullable
+  public MSASuppressAnnotation getSuppressAnnotation() {
+    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  }
+
 }
