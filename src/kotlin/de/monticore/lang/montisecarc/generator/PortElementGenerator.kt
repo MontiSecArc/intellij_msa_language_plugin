@@ -1,7 +1,12 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.search.searches.ReferencesSearch
+import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
+import de.monticore.lang.montisecarc.psi.MSAComponentName
 import de.monticore.lang.montisecarc.psi.MSAPortElement
+import de.monticore.lang.montisecarc.psi.MSATypeVariableDeclaration
 
 /**
  * Copyright 2016 thomasbuning
@@ -38,9 +43,56 @@ class PortElementGenerator : MSAGenerator() {
         }
 
         fun getPortIdentifiers(portElement: MSAPortElement): Pair<String?, String?> {
+
+            /**
+             * If port element has generic type parameter we need to find all instance declarations (with the
+             * type projections) to generate the right amount of port elements
+             */
             val referenceType = portElement.javaClassReference?.text
+            val typeParametersFromTreeParents = getTypeParametersFromTreeParents(portElement)
+
+            //ToDo 1. Check if it has a type parameter
+            val typeParameters = typeParametersFromTreeParents.map { it.id.text }
+            if (typeParameters.contains(referenceType)) {
+
+                // Type is generic
+                //ToDo 2. Find instance declarations for the port
+                // Find references to the enclosing component
+                if (portElement.enclosingComponent != null) {
+                    val enclosingComponentName = portElement.enclosingComponent!!.componentSignature?.componentNameWithType?.componentName
+
+                    if (enclosingComponentName != null) {
+                        //Find Usage lockup is needed
+                        for (psiReference in ReferencesSearch.search(enclosingComponentName)) {
+                            //ToDo 3. Pass the new reference type as a parameter to a new getPortIdentifiers function
+
+                            if(psiReference.element is MSAComponentName) {
+
+
+                            }
+                        }
+
+                        //ToDo 4. Check if all dependecies can handle the new naming system
+                    }
+                }
+            }
+
+
             val portInstanceName = portElement.portInstanceName?.text ?: referenceType?.decapitalize()
             return Pair(referenceType, portInstanceName)
+        }
+
+        private fun getTypeParametersFromTreeParents(element: PsiElement): MutableList<MSATypeVariableDeclaration> {
+            var msaComponentDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+
+            val collectedTypeVariable = mutableListOf<MSATypeVariableDeclaration>()
+            while (msaComponentDeclaration != null) {
+
+                val typeVariables = msaComponentDeclaration.componentSignature?.componentNameWithType?.typeParameters?.typeVariableDeclarationList?.filter { !it.id.text.isNullOrEmpty() }.orEmpty()
+                collectedTypeVariable.addAll(typeVariables)
+                msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentDeclaration, MSAComponentDeclaration::class.java)
+            }
+            return collectedTypeVariable
         }
 
         fun createPortElementNode(psiElement: MSAPortElement): String {
