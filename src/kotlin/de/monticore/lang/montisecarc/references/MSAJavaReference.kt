@@ -1,11 +1,15 @@
 package de.monticore.lang.montisecarc.references
 
 import com.intellij.codeInsight.completion.JavaLookupElementBuilder
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
+import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAJavaReference
+import de.monticore.lang.montisecarc.psi.MSATypeVariableDeclaration
 
 /**
  * Copyright 2016 thomasbuning
@@ -27,7 +31,31 @@ class MSAJavaReference(element: MSAJavaReference, textRange: TextRange, val refe
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 
-        return PsiShortNamesCache.getInstance(element.project).getClassesByName(reference, GlobalSearchScope.allScope(element.project)).map(::PsiElementResolveResult).toTypedArray()
+        /*
+        * Traverse Tree Up and collect all Generic Types, because these can be Java References
+        * */
+        return PsiShortNamesCache
+                .getInstance(element.project)
+                .getClassesByName(reference, GlobalSearchScope.allScope(element.project))
+                .map(::PsiElementResolveResult)
+                .union(
+                        getTypeParametersFromTreeParents()
+                                .filter { it.id.text == reference }
+                                .map(::PsiElementResolveResult)
+                ).toTypedArray()
+    }
+
+    private fun getTypeParametersFromTreeParents(): MutableList<MSATypeVariableDeclaration> {
+        var msaComponentDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+
+        val collectedTypeVariable = mutableListOf<MSATypeVariableDeclaration>()
+        while (msaComponentDeclaration != null) {
+
+            val typeVariables = msaComponentDeclaration.componentSignature?.componentNameWithType?.typeParameters?.typeVariableDeclarationList?.filter { !it.id.text.isNullOrEmpty() }.orEmpty()
+            collectedTypeVariable.addAll(typeVariables)
+            msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentDeclaration, MSAComponentDeclaration::class.java)
+        }
+        return collectedTypeVariable
     }
 
     override fun resolve(): PsiElement? {
@@ -42,6 +70,13 @@ class MSAJavaReference(element: MSAJavaReference, textRange: TextRange, val refe
             className ->
             PsiShortNamesCache.getInstance(element.project).getClassesByName(className, GlobalSearchScope.allScope(element.project)).map { aClass -> JavaLookupElementBuilder.forClass(aClass) }
         }
-        return map.toTypedArray()
+
+        return map.union(getTypeParametersFromTreeParents().filter { it.id.text == reference }.map {
+            val lookupElementBuilder = LookupElementBuilder.create(it)
+            lookupElementBuilder.withLookupString(it.id.text)
+            if(it.javaClassReference != null) {
+                lookupElementBuilder.withTailText("(" + it.javaClassReference!!.text + ")")
+            }
+        }).toTypedArray()
     }
 }
