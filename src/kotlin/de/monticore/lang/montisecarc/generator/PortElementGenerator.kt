@@ -62,8 +62,9 @@ class PortElementGenerator : MSAGenerator() {
                     val enclosingComponentName = portElement.enclosingComponent!!.componentSignature?.componentNameWithType?.componentName
 
                     if (enclosingComponentName != null) {
-                        //Find Usage lockup is needed
-                        for (psiReference in ReferencesSearch.search(enclosingComponentName)) {
+
+                        val search = ReferencesSearch.search(enclosingComponentName)
+                        for (psiReference in search) {
                             //ToDo 3. Pass the new reference type as a parameter to a new getPortIdentifiers function
 
                             if(psiReference.element is MSAComponentName) {
