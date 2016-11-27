@@ -8,7 +8,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBasedPsiElement<MSAComponentInstanceStub> {
+public interface MSAComponentInstanceDeclaration extends MSACompositeElement, StubBasedPsiElement<MSAComponentInstanceStub> {
 
   @NotNull
   List<MSAComponentInstanceName> getComponentInstanceNameList();
@@ -27,10 +27,6 @@ public interface MSAComponentInstanceDeclaration extends MSANamedElement, StubBa
 
   @NotNull
   List<MSASuppressAnnotation> getSuppressAnnotationList();
-
-  @JvmStatic
-  @NotNull
-  String getName();
 
   @JvmStatic
   @NotNull

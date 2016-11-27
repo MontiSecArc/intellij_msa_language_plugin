@@ -7,10 +7,14 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAPortInstanceName extends MSACompositeElement {
+public interface MSAPortInstanceName extends MSANamedElement {
 
   @NotNull
   PsiElement getId();
+
+  @JvmStatic
+  @NotNull
+  String getName();
 
   @JvmStatic
   @NotNull
@@ -31,5 +35,9 @@ public interface MSAPortInstanceName extends MSACompositeElement {
   @JvmStatic
   @Nullable
   MSAPortElement getReferencedPortElement();
+
+  @JvmStatic
+  @NotNull
+  PsiElement getNameIdentifier();
 
 }

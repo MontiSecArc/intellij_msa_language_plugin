@@ -20,5 +20,5 @@ import de.monticore.lang.montisecarc.stubs.MSAFileStub
 * limitations under the License.
 */
 object MSAFileElementType : IStubFileElementType<MSAFileStub>(MSALanguage.instance) {
-    override fun getStubVersion(): Int = 27
+    override fun getStubVersion(): Int = 28
 }

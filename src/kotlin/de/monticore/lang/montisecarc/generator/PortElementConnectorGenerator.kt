@@ -45,12 +45,12 @@ class PortElementConnectorGenerator : MSAGenerator() {
 
         if (psiElement is MSAPortElement) {
 
-            val portIdentifier = PortElementGenerator.createPortIdentifier(psiElement)
+            val portIdentifier = PortElementGenerator.createPortIdentifiers(psiElement)
 
             if (psiElement.enclosingComponent != null) {
                 val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(psiElement.enclosingComponent!!)
 
-                return listOf(getModel(psiElement.direction, componentIdentifier, portIdentifier))
+                return portIdentifier.map { getModel(psiElement.direction, componentIdentifier, it) }
             }
         }
         return null

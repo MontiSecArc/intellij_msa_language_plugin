@@ -55,9 +55,12 @@ class PortComponentInstanceConnectorGenerator : MSAGenerator() {
 
                     msaComponentDeclaration.componentBody?.portDeclarationList.orEmpty().flatMap {
                         it.portElementList.map {
-                            val portIdentifier = PortElementGenerator.createPortIdentifier(it)
+                            val portIdentifier = PortElementGenerator.createPortIdentifiers(it)
 
-                            getModel(it.direction, componentIdentifier, portIdentifier)
+                            val direction = it.direction
+                            portIdentifier.map {
+                                getModel(direction, componentIdentifier, it)
+                            }
                         }
                     }
                 }

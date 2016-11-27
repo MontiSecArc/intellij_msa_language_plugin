@@ -1,17 +1,18 @@
 // This is a generated file. Not intended for manual editing.
 package de.monticore.lang.montisecarc.psi.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
-import de.monticore.lang.montisecarc.psi.*;
 import com.intellij.psi.PsiReference;
+import de.monticore.lang.montisecarc.psi.MSAPortElement;
+import de.monticore.lang.montisecarc.psi.MSAPortInstanceName;
+import de.monticore.lang.montisecarc.psi.MSAVisitor;
 import kotlin.jvm.JvmStatic;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.ID;
 
 public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements MSAPortInstanceName {
 
@@ -32,6 +33,12 @@ public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements 
   @NotNull
   public PsiElement getId() {
     return notNullChild(findChildByType(ID));
+  }
+
+  @JvmStatic
+  @NotNull
+  public String getName() {
+    return MSAPsiImplUtil.getName(this);
   }
 
   @JvmStatic
@@ -62,6 +69,12 @@ public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements 
   @Nullable
   public MSAPortElement getReferencedPortElement() {
     return MSAPsiImplUtil.getReferencedPortElement(this);
+  }
+
+  @JvmStatic
+  @NotNull
+  public PsiElement getNameIdentifier() {
+    return MSAPsiImplUtil.getNameIdentifier(this);
   }
 
 }

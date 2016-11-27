@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAComponentInstanceName extends MSACompositeElement {
+public interface MSAComponentInstanceName extends MSANamedElement {
 
   @NotNull
   PsiElement getId();
@@ -23,5 +23,9 @@ public interface MSAComponentInstanceName extends MSACompositeElement {
   @JvmStatic
   @NotNull
   PsiReference[] getReferences();
+
+  @JvmStatic
+  @NotNull
+  PsiElement getNameIdentifier();
 
 }

@@ -44,7 +44,7 @@ class ComponentDeclarationGenerator : MSAGenerator() {
             val componentNameWithTypeList = psiElement.componentSignature?.componentName
             if (componentNameWithTypeList != null) {
 
-                model.put("instance_name", componentNameWithTypeList!!.componentName.name)
+                model.put("instance_name", componentNameWithTypeList.componentName.name)
 
             } else {
                 return null

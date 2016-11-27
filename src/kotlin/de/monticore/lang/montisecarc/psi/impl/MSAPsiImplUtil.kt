@@ -71,14 +71,29 @@ class MSAPsiImplUtil {
             return element.text
         }
 
-        @JvmStatic fun getName(element: MSAComponentDeclaration): String {
+        @JvmStatic fun getName(element: MSAPortInstanceName): String {
 
-            return element.qualifiedName
+            return element.text
         }
 
-        @JvmStatic fun getName(element: MSAComponentInstanceDeclaration): String {
+        @JvmStatic fun getPortName(element: MSAPortElement): String {
 
-            return element.componentInstanceNameList.map { it.text }.joinToString()
+            return element.portInstanceName?.text ?: element.javaClassReference?.text ?: ""
+        }
+
+        @JvmStatic fun getNameIdentifier(element: MSAComponentName): PsiElement {
+
+            return element
+        }
+
+        @JvmStatic fun getNameIdentifier(element: MSAComponentInstanceName): PsiElement {
+
+            return element
+        }
+
+        @JvmStatic fun getNameIdentifier(element: MSAPortInstanceName): PsiElement {
+
+            return element
         }
 
         @JvmStatic fun getReferences(element: MSAPortInstanceName): Array<out PsiReference> {

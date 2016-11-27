@@ -1,11 +1,14 @@
 package de.monticore.lang.montisecarc.usage
 
+import com.intellij.lang.cacheBuilder.DefaultWordsScanner
 import com.intellij.lang.cacheBuilder.WordsScanner
 import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiNamedElement
-import de.monticore.lang.montisecarc.psi.MSAComponentSignature
-import de.monticore.lang.montisecarc.psi.MSAPortInstanceName
+import com.intellij.psi.tree.TokenSet
+import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.MSALexerAdapter
+import de.monticore.lang.montisecarc.psi.*
+import de.monticore.lang.montisecarc.psi.util.elementType
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 
@@ -27,17 +30,22 @@ limitations under the License.
 class MSAFindUsageProvider : FindUsagesProvider {
 
     @Nullable
-    override fun getWordsScanner(): WordsScanner? = null
-
-    /*{
+    override fun getWordsScanner(): WordsScanner? {
         return DefaultWordsScanner(MSALexerAdapter(),
-                TokenSet.create(MSACompositeElementTypes.COMPONENT_NAME, MSACompositeElementTypes.COMPONENT_INSTANCE_NAME, MSACompositeElementTypes.PORT_INSTANCE_NAME),
+                TokenSet.create(MSATokenElementTypes.ID),
                 TokenSet.create(MSATokenElementTypes.SINGLE_LINE_COMMENT, MSATokenElementTypes.MULTI_LINE_COMMENT),
                 TokenSet.create(MSATokenElementTypes.STRING))
-    }*/
+    }
 
     override fun canFindUsagesFor(@NotNull psiElement: PsiElement): Boolean {
-        return psiElement is PsiNamedElement
+        /*
+        * ToDo: Check if Find Usage is necessary:
+        *  - For instance names only in instance declarations or component declarations
+        *  - Port instance names only in port declarations
+        *  - Component Names only in declarations
+        * */
+        return PsiTreeUtil.getParentOfType(psiElement, MSAPortElement::class.java, MSAComponentInstanceDeclaration::class.java, MSAComponentSignature::class.java) != null
+        //return psiElement is PsiNamedElement
     }
 
     @Nullable
@@ -47,30 +55,35 @@ class MSAFindUsageProvider : FindUsagesProvider {
 
     @NotNull
     override fun getType(@NotNull element: PsiElement): String {
-        if (element is MSAComponentSignature) {
-            return "component"
-        } else if (element is MSAPortInstanceName) {
-            return "port"
-        } else {
-            return ""
+        when (element.elementType) {
+
+            MSACompositeElementTypes.COMPONENT_INSTANCE_NAME -> return "Component Instance"
+            MSACompositeElementTypes.COMPONENT_NAME -> return "Component"
+            MSACompositeElementTypes.PORT_INSTANCE_NAME -> return "Port Instance"
         }
+        return ""
     }
 
     @NotNull
     override fun getDescriptiveName(@NotNull element: PsiElement): String {
-        if (element is MSAComponentSignature) {
-            return element.text
-        } else {
-            return ""
+        when (element.elementType) {
+
+            MSACompositeElementTypes.COMPONENT_INSTANCE_NAME -> return (element as MSAComponentInstanceName).name
+            MSACompositeElementTypes.COMPONENT_NAME -> return (element as MSAComponentName).name
+            MSACompositeElementTypes.PORT_INSTANCE_NAME -> return (element as MSAPortInstanceName).name
         }
+        return ""
     }
 
     @NotNull
     override fun getNodeText(@NotNull element: PsiElement, useFullName: Boolean): String {
-        if (element is MSAComponentSignature) {
-            return element.text
-        } else {
-            return ""
+
+        when (element.elementType) {
+
+            MSACompositeElementTypes.COMPONENT_INSTANCE_NAME -> return (element as MSAComponentInstanceName).name
+            MSACompositeElementTypes.COMPONENT_NAME -> return (element as MSAComponentName).name
+            MSACompositeElementTypes.PORT_INSTANCE_NAME -> return (element as MSAPortInstanceName).name
         }
+        return ""
     }
 }

@@ -74,15 +74,14 @@ private package_recover ::= !(';' | '<<' | <<eof>> | import | component | AT)
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
 private import_recover ::= !('<<' | component | import | semi | AT)
 
-ComponentName ::= ID { methods=[getName setName getReferences] }
-ComponentInstanceName ::= ID { methods=[getName setName getReferences] }
+ComponentName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName setName getReferences getNameIdentifier] }
+ComponentInstanceName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName setName getReferences getNameIdentifier] }
 RoleName ::= ID { methods=[] }
-PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
+PortInstanceName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName getPortName getComponentsPath setName getReferences getReferencedPortElement getNameIdentifier] }
 
 ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations getSuperComponents]
-                                implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+                                methods=[getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations getSuperComponents]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
@@ -99,8 +98,7 @@ ComponentBody ::= LBRACE (Statement)* RBRACE {pin=1}
 
 ComponentInstanceDeclaration ::= Prefix?  ComponentNamesWithTypes ComponentParameters SuppressAnnotation? ComponentInstance (COMMA SuppressAnnotation? ComponentInstance)* semi {
         pin=3
-        methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
-        implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+        methods=[getQualifiedName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
         stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
         mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin"
@@ -111,8 +109,7 @@ private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleCon
 
 PortDeclaration ::= Prefix port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
 PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
-    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent addPolicyViolation getPolicyViolations]
-    implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+    pin=2 name="port" methods=[isCritical getDirection getEnclosingComponent addPolicyViolation getPolicyViolations getPortName]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
     elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
     mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin"

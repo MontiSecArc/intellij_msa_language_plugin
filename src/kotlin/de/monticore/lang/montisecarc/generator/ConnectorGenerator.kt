@@ -33,12 +33,12 @@ class ConnectorGenerator : MSAGenerator() {
         val connectors = mutableListOf<String>()
 
         val sourcePort = msaConnector.connectSource.qualifiedIdentifier.portInstanceName.referencedPortElement ?: return emptyList()
-        val sourcePortIdentifier = PortElementGenerator.createPortIdentifier(sourcePort)
+        val sourcePortIdentifier = PortElementGenerator.createPortIdentifiers(sourcePort)
         for (msaConnectTarget in msaConnector.connectTargetList) {
 
             val targetPort = msaConnectTarget.qualifiedIdentifier.portInstanceName.referencedPortElement ?: continue
 
-            val targetPortIdentifier = PortElementGenerator.createPortIdentifier(targetPort)
+            val targetPortIdentifier = PortElementGenerator.createPortIdentifiers(targetPort)
             //<@connector p1="${start_port}" p2="${target_port}" relationship_type="${relationship_type}" />
 
             val connector_model = mutableMapOf<String, Any>()

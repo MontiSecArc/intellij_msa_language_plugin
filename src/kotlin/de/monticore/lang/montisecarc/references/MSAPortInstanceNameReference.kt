@@ -13,7 +13,7 @@ import de.monticore.lang.montisecarc.psi.*
 import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 
 /**
- * Copyright 2016 thomasbuning
+ * Copyright 2016 Thomas Buning
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,16 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
             val references = instanceDeclarationParent.componentNameWithTypeProjectionList.last().componentName.references
             if (references.isNotEmpty()) {
 
-                (references[0] as MSAComponentNameReference).multiResolve(false)
-                        .filter { it.element is MSAComponentDeclaration }
-                        .forEach { instanceComponentQualifiedName = (it.element as MSAComponentDeclaration).qualifiedName }
+                for (resolveResult in (references[0] as MSAComponentNameReference).multiResolve(false)
+                        .filter { it.element is MSAComponentName }) {
+
+                    val msaComponentDeclaration = PsiTreeUtil.getParentOfType(resolveResult.element, MSAComponentDeclaration::class.java)
+                    if (!msaComponentDeclaration?.qualifiedName.isNullOrEmpty()) {
+
+                        instanceComponentQualifiedName = msaComponentDeclaration!!.qualifiedName
+                        break
+                    }
+                }
             }
         }
 
@@ -61,12 +68,14 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                     if (multiResolve.isNotEmpty()) {
 
                         val element = multiResolve[0].element
-                        if (element is MSAComponentDeclaration) {
+                        val msaComponentDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+                        val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentInstanceDeclaration::class.java)
+                        if (msaComponentDeclaration != null) {
 
-                            wrappingComponentQualifiedName = element.qualifiedName
-                        } else if (element is MSAComponentInstanceDeclaration) {
+                            wrappingComponentQualifiedName = msaComponentDeclaration.qualifiedName
+                        } else if (msaComponentInstanceDeclaration != null) {
 
-                            val references = element.componentNameWithTypeProjectionList.last().componentName.references
+                            val references = msaComponentInstanceDeclaration.componentNameWithTypeProjectionList.last().componentName.references
                             if (references.isNotEmpty()) {
 
                                 if (references[0] is MSAComponentNameReference) {
@@ -82,37 +91,47 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                                     }
                                 }
                             } else {
-                                wrappingComponentQualifiedName = element.qualifiedName
+                                wrappingComponentQualifiedName = msaComponentInstanceDeclaration.qualifiedName
                             }
                         }
                     }
                 }
             }
         }
-        val found = arrayListOf<MSANamedElement>()
-        fun elementProcessor(): (MSANamedElement) -> Boolean {
-            return {
+        val found = arrayListOf<PsiElement>()
 
-                val itComponentParent = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
-                if (itComponentParent?.qualifiedName.equals(wrappingComponentQualifiedName)) {
+        StubIndex.getInstance().processElements(MSAPortIndex.KEY, instanceName, element.project, GlobalSearchScope.allScope(element.project), MSAPortElement::class.java, {
+
+            /**
+             * Port Instance could reference a Port Type without instance name by a decapitalized port type identifier
+             */
+            val portInstanceName = it.portInstanceName
+
+            val itComponentParent = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
+            fun addPort(portInstanceName: MSAPortInstanceName?) {
+                if (portInstanceName != null) {
+                    found.add(portInstanceName)
+                } else {
                     found.add(it)
                 }
-                if (itComponentParent?.qualifiedName.equals(instanceComponentQualifiedName)) {
-                    found.add(it)
-                }
-                for (superComponent in superComponents) {
-
-                    if(superComponent.qualifiedName == itComponentParent?.qualifiedName) {
-
-                        found.add(it)
-                        break
-                    }
-                }
-                true
             }
-        }
 
-        StubIndex.getInstance().processElements(MSAPortIndex.KEY, instanceName, element.project, GlobalSearchScope.allScope(element.project), MSAPortElement::class.java, elementProcessor())
+            if (itComponentParent?.qualifiedName.equals(wrappingComponentQualifiedName)) {
+
+                addPort(portInstanceName)
+            } else if (itComponentParent?.qualifiedName.equals(instanceComponentQualifiedName)) {
+                addPort(portInstanceName)
+            }
+            for (superComponent in superComponents) {
+
+                if (superComponent.qualifiedName == itComponentParent?.qualifiedName) {
+
+                    addPort(portInstanceName)
+                    break
+                }
+            }
+            true
+        })
         return found.map(::PsiElementResolveResult).toTypedArray()
     }
 
@@ -124,27 +143,25 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
 
     override fun getVariants(): Array<out Any> {
 
-        val found = arrayListOf<MSAPortElement>()
+        val found = arrayListOf<MSAPortInstanceName>()
         StubIndex.getInstance().getAllKeys(MSAPortIndex.KEY, element.project).forEach { portInstanceName ->
             StubIndex.getInstance().processElements(MSAPortIndex.KEY, portInstanceName, element.project, GlobalSearchScope.allScope(element.project), MSAPortElement::class.java, {
-                found.add(it)
+
+                var portInstanceNameLocal = it.portInstanceName
+                if (portInstanceNameLocal == null) {
+
+                    portInstanceNameLocal = MSAElementFactory.createPortInstanceName(element.project, it.portName)
+                }
+
+                if (!portInstanceNameLocal.text.isNullOrEmpty()) {
+                    found.add(portInstanceNameLocal)
+                }
                 true
             })
         }
-        val foundPortInstanceNames = found.filter { it.portInstanceName != null && it.portInstanceName?.text.orEmpty().isNotEmpty() }
+        val foundPortInstanceNames = found.filter { it.text.orEmpty().isNotEmpty() }
         val arrayOfLookupElementBuilders = foundPortInstanceNames.map {
-            val lookupElementBuilder = LookupElementBuilder.create(it)
-            val portInstanceName = it.portInstanceName
-            if (portInstanceName != null) {
-                portInstanceName.text
-                lookupElementBuilder.withLookupString(it.portInstanceName!!.text)
-
-                /*if (it.referenceType?.text != null) {
-
-                    lookupElementBuilder.withTailText("(" + it.referenceType!!.text + ")")
-                }*/
-            }
-            lookupElementBuilder
+            LookupElementBuilder.create(it).withLookupString(it.text)
 
         }.toTypedArray()
 
