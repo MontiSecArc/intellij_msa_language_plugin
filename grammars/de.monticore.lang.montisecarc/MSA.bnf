@@ -120,7 +120,7 @@ JavaClassReference ::= (JavaReference DOT)* JavaReference { methods=[getReferenc
 JavaReference ::= ID { methods=[getReferences]}
 
 private SimpleConnectPortStatement ::= Prefix? Connector
-Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}
+Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}
 
 ConnectSource ::= QualifiedIdentifier
 ConnectTarget ::= QualifiedIdentifier

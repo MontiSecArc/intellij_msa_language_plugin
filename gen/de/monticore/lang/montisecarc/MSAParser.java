@@ -817,7 +817,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)*
+  // [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)*
   public static boolean Connector(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector")) return false;
     boolean r, p;
@@ -851,20 +851,20 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // [ WEAK_AUTH | STRONG_AUTH ]
+  // [ STRONG | WEAK  ]
   private static boolean Connector_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector_1")) return false;
     Connector_1_0(b, l + 1);
     return true;
   }
 
-  // WEAK_AUTH | STRONG_AUTH
+  // STRONG | WEAK
   private static boolean Connector_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, WEAK_AUTH);
-    if (!r) r = consumeToken(b, STRONG_AUTH);
+    r = consumeToken(b, STRONG);
+    if (!r) r = consumeToken(b, WEAK);
     exit_section_(b, m, null, r);
     return r;
   }
