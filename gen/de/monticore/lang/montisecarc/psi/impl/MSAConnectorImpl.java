@@ -37,4 +37,10 @@ public class MSAConnectorImpl extends MSACompositeElementImpl implements MSAConn
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAConnectTarget.class);
   }
 
+  @Override
+  @Nullable
+  public MSAJavaClassReference getJavaClassReference() {
+    return PsiTreeUtil.getChildOfType(this, MSAJavaClassReference.class);
+  }
+
 }

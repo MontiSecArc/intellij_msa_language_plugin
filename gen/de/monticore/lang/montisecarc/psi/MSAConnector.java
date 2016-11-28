@@ -1,9 +1,10 @@
 // This is a generated file. Not intended for manual editing.
 package de.monticore.lang.montisecarc.psi;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElement;
 
 public interface MSAConnector extends MSACompositeElement {
 
@@ -12,5 +13,8 @@ public interface MSAConnector extends MSACompositeElement {
 
   @NotNull
   List<MSAConnectTarget> getConnectTargetList();
+
+  @Nullable
+  MSAJavaClassReference getJavaClassReference();
 
 }
