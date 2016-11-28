@@ -22,8 +22,6 @@ artifactory {
     publish {
         repository {
             repoKey = 'intellij_plugins_snapshot_local'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
             maven = true
         }
         defaults {
@@ -35,8 +33,7 @@ artifactory {
     resolve {
         repository {
             repoKey = 'intellij_plugins_snapshot'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
+          
             maven = true
         }
     }
