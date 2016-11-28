@@ -817,7 +817,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)*
+  // [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource (ARROW | '-[' JavaClassReference ']->')  ConnectTarget (COMMA ConnectTarget)*
   public static boolean Connector(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector")) return false;
     boolean r, p;
@@ -826,7 +826,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     r = r && Connector_1(b, l + 1);
     r = r && ConnectSource(b, l + 1);
     p = r; // pin = 3
-    r = r && report_error_(b, consumeToken(b, ARROW));
+    r = r && report_error_(b, Connector_3(b, l + 1));
     r = p && report_error_(b, ConnectTarget(b, l + 1)) && r;
     r = p && Connector_5(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
@@ -865,6 +865,29 @@ public class MSAParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, STRONG);
     if (!r) r = consumeToken(b, WEAK);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // ARROW | '-[' JavaClassReference ']->'
+  private static boolean Connector_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_3")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ARROW);
+    if (!r) r = Connector_3_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // '-[' JavaClassReference ']->'
+  private static boolean Connector_3_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_3_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, "-[");
+    r = r && JavaClassReference(b, l + 1);
+    r = r && consumeToken(b, "]->");
     exit_section_(b, m, null, r);
     return r;
   }

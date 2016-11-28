@@ -48,6 +48,8 @@
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidSemanticAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidPackageAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAProtocolAnnotator"/>
 
         <completion.contributor language="MSA"
                                 implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>
