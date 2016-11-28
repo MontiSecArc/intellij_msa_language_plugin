@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 
 /**
@@ -46,7 +47,9 @@ class ComponentHierarchyConnectorGenerator : MSAGenerator() {
             }
             val hierarchy2 = psiElement.componentBody?.componentInstanceDeclarationList?.flatMap {
 
-                val msaComponentDeclaration = it.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
+                val msaComponentName = it.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
+
+                val msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
 
                 if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 

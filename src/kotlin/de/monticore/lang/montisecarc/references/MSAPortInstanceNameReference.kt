@@ -68,11 +68,11 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                     if (multiResolve.isNotEmpty()) {
 
                         val element = multiResolve[0].element
-                        val msaComponentDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+                        val msaComponentDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentSignature::class.java)
                         val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentInstanceDeclaration::class.java)
                         if (msaComponentDeclaration != null) {
 
-                            wrappingComponentQualifiedName = msaComponentDeclaration.qualifiedName
+                            wrappingComponentQualifiedName = PsiTreeUtil.getParentOfType(msaComponentDeclaration, MSAComponentDeclaration::class.java)?.qualifiedName
                         } else if (msaComponentInstanceDeclaration != null) {
 
                             val references = msaComponentInstanceDeclaration.componentNameWithTypeProjectionList.last().componentName.references
@@ -83,7 +83,8 @@ class MSAPortInstanceNameReference(element: MSAPortInstanceName, textRange: Text
                                     val resolve = (references[0] as MSAComponentNameReference).multiResolve(false)
                                     if (resolve.isNotEmpty()) {
 
-                                        val element1 = resolve[0].element
+                                        val element1 = PsiTreeUtil.getParentOfType(resolve[0].element, MSAComponentDeclaration::class.java)
+
                                         if (element1 is MSAComponentDeclaration) {
 
                                             wrappingComponentQualifiedName = element1.qualifiedName

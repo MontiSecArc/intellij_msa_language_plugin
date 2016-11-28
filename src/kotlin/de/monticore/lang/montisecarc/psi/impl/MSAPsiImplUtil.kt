@@ -314,9 +314,12 @@ class MSAPsiImplUtil {
             if (psiReference != null) {
 
                 val component = psiReference.resolve()
-                if (component != null && component is MSAComponentDeclaration) {
 
-                    return component.trustLevel
+                val msaComponentDeclaration = PsiTreeUtil.getParentOfType(component, MSAComponentDeclaration::class.java)
+
+                if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
+
+                    return msaComponentDeclaration.trustLevel
                 }
             }
             return 0
