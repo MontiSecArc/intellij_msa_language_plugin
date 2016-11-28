@@ -30,14 +30,14 @@ abstract class MSAComponentDeclarationImplMixin: MSAStubbedNamedElementImpl<MSAC
     override fun getSuperComponents() : Array<MSAComponentDeclaration> {
 
         val superComponents = mutableListOf<MSAComponentDeclaration>()
-        var referenceToSuperComponent = componentSignature?.componentExtensionName?.componentName?.references
+        var referenceToSuperComponent = componentSignature?.componentExtension?.componentNameWithTypeProjection?.componentName?.references
         while(referenceToSuperComponent != null && referenceToSuperComponent.isNotEmpty()) {
 
             val superComponent = referenceToSuperComponent[0].resolve()
             if(superComponent != null && superComponent is MSAComponentDeclaration) {
 
                 superComponents.add(superComponent)
-                referenceToSuperComponent = superComponent.componentSignature?.componentExtensionName?.componentName?.references
+                referenceToSuperComponent = superComponent.componentSignature?.componentExtension?.componentNameWithTypeProjection?.componentName?.references
             } else {
 
                 return superComponents.toTypedArray()

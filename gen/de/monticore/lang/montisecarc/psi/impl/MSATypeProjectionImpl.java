@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
 
-public class MSAComponentExtensionImpl extends MSACompositeElementImpl implements MSAComponentExtension {
+public class MSATypeProjectionImpl extends MSACompositeElementImpl implements MSATypeProjection {
 
-  public MSAComponentExtensionImpl(ASTNode node) {
+  public MSATypeProjectionImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitComponentExtension(this);
+    visitor.visitTypeProjection(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,8 +27,8 @@ public class MSAComponentExtensionImpl extends MSACompositeElementImpl implement
 
   @Override
   @NotNull
-  public MSAComponentNameWithTypeProjection getComponentNameWithTypeProjection() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentNameWithTypeProjection.class));
+  public MSAJavaClassReference getJavaClassReference() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAJavaClassReference.class));
   }
 
 }

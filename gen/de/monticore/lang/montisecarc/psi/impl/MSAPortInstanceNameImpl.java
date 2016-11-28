@@ -36,6 +36,12 @@ public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements 
 
   @JvmStatic
   @NotNull
+  public String getName() {
+    return MSAPsiImplUtil.getName(this);
+  }
+
+  @JvmStatic
+  @NotNull
   public String getPortName() {
     return MSAPsiImplUtil.getPortName(this);
   }
@@ -62,6 +68,12 @@ public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements 
   @Nullable
   public MSAPortElement getReferencedPortElement() {
     return MSAPsiImplUtil.getReferencedPortElement(this);
+  }
+
+  @JvmStatic
+  @NotNull
+  public PsiElement getNameIdentifier() {
+    return MSAPsiImplUtil.getNameIdentifier(this);
   }
 
 }

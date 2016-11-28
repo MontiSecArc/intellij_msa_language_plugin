@@ -57,4 +57,10 @@ public class MSAPortElementImpl extends MSAPortElementImplMixin implements MSAPo
     return MSAPsiImplUtil.getDirection(this);
   }
 
+  @JvmStatic
+  @NotNull
+  public String getPortName() {
+    return MSAPsiImplUtil.getPortName(this);
+  }
+
 }

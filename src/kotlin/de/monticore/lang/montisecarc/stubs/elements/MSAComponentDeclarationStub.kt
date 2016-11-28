@@ -2,15 +2,11 @@ package de.monticore.lang.montisecarc.stubs.elements
 
 import com.intellij.psi.stubs.*
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
-import de.monticore.lang.montisecarc.psi.MSAPortElement
 import de.monticore.lang.montisecarc.psi.impl.MSAComponentDeclarationImpl
-import de.monticore.lang.montisecarc.psi.impl.MSAPortElementImpl
-import de.monticore.lang.montisecarc.stubs.MSANamedElementStub
+import de.monticore.lang.montisecarc.stubs.MSAElementStub
 import de.monticore.lang.montisecarc.stubs.MSANamedStubElementType
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex
-import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
-import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 
 /**
 * Copyright 2016 thomasbuning
@@ -51,7 +47,6 @@ object MSAComponentDeclarationStubElementType : MSANamedStubElementType<MSACompo
             MSAComponentDeclarationStub(parentStub, this, dataStream.readNameAsString(), dataStream.readNameAsString())
 
     override fun indexStub(stub: MSAComponentDeclarationStub, sink: IndexSink) {
-        super.indexStub(stub, sink)
 
         stub.name.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentDeclarationIndex.KEY, it!!)} }
         stub.instanceName.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAComponentInstanceDeclarationIndex.KEY, stub.instanceName!!) } }
@@ -62,6 +57,6 @@ object MSAComponentDeclarationStubElementType : MSANamedStubElementType<MSACompo
 class MSAComponentDeclarationStub(
         parent: StubElement<*>?,
         elementType: IStubElementType<*, *>,
-        name: String?,
+        val name: String?,
         val instanceName: String?
-) : MSANamedElementStub<MSAComponentDeclaration>(parent, elementType, name ?: "")
+) : MSAElementStub<MSAComponentDeclaration>(parent, elementType)

@@ -32,38 +32,39 @@ class ConnectorGenerator : MSAGenerator() {
 
         val connectors = mutableListOf<String>()
 
-        val sourcePort = msaConnector.connectSource.qualifiedIdentifier.portInstanceName.referencedPortElement ?: return emptyList()
-        val sourcePortIdentifier = PortElementGenerator.createPortIdentifier(sourcePort)
         for (msaConnectTarget in msaConnector.connectTargetList) {
+            val sourcePort = msaConnector.connectSource.qualifiedIdentifier.portInstanceName.referencedPortElement ?: return emptyList()
+            val sourcePortIdentifiers = PortElementGenerator.createPortIdentifiers(sourcePort)
 
             val targetPort = msaConnectTarget.qualifiedIdentifier.portInstanceName.referencedPortElement ?: continue
 
-            val targetPortIdentifier = PortElementGenerator.createPortIdentifier(targetPort)
-            //<@connector p1="${start_port}" p2="${target_port}" relationship_type="${relationship_type}" />
+            sourcePortIdentifiers.filter { sourcePort.direction != targetPort.direction }.forEach {
 
-            val connector_model = mutableMapOf<String, Any>()
-            connector_model.put("relationship_type", encrypted)
-            connector_model.put("element_offset", msaConnector.textOffset)
+                val targetPortIdentifiers = PortElementGenerator.createPortIdentifiers(targetPort)
+                //<@connector p1="${start_port}" p2="${target_port}" relationship_type="${relationship_type}" />
 
-            if (sourcePort.direction == targetPort.direction) {
-                continue
+                for (targetPortIdentifier in targetPortIdentifiers) {
+                    val connector_model = mutableMapOf<String, Any>()
+                    connector_model.put("relationship_type", encrypted)
+                    connector_model.put("element_offset", msaConnector.textOffset)
+
+                    if (targetPort.direction == "IN") {
+                        connector_model.put("start_port", it)
+                        connector_model.put("target_port", targetPortIdentifier)
+                    } else {
+                        connector_model.put("start_port", targetPortIdentifier)
+                        connector_model.put("target_port", it)
+                    }
+
+                    val extras = mutableMapOf<String, String>()
+                    extras.put("element_offset", msaConnector.textOffset.toString())
+                    extras.put("file_path", msaConnector.containingFile.virtualFile.canonicalPath.orEmpty())
+                    connector_model.put("extra_arguments", extras)
+
+                    val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+                    connectors.add(connector)
+                }
             }
-
-            if (targetPort.direction == "IN") {
-                connector_model.put("start_port", sourcePortIdentifier)
-                connector_model.put("target_port", targetPortIdentifier)
-            } else {
-                connector_model.put("start_port", targetPortIdentifier)
-                connector_model.put("target_port", sourcePortIdentifier)
-            }
-
-            val extras = mutableMapOf<String, String>()
-            extras.put("element_offset", msaConnector.textOffset.toString())
-            extras.put("file_path", msaConnector.containingFile.virtualFile.canonicalPath.orEmpty())
-            connector_model.put("extra_arguments", extras)
-
-            val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
-            connectors.add(connector)
         }
 
         return connectors
@@ -71,7 +72,7 @@ class ConnectorGenerator : MSAGenerator() {
 
     override fun generate(psiElement: PsiElement): Any? {
 
-        if(psiElement is MSAConnector) {
+        if (psiElement is MSAConnector) {
 
             return generateConnectorElement(psiElement)
         }

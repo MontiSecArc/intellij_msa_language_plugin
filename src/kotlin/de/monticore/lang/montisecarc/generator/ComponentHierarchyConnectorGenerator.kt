@@ -46,7 +46,7 @@ class ComponentHierarchyConnectorGenerator : MSAGenerator() {
             }
             val hierarchy2 = psiElement.componentBody?.componentInstanceDeclarationList?.flatMap {
 
-                val msaComponentDeclaration = it.componentNameWithTypeList.last().componentName.references[0].resolve()
+                val msaComponentDeclaration = it.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
                 if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 

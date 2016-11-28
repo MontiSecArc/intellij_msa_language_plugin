@@ -1,12 +1,10 @@
 package de.monticore.lang.montisecarc.references
 
-import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
-import de.monticore.lang.montisecarc.formatting.UsefulPsiTreeUtil
 import de.monticore.lang.montisecarc.psi.*
 import org.jetbrains.annotations.NotNull
 
@@ -27,16 +25,6 @@ limitations under the License.
  */
 class MSAReferenceContributor : PsiReferenceContributor() {
 
-    private fun getPrevSiblingSkipWhiteSpacesAndComments(sibling: ASTNode?): ASTNode? {
-        if (sibling == null) return null
-        var result: ASTNode? = sibling.treePrev
-
-        while (result != null && UsefulPsiTreeUtil.isWhitespaceOrComment(result.psi)) {
-            result = result.treePrev
-        }
-        return result
-    }
-
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
 
 
@@ -48,7 +36,8 @@ class MSAReferenceContributor : PsiReferenceContributor() {
 
                 val msaPortInstanceName = element as MSAPortInstanceName
 
-                if (msaPortInstanceName.parent is MSAPortDeclaration) {
+                val parentOfType = PsiTreeUtil.getParentOfType(msaPortInstanceName, MSAPortDeclaration::class.java)
+                if (parentOfType != null) {
                     return PsiReference.EMPTY_ARRAY
                 }
 
@@ -70,11 +59,10 @@ class MSAReferenceContributor : PsiReferenceContributor() {
 
                 val msaComponentInstanceName = element as MSAComponentInstanceName
 
+                val instanceName = msaComponentInstanceName.text
                 if (msaComponentInstanceName.parent is MSAComponentSignature || msaComponentInstanceName.parent is MSAComponentInstanceDeclaration) {
                     return PsiReference.EMPTY_ARRAY
                 }
-
-                val instanceName = msaComponentInstanceName.text
 
                 if (!instanceName.isEmpty() && instanceName.first().isLowerCase()) {
                     return arrayOf(MSAComponentInstanceNameReference(msaComponentInstanceName, TextRange(0, instanceName.length), instanceName))

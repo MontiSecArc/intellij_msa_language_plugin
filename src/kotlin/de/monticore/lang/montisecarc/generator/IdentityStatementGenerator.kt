@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.*
 
 /**
@@ -32,7 +33,7 @@ class IdentityStatementGenerator : MSAGenerator() {
 
                 link = ":STRONG"
             }
-            var startIdentifier: String? = ""
+            var startIdentifier: List<String> = emptyList()
             val msaIdentityIdentifier = msaIdentityStatement.identityIdentifierList.first()
             if (msaIdentityIdentifier != null) {
                 if (msaIdentityIdentifier.portInstanceName != null) {
@@ -40,7 +41,7 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaPortElement = msaIdentityIdentifier.portInstanceName!!.references[0].resolve()
                     if (msaPortElement != null && msaPortElement is MSAPortElement) {
 
-                        startIdentifier = PortElementGenerator.createPortIdentifier(msaPortElement)
+                        startIdentifier = PortElementGenerator.createPortIdentifiers(msaPortElement)
                     }
                 } else if (msaIdentityIdentifier.componentInstanceNameList.last() != null) {
 
@@ -48,26 +49,26 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaComponentDeclaration = componentInstanceName.references[0].resolve()
                     if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-                        startIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
+                        startIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
                     } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentInstanceDeclaration) {
 
-                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeList.last().componentName.references[0].resolve()
+                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
                         if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
-                            startIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name)
+                            startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name))
                         }
                     }
                 }
             }
             msaIdentityStatement.identityIdentifierList.subList(1, msaIdentityStatement.identityIdentifierList.size).forEach {
 
-                var stopIdentifier: String? = ""
+                var stopIdentifier: List<String> = emptyList()
                 if (it.portInstanceName != null) {
 
                     val msaPortElement = it.portInstanceName!!.references[0].resolve()
                     if (msaPortElement != null && msaPortElement is MSAPortElement) {
 
-                        stopIdentifier = PortElementGenerator.createPortIdentifier(msaPortElement)
+                        stopIdentifier = PortElementGenerator.createPortIdentifiers(msaPortElement)
                     }
                 } else if (it.componentInstanceNameList.last() != null) {
 
@@ -75,27 +76,34 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaComponentDeclaration = componentInstanceName.references[0].resolve()
                     if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-                        stopIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
+                        stopIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
                     } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentInstanceDeclaration) {
 
-                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeList.last().componentName.references[0].resolve()
+                        val componentDeclaration = msaComponentDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
                         if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
-                            startIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name)
+                            startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name))
                         }
                     }
                 }
 
                 if (!startIdentifier.isNullOrEmpty() && !stopIdentifier.isNullOrEmpty()) {
 
-                    val connector_model = mutableMapOf<String, Any>()
-                    connector_model.put("relationship_type", link)
-                    connector_model.put("start_port", startIdentifier!!)
-                    connector_model.put("target_port", stopIdentifier!!)
-                    connector_model.put("element_offset", msaIdentityStatement.textOffset)
-                    val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+                    startIdentifier.forEach {
+                        val start = it
+                        stopIdentifier.forEach {
+                            val stop = it
+                            val connector_model = mutableMapOf<String, Any>()
+                            connector_model.put("relationship_type", link)
+                            connector_model.put("start_port", start)
+                            connector_model.put("target_port", stop)
+                            connector_model.put("element_offset", msaIdentityStatement.textOffset)
+                            val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
 
-                    connectors.add(connector)
+                            connectors.add(connector)
+                        }
+                    }
+
                 }
             }
             return connectors

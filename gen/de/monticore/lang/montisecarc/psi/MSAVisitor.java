@@ -27,7 +27,7 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitComponentDeclaration(@NotNull MSAComponentDeclaration o) {
-    visitNamedElement(o);
+    visitCompositeElement(o);
   }
 
   public void visitComponentExtension(@NotNull MSAComponentExtension o) {
@@ -35,18 +35,22 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitComponentInstanceDeclaration(@NotNull MSAComponentInstanceDeclaration o) {
-    visitNamedElement(o);
+    visitCompositeElement(o);
   }
 
   public void visitComponentInstanceName(@NotNull MSAComponentInstanceName o) {
-    visitCompositeElement(o);
+    visitNamedElement(o);
   }
 
   public void visitComponentName(@NotNull MSAComponentName o) {
-    visitCompositeElement(o);
+    visitNamedElement(o);
   }
 
   public void visitComponentNameWithType(@NotNull MSAComponentNameWithType o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitComponentNameWithTypeProjection(@NotNull MSAComponentNameWithTypeProjection o) {
     visitCompositeElement(o);
   }
 
@@ -115,11 +119,11 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitPortElement(@NotNull MSAPortElement o) {
-    visitNamedElement(o);
+    visitCompositeElement(o);
   }
 
   public void visitPortInstanceName(@NotNull MSAPortInstanceName o) {
-    visitCompositeElement(o);
+    visitNamedElement(o);
   }
 
   public void visitQualifiedIdentifier(@NotNull MSAQualifiedIdentifier o) {
@@ -155,6 +159,18 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitTypeParameters(@NotNull MSATypeParameters o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeProjection(@NotNull MSATypeProjection o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeProjections(@NotNull MSATypeProjections o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitTypeVariableDeclaration(@NotNull MSATypeVariableDeclaration o) {
     visitCompositeElement(o);
   }
 

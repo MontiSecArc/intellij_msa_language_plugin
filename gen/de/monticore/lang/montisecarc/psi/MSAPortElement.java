@@ -8,16 +8,13 @@ import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAPortElement extends MSANamedElement, StubBasedPsiElement<MSAPortElementStub> {
+public interface MSAPortElement extends MSACompositeElement, StubBasedPsiElement<MSAPortElementStub> {
 
   @Nullable
   MSAJavaClassReference getJavaClassReference();
 
   @Nullable
   MSAPortInstanceName getPortInstanceName();
-
-  @Nullable
-  String getName();
 
   @JvmStatic
   boolean isCritical();
@@ -33,5 +30,9 @@ public interface MSAPortElement extends MSANamedElement, StubBasedPsiElement<MSA
 
   @NotNull
   List<String> getPolicyViolations();
+
+  @JvmStatic
+  @NotNull
+  String getPortName();
 
 }

@@ -19,6 +19,7 @@ public interface MSACompositeElementTypes {
   IElementType COMPONENT_INSTANCE_NAME = new MSACompositeElementType("COMPONENT_INSTANCE_NAME");
   IElementType COMPONENT_NAME = new MSACompositeElementType("COMPONENT_NAME");
   IElementType COMPONENT_NAME_WITH_TYPE = new MSACompositeElementType("COMPONENT_NAME_WITH_TYPE");
+  IElementType COMPONENT_NAME_WITH_TYPE_PROJECTION = new MSACompositeElementType("COMPONENT_NAME_WITH_TYPE_PROJECTION");
   IElementType COMPONENT_SIGNATURE = new MSACompositeElementType("COMPONENT_SIGNATURE");
   IElementType CONFIGURATION_STATEMENT = new MSACompositeElementType("CONFIGURATION_STATEMENT");
   IElementType CONNECTOR = new MSACompositeElementType("CONNECTOR");
@@ -47,6 +48,9 @@ public interface MSACompositeElementTypes {
   IElementType TRUST_LEVEL_RELATION_STATEMENT = new MSACompositeElementType("TRUST_LEVEL_RELATION_STATEMENT");
   IElementType TRUST_LEVEL_STATEMENT = new MSACompositeElementType("TRUST_LEVEL_STATEMENT");
   IElementType TYPE_PARAMETERS = new MSACompositeElementType("TYPE_PARAMETERS");
+  IElementType TYPE_PROJECTION = new MSACompositeElementType("TYPE_PROJECTION");
+  IElementType TYPE_PROJECTIONS = new MSACompositeElementType("TYPE_PROJECTIONS");
+  IElementType TYPE_VARIABLE_DECLARATION = new MSACompositeElementType("TYPE_VARIABLE_DECLARATION");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
@@ -80,6 +84,9 @@ public interface MSACompositeElementTypes {
       }
       else if (type == COMPONENT_NAME_WITH_TYPE) {
         return new MSAComponentNameWithTypeImpl(node);
+      }
+      else if (type == COMPONENT_NAME_WITH_TYPE_PROJECTION) {
+        return new MSAComponentNameWithTypeProjectionImpl(node);
       }
       else if (type == COMPONENT_SIGNATURE) {
         return new MSAComponentSignatureImpl(node);
@@ -164,6 +171,15 @@ public interface MSACompositeElementTypes {
       }
       else if (type == TYPE_PARAMETERS) {
         return new MSATypeParametersImpl(node);
+      }
+      else if (type == TYPE_PROJECTION) {
+        return new MSATypeProjectionImpl(node);
+      }
+      else if (type == TYPE_PROJECTIONS) {
+        return new MSATypeProjectionsImpl(node);
+      }
+      else if (type == TYPE_VARIABLE_DECLARATION) {
+        return new MSATypeVariableDeclarationImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

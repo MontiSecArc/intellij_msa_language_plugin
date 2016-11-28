@@ -9,15 +9,16 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
+import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-public class MSAComponentExtensionImpl extends MSACompositeElementImpl implements MSAComponentExtension {
+public class MSATypeVariableDeclarationImpl extends MSACompositeElementImpl implements MSATypeVariableDeclaration {
 
-  public MSAComponentExtensionImpl(ASTNode node) {
+  public MSATypeVariableDeclarationImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitComponentExtension(this);
+    visitor.visitTypeVariableDeclaration(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,9 +27,15 @@ public class MSAComponentExtensionImpl extends MSACompositeElementImpl implement
   }
 
   @Override
+  @Nullable
+  public MSAJavaClassReference getJavaClassReference() {
+    return PsiTreeUtil.getChildOfType(this, MSAJavaClassReference.class);
+  }
+
+  @Override
   @NotNull
-  public MSAComponentNameWithTypeProjection getComponentNameWithTypeProjection() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentNameWithTypeProjection.class));
+  public PsiElement getId() {
+    return notNullChild(findChildByType(ID));
   }
 
 }

@@ -52,4 +52,10 @@ public class MSAComponentNameImpl extends MSACompositeElementImpl implements MSA
     return MSAPsiImplUtil.getReferences(this);
   }
 
+  @JvmStatic
+  @NotNull
+  public PsiElement getNameIdentifier() {
+    return MSAPsiImplUtil.getNameIdentifier(this);
+  }
+
 }

@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 
 /**
@@ -45,17 +46,29 @@ class PortComponentInstanceDeclarationConnectorGenerator : MSAGenerator() {
 
             val msaComponentDeclaration = psiElement
 
+            /**
+             * Check if component is generic these cannot be generated
+             */
+            val typeVariableDeclarationList = msaComponentDeclaration.componentSignature?.componentNameWithType?.typeParameters?.typeVariableDeclarationList
+            if(!typeVariableDeclarationList.isNullOrEmpty()) {
+                return null
+            }
+
             if (msaComponentDeclaration.instanceName.isNotEmpty()) {
 
                 val componentIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
-                return msaComponentDeclaration.componentBody?.portDeclarationList?.flatMap {
+                val portConnectorModels = msaComponentDeclaration.componentBody?.portDeclarationList?.flatMap {
 
-                    it.portElementList.map {
+                    it.portElementList.flatMap {
 
-                        val portIdentifier = PortElementGenerator.createPortIdentifier(it)
-                        getModel(it.direction, componentIdentifier, portIdentifier)
+                        val portIdentifier = PortElementGenerator.createPortIdentifiers(it)
+                        val direction = it.direction
+                        portIdentifier.map {
+                            getModel(direction, componentIdentifier, it)
+                        }
                     }
                 }
+                return portConnectorModels ?: emptyList<String>()
             }
         }
         return null

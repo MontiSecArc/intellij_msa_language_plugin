@@ -42,8 +42,8 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
 
   @Override
   @NotNull
-  public List<MSAComponentNameWithType> getComponentNameWithTypeList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithType.class);
+  public List<MSAComponentNameWithTypeProjection> getComponentNameWithTypeProjectionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentNameWithTypeProjection.class);
   }
 
   @Override
@@ -68,12 +68,6 @@ public class MSAComponentInstanceDeclarationImpl extends MSAComponentInstanceImp
   @NotNull
   public List<MSASuppressAnnotation> getSuppressAnnotationList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSASuppressAnnotation.class);
-  }
-
-  @JvmStatic
-  @NotNull
-  public String getName() {
-    return MSAPsiImplUtil.getName(this);
   }
 
   @JvmStatic

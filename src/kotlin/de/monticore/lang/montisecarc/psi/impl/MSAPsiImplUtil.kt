@@ -71,14 +71,29 @@ class MSAPsiImplUtil {
             return element.text
         }
 
-        @JvmStatic fun getName(element: MSAComponentDeclaration): String {
+        @JvmStatic fun getName(element: MSAPortInstanceName): String {
 
-            return element.qualifiedName
+            return element.text
         }
 
-        @JvmStatic fun getName(element: MSAComponentInstanceDeclaration): String {
+        @JvmStatic fun getPortName(element: MSAPortElement): String {
 
-            return element.componentInstanceNameList.map { it.text }.joinToString()
+            return element.portInstanceName?.text ?: element.javaClassReference?.text ?: ""
+        }
+
+        @JvmStatic fun getNameIdentifier(element: MSAComponentName): PsiElement {
+
+            return element
+        }
+
+        @JvmStatic fun getNameIdentifier(element: MSAComponentInstanceName): PsiElement {
+
+            return element
+        }
+
+        @JvmStatic fun getNameIdentifier(element: MSAPortInstanceName): PsiElement {
+
+            return element
         }
 
         @JvmStatic fun getReferences(element: MSAPortInstanceName): Array<out PsiReference> {
@@ -114,7 +129,8 @@ class MSAPsiImplUtil {
 
                 val resolve = referencesFromProviders[0].resolve()
                 if (resolve != null) {
-                    return resolve as MSAPortElement
+
+                    return PsiTreeUtil.getParentOfType(resolve, MSAPortElement::class.java)
                 } else {
                     return null
                 }
@@ -180,7 +196,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getQualifiedName(element: MSAComponentInstanceDeclaration): String {
 
-            val name = element.componentNameWithTypeList.map { it.componentName.name }.joinToString()
+            val name = element.componentNameWithTypeProjectionList.map { "${it.componentName.name}<${it.typeProjections?.typeProjectionList?.joinToString(",")}>" }.joinToString(".")
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
@@ -204,7 +220,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getComponentName(element: MSAComponentDeclaration): String {
 
-            return element.componentSignature?.componentName?.text.orEmpty()
+            return element.componentSignature?.componentNameWithType?.componentName?.text.orEmpty()
         }
 
         @JvmStatic fun getInstanceName(element: MSAComponentDeclaration): String {
@@ -290,11 +306,11 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getTrustLevel(element: MSAComponentInstanceDeclaration): Int {
 
-            if (element.componentNameWithTypeList.last().references.isEmpty()) {
+            if (element.componentNameWithTypeProjectionList.last().references.isEmpty()) {
                 return 0
             }
 
-            val psiReference = element.componentNameWithTypeList.last().references[0]
+            val psiReference = element.componentNameWithTypeProjectionList.last().references[0]
             if (psiReference != null) {
 
                 val component = psiReference.resolve()

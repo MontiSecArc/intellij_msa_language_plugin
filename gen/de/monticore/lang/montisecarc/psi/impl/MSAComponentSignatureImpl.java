@@ -56,12 +56,4 @@ public class MSAComponentSignatureImpl extends MSACompositeElementImpl implement
     return getComponentNameWithType();
   }
 
-  @Override
-  @Nullable
-  public MSAComponentNameWithType getComponentExtensionName() {
-    MSAComponentExtension p1 = getComponentExtension();
-    if (p1 == null) return null;
-    return p1.getComponentNameWithType();
-  }
-
 }

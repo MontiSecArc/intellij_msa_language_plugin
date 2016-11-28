@@ -5,7 +5,6 @@ import com.intellij.psi.tree.IElementType;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
-
 %%
 
 %{
@@ -82,7 +81,6 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "trustlevel"               { return TRUSTLEVEL; }
   "trustlevelrelation"       { return TRUSTLEVELRELATION; }
 
-  {WHITE_SPACE}              { return WHITE_SPACE; }
   {SINGLE_LINE_COMMENT}      { return SINGLE_LINE_COMMENT; }
   {MULTI_LINE_COMMENT}       { return MULTI_LINE_COMMENT; }
   {NUMBER}                   { return NUMBER; }

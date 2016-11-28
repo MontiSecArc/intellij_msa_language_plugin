@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MSAComponentExtension extends MSACompositeElement {
+public interface MSATypeProjections extends MSACompositeElement {
 
   @NotNull
-  MSAComponentNameWithTypeProjection getComponentNameWithTypeProjection();
+  List<MSATypeProjection> getTypeProjectionList();
 
 }

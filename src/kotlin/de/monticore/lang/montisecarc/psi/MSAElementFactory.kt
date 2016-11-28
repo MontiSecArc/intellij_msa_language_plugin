@@ -27,8 +27,7 @@ object MSAElementFactory {
 
     fun createPortInstanceName(project: Project, name: String): MSAPortInstanceName {
 
-        val file = createFile(project, name)
-        return file.firstChild as MSAPortInstanceName
+        return createFile(project, "component A { port in A $name; }").firstChild.children[1].children[0].children[0].children[1] as MSAPortInstanceName
     }
 
     // ToDo: Anders erzeugen!
