@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
@@ -36,8 +37,12 @@ class ComponentInstanceInstanceGenerator : MSAGenerator() {
 
         if(psiElement is MSAComponentInstanceDeclaration) {
 
-            val msaComponentDeclaration = psiElement.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
+            val msaComponentName = psiElement.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
 
+            /**
+             * Gets component name
+             */
+            val msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
             if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
                 val generatedNodes = psiElement.componentInstanceNameList.filter { it.name.isNotEmpty() }.map {

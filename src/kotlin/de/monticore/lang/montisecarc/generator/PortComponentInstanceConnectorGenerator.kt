@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 
@@ -45,7 +46,9 @@ class PortComponentInstanceConnectorGenerator : MSAGenerator() {
     override fun generate(psiElement: PsiElement): Any? {
         if(psiElement is MSAComponentInstanceDeclaration) {
 
-            val msaComponentDeclaration = psiElement.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
+            val msaComponentName = psiElement.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
+
+            val msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
 
             if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
@@ -54,7 +57,7 @@ class PortComponentInstanceConnectorGenerator : MSAGenerator() {
                     val componentIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentDeclaration, it.name)
 
                     msaComponentDeclaration.componentBody?.portDeclarationList.orEmpty().flatMap {
-                        it.portElementList.map {
+                        it.portElementList.flatMap {
                             val portIdentifier = PortElementGenerator.createPortIdentifiers(it)
 
                             val direction = it.direction

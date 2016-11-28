@@ -38,7 +38,13 @@ class ComponentInstanceGenerator : MSAGenerator() {
     override fun generate(psiElement: PsiElement): String? {
 
         if (psiElement is MSAComponentDeclaration) {
-
+            /**
+             * Check if component is generic these cannot be generated
+             */
+            val typeVariableDeclarationList = psiElement.componentSignature?.componentNameWithType?.typeParameters?.typeVariableDeclarationList
+            if(!typeVariableDeclarationList.isNullOrEmpty()) {
+                return null
+            }
             if (psiElement.instanceName.isNotEmpty()) {
                 val model = mutableMapOf<String, Any>()
 

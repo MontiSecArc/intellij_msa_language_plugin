@@ -129,7 +129,8 @@ class MSAPsiImplUtil {
 
                 val resolve = referencesFromProviders[0].resolve()
                 if (resolve != null) {
-                    return resolve as MSAPortElement
+
+                    return PsiTreeUtil.getParentOfType(resolve, MSAPortElement::class.java)
                 } else {
                     return null
                 }
@@ -195,7 +196,7 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getQualifiedName(element: MSAComponentInstanceDeclaration): String {
 
-            val name = element.componentNameWithTypeProjectionList.map { it.componentName.name }.joinToString()
+            val name = element.componentNameWithTypeProjectionList.map { "${it.componentName.name}<${it.typeProjections?.typeProjectionList?.joinToString(",")}>" }.joinToString(".")
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 

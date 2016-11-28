@@ -41,6 +41,18 @@ class PortElementGenerator : MSAGenerator() {
             }
         }
 
+        fun createPortIdentifiers(portElement: MSAPortElement, referenceType: String, portInstanceName: String): String {
+
+            val enclosingComponent = portElement.enclosingComponent
+            if (enclosingComponent != null) {
+
+                val componentIdentifier = enclosingComponent.qualifiedName.replace(".", "_")
+                return arrayOf(componentIdentifier, referenceType, portInstanceName).joinToString("_")
+            }
+
+            return arrayOf(referenceType, portInstanceName).joinToString("_")
+        }
+
         fun getPortIdentifiers(portElement: MSAPortElement): List<Pair<String, String>> {
 
             /**
@@ -75,14 +87,14 @@ class PortElementGenerator : MSAGenerator() {
                              * Can be used in a component instance declaration or extends
                              */
                             val msaComponentNameWithTypeProjection = PsiTreeUtil.getParentOfType(componentName, MSAComponentNameWithTypeProjection::class.java)
-                            if(msaComponentNameWithTypeProjection != null) {
+                            if (msaComponentNameWithTypeProjection != null) {
 
                                 typeParameter.second.listIterator().withIndex().forEach {
 
-                                    if(it.value.text == referenceType) {
+                                    if (it.value.text == referenceType) {
 
                                         val typeProjectionList = msaComponentNameWithTypeProjection.typeProjections?.typeProjectionList
-                                        if(typeProjectionList != null && typeProjectionList.size >= it.index) {
+                                        if (typeProjectionList != null && typeProjectionList.size >= it.index) {
 
                                             val newReferenceType = typeProjectionList[it.index]
 
@@ -102,7 +114,7 @@ class PortElementGenerator : MSAGenerator() {
 
                 val portInstanceName = portElementInstanceName ?: referenceType?.decapitalize()
 
-                if(!referenceType.isNullOrEmpty() && !portInstanceName.isNullOrEmpty()) {
+                if (!referenceType.isNullOrEmpty() && !portInstanceName.isNullOrEmpty()) {
                     return listOf(Pair(referenceType!!, portInstanceName!!))
                 }
             }
@@ -131,7 +143,7 @@ class PortElementGenerator : MSAGenerator() {
                 //<@node instance_name="${instance_name}" type_name="${type_name}" is_critical="${is_critical}" access_roles="${access_roles}" extra="${extra_arguments}" />
 
                 //${instance_name}_${type_name}
-                val identifier = createPortIdentifiers(psiElement)
+                val identifier = createPortIdentifiers(psiElement, referenceType, portInstanceName)
                 model.put("id", identifier)
                 model.put("instance_name", portInstanceName.orEmpty())
 

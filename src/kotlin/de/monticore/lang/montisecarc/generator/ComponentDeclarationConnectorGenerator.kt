@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.generator
 
 import com.intellij.psi.PsiElement
+import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 
 /**
@@ -36,6 +37,13 @@ class ComponentDeclarationConnectorGenerator : MSAGenerator() {
         if (psiElement is MSAComponentDeclaration) {
 
             val msaComponentDeclaration = psiElement
+            /**
+             * Check if component is generic these cannot be generated
+             */
+            val typeVariableDeclarationList = msaComponentDeclaration.componentSignature?.componentNameWithType?.typeParameters?.typeVariableDeclarationList
+            if(!typeVariableDeclarationList.isNullOrEmpty()) {
+                return null
+            }
 
             val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
 
