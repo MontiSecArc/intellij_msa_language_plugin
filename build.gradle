@@ -55,6 +55,10 @@ sourceSets {
         kotlin.srcDirs "src/kotlin"
         resources.srcDir "resources"
     }
+    test {
+        kotlin.srcDirs "src/test/kotlin"
+        resources.srcDir "test/testData"
+    }
 }
 
 repositories {
@@ -63,6 +67,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.25-incubating'
 }
 

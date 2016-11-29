@@ -1,0 +1,66 @@
+<idea-plugin>
+    <id>de.monticore.lang.montisecarc.MontiSecArcLanguagePlugin</id>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <internalFileTemplate name="MSA Component"/>
+        <internalFileTemplate name="MSA File"/>
+        <defaultTemplatePropertiesProvider
+                implementation="de.monticore.lang.montisecarc.actions.MSATemplatePropertiesProvider"/>
+        <createFromTemplateHandler implementation="de.monticore.lang.montisecarc.actions.MSACreateFromTemplateHandler"/>
+
+        <stubElementTypeHolder class="de.monticore.lang.montisecarc.psi.MSACompositeElementType"/>
+
+        <!-- Add your extensions here -->
+        <fileTypeFactory implementation="de.monticore.lang.montisecarc.MSAFileTypeFactory"/>
+        <lang.parserDefinition language="MSA" implementationClass="de.monticore.lang.montisecarc.MSAParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="MSA"
+                                       implementationClass="de.monticore.lang.montisecarc.highlighting.MSASyntaxHighlighterFactory"/>
+        <lang.formatter language="MSA"
+                        implementationClass="de.monticore.lang.montisecarc.formatting.MSAFormattingModelBuilder"/>
+        <lang.commenter language="MSA" implementationClass="de.monticore.lang.montisecarc.commenter.MSACommenter"/>
+        <colorSettingsPage implementation="de.monticore.lang.montisecarc.highlighting.MSAColorSettingsPage"/>
+        <codeStyleSettingsProvider
+                implementation="de.monticore.lang.montisecarc.formatting.settings.MSACodeStyleSettingsProvider"/>
+        <lang.braceMatcher language="MSA" implementationClass="de.monticore.lang.montisecarc.MSABraceMatcher"/>
+        <lang.foldingBuilder language="MSA"
+                             implementationClass="de.monticore.lang.montisecarc.folding.MSAFoldingBuilder"/>
+
+        <!-- Annotator -->
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidSemanticAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidPackageAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAProtocolAnnotator"/>
+
+        <completion.contributor language="MSA"
+                                implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>
+        <psi.referenceContributor language="MSA"
+                                  implementation="de.monticore.lang.montisecarc.references.MSAReferenceContributor"/>
+        <langCodeStyleSettingsProvider
+                implementation="de.monticore.lang.montisecarc.formatting.settings.MSALanguageCodeStyleSettingsProvider"/>
+        <lang.findUsagesProvider language="MSA"
+                                 implementationClass="de.monticore.lang.montisecarc.usage.MSAFindUsageProvider"/>
+        <lang.quoteHandler language="MSA" implementationClass="de.monticore.lang.montisecarc.MSAQuoteHandler"/>
+
+        <!-- Live Templates -->
+        <defaultLiveTemplatesProvider
+                implementation="de.monticore.lang.montisecarc.templates.MSALiveTemplatesProvider"/>
+        <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$Component"/>
+        <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$Port"/>
+
+        <!-- Indices -->
+        <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSANamedElementIndex"/>
+        <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAPortIndex"/>
+        <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentDeclarationIndex"/>
+        <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex"/>
+        <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex"/>
+
+        <!-- Inspection -->
+        <localInspection level="WARNING" enabledByDefault="true"
+                         implementationClass="de.monticore.lang.montisecarc.inspections.MSAPortTypMissingImplementationInspection"
+                         displayName="Unresolved Port Type Reference" language="MSA" groupName="MSA"/>
+    </extensions>
+</idea-plugin>
