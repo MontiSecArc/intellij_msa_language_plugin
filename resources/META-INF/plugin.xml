@@ -25,7 +25,7 @@
                 implementation="de.monticore.lang.montisecarc.actions.MSATemplatePropertiesProvider"/>
         <createFromTemplateHandler implementation="de.monticore.lang.montisecarc.actions.MSACreateFromTemplateHandler"/>
 
-        <stubElementTypeHolder class="de.monticore.lang.montisecarc.psi.MSACompositeElementType"/>
+        <stubElementTypeHolder class="de.monticore.lang.montisecarc.psi.MSACompositeElementTypes"/>
 
         <!-- Add your extensions here -->
         <fileTypeFactory implementation="de.monticore.lang.montisecarc.MSAFileTypeFactory"/>
