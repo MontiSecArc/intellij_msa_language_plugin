@@ -3,6 +3,7 @@ package de.monticore.lang.montisecarc.cli
 import com.intellij.mock.MockProject
 import de.monticore.lang.montisecarc.cli.plugins.ComponentRegistrar
 import de.monticore.lang.montisecarc.psi.cli.CompilerConfiguration
+import java.io.File
 
 /**
  * Copyright 2016 Thomas Buning

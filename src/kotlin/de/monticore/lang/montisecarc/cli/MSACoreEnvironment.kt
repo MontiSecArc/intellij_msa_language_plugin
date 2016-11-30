@@ -10,7 +10,6 @@ import com.intellij.core.JavaCoreProjectEnvironment
 import com.intellij.lang.java.JavaParserDefinition
 import com.intellij.mock.MockApplication
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.TransactionGuardImpl
@@ -22,7 +21,6 @@ import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.io.FileUtilRt
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.PersistentFSConstants
@@ -38,10 +36,12 @@ import com.intellij.psi.impl.PsiElementFinderImpl
 import com.intellij.psi.impl.PsiTreeChangePreprocessor
 import com.intellij.psi.impl.compiled.ClsCustomNavigationPolicy
 import com.intellij.psi.impl.file.impl.JavaFileManager
+import com.intellij.psi.impl.source.resolve.reference.PsiReferenceContributorEP
 import com.intellij.psi.meta.MetaDataContributor
-import com.intellij.psi.stubs.BinaryFileStubBuilders
+import com.intellij.psi.stubs.*
 import com.intellij.psi.util.JavaClassSupers
-import com.intellij.util.PathUtil
+import com.intellij.util.indexing.FileBasedIndex
+import com.intellij.util.indexing.FileBasedIndexExtension
 import com.intellij.util.io.URLUtil
 import de.monticore.lang.montisecarc.MSAFileType
 import de.monticore.lang.montisecarc.MSAParserDefinition
@@ -49,7 +49,10 @@ import de.monticore.lang.montisecarc.cli.index.JavaRoot
 import de.monticore.lang.montisecarc.cli.index.JvmDependenciesIndex
 import de.monticore.lang.montisecarc.cli.plugins.ComponentRegistrar
 import de.monticore.lang.montisecarc.psi.MSAFile
-import de.monticore.lang.montisecarc.psi.cli.*
+import de.monticore.lang.montisecarc.psi.cli.CompileEnvironmentUtil
+import de.monticore.lang.montisecarc.psi.cli.CompilerConfiguration
+import de.monticore.lang.montisecarc.psi.cli.CompilerConfigurationKey
+import de.monticore.lang.montisecarc.psi.cli.CompilerMessageSeverity
 import org.jetbrains.annotations.TestOnly
 import java.io.File
 import java.util.*
@@ -122,6 +125,22 @@ class MSACoreEnvironment private constructor(
                 val text = it.text
                 StringUtil.getLineBreakCount(it.text) + (if (StringUtil.endsWithLineBreak(text)) 0 else 1)
             }
+
+    fun <T>addComponent(clazz: Class<T>, instance: T) {
+
+        with(projectEnvironment.project) {
+
+            addComponent(clazz, instance)
+        }
+    }
+
+    fun <T>addComponentToApplication(clazz: Class<T>, instance: T) {
+
+        with(application) {
+
+            addComponent(clazz, instance)
+        }
+    }
 
     private fun Iterable<ContentRoot>.classpathRoots(): List<JavaRoot> =
             filterIsInstance(JvmContentRoot::class.java).mapNotNull {
@@ -294,7 +313,6 @@ class MSACoreEnvironment private constructor(
 
             registerApplicationServicesForCLI(applicationEnvironment)
             registerApplicationServices(applicationEnvironment)
-
             return applicationEnvironment
         }
 
@@ -311,23 +329,26 @@ class MSACoreEnvironment private constructor(
             CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), ClassFileDecompilers.EP_NAME, ClassFileDecompilers.Decompiler::class.java)
             //
             CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), TypeAnnotationModifier.EP_NAME, TypeAnnotationModifier::class.java)
+
+            CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), StubIndexExtension.EP_NAME, StubIndexExtension::class.java)
+            CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), StubElementTypeHolderEP.EP_NAME, StubElementTypeHolderEP::class.java)
+
+            //CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), PsiReferenceContributor.EP_NAME, PsiReferenceContributor::class.java)
+            CoreApplicationEnvironment.registerExtensionPoint(Extensions.getRootArea(), "com.intellij.psi.referenceContributor", PsiReferenceContributorEP::class.java)
         }
 
         private fun registerApplicationExtensionPointsAndExtensionsFrom(configuration: CompilerConfiguration, configFilePath: String) {
-            val locator = configuration.get(CLIConfigurationKeys.COMPILER_JAR_LOCATOR)
-            var pluginRoot = locator?.compilerJar ?: getPathUtilJar()
 
-            val app = ApplicationManager.getApplication()
-            val parentFile = pluginRoot.parentFile
+            val configs = File(configFilePath)
 
-            if (pluginRoot.isDirectory && app != null && app.isUnitTestMode
-                    && FileUtil.toCanonicalPath(parentFile.path).endsWith("out/production")) {
-                // hack for load extensions when compiler run directly from out directory(e.g. in tests)
-                val srcDir = parentFile.parentFile.parentFile
-                pluginRoot = File(srcDir, "idea/src")
+            if(configs.exists()) {
+
+                val pluginRoot = configs.parentFile.parentFile.parentFile
+
+                val filePath = "extensions/" + configs.name
+
+                CoreApplicationEnvironment.registerExtensionPointAndExtensions(pluginRoot, filePath, Extensions.getRootArea())
             }
-
-            CoreApplicationEnvironment.registerExtensionPointAndExtensions(pluginRoot, configFilePath, Extensions.getRootArea())
         }
 
         private fun registerApplicationServicesForCLI(applicationEnvironment: JavaCoreApplicationEnvironment) {
@@ -349,11 +370,14 @@ class MSACoreEnvironment private constructor(
         private fun registerProjectExtensionPoints(area: ExtensionsArea) {
             CoreApplicationEnvironment.registerExtensionPoint(area, PsiTreeChangePreprocessor.EP_NAME, PsiTreeChangePreprocessor::class.java)
             CoreApplicationEnvironment.registerExtensionPoint(area, PsiElementFinder.EP_NAME, PsiElementFinder::class.java)
+
+            CoreApplicationEnvironment.registerExtensionPoint(area, FileBasedIndexExtension.EXTENSION_POINT_NAME, FileBasedIndexExtension::class.java)
         }
 
         // made public for Upsource
         @JvmStatic fun registerProjectServices(projectEnvironment: JavaCoreProjectEnvironment) {
             with (projectEnvironment.project) {
+
                 /*val kotlinScriptDefinitionProvider = KotlinScriptDefinitionProvider()
                 registerService(KotlinScriptDefinitionProvider::class.java, kotlinScriptDefinitionProvider)
                 registerService(KotlinScriptExternalImportsProvider::class.java, KotlinScriptExternalImportsProvider(projectEnvironment.project, kotlinScriptDefinitionProvider))
@@ -394,7 +418,7 @@ fun String?.toBooleanLenient(): Boolean? = when (this?.toLowerCase()) {
 }
 
 fun getPathUtilJar(): File {
-    return getResourcePathForClass(PathUtil::class.java)
+    return getResourcePathForClass(MSACoreEnvironment::class.java)
 }
 
 fun getResourcePathForClass(aClass: Class<*>): File {
