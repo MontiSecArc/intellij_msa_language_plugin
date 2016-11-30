@@ -1,5 +1,6 @@
 package de.monticore.lang.montisecarc.cli
 
+import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder
 import com.google.common.collect.Sets
 import com.intellij.codeInsight.ContainerProvider
 import com.intellij.codeInsight.runner.JavaMainMethodProvider
@@ -38,9 +39,10 @@ import com.intellij.psi.impl.compiled.ClsCustomNavigationPolicy
 import com.intellij.psi.impl.file.impl.JavaFileManager
 import com.intellij.psi.impl.source.resolve.reference.PsiReferenceContributorEP
 import com.intellij.psi.meta.MetaDataContributor
-import com.intellij.psi.stubs.*
+import com.intellij.psi.stubs.BinaryFileStubBuilders
+import com.intellij.psi.stubs.StubElementTypeHolderEP
+import com.intellij.psi.stubs.StubIndexExtension
 import com.intellij.psi.util.JavaClassSupers
-import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.indexing.FileBasedIndexExtension
 import com.intellij.util.io.URLUtil
 import de.monticore.lang.montisecarc.MSAFileType
@@ -55,6 +57,7 @@ import de.monticore.lang.montisecarc.psi.cli.CompilerConfigurationKey
 import de.monticore.lang.montisecarc.psi.cli.CompilerMessageSeverity
 import org.jetbrains.annotations.TestOnly
 import java.io.File
+import java.nio.file.FileSystem
 import java.util.*
 
 /**
@@ -120,13 +123,13 @@ class MSACoreEnvironment private constructor(
 
     val sourceLinesOfCode: Int by lazy { countLinesOfCode(sourceFiles) }
 
-    fun countLinesOfCode(sourceFiles: List<MSAFile>): Int  =
+    fun countLinesOfCode(sourceFiles: List<MSAFile>): Int =
             sourceFiles.sumBy {
                 val text = it.text
                 StringUtil.getLineBreakCount(it.text) + (if (StringUtil.endsWithLineBreak(text)) 0 else 1)
             }
 
-    fun <T>addComponent(clazz: Class<T>, instance: T) {
+    fun <T> addComponent(clazz: Class<T>, instance: T) {
 
         with(projectEnvironment.project) {
 
@@ -134,7 +137,7 @@ class MSACoreEnvironment private constructor(
         }
     }
 
-    fun <T>addComponentToApplication(clazz: Class<T>, instance: T) {
+    fun <T> addComponentToApplication(clazz: Class<T>, instance: T) {
 
         with(application) {
 
@@ -144,16 +147,17 @@ class MSACoreEnvironment private constructor(
 
     private fun Iterable<ContentRoot>.classpathRoots(): List<JavaRoot> =
             filterIsInstance(JvmContentRoot::class.java).mapNotNull {
-                javaRoot -> contentRootToVirtualFile(javaRoot)?.let { virtualFile ->
+                javaRoot ->
+                contentRootToVirtualFile(javaRoot)?.let { virtualFile ->
 
-                val rootType = when (javaRoot) {
-                    is JavaSourceRoot -> JavaRoot.RootType.SOURCE
-                    is JvmClasspathRoot -> JavaRoot.RootType.BINARY
-                    else -> throw IllegalStateException()
+                    val rootType = when (javaRoot) {
+                        is JavaSourceRoot -> JavaRoot.RootType.SOURCE
+                        is JvmClasspathRoot -> JavaRoot.RootType.BINARY
+                        else -> throw IllegalStateException()
+                    }
+
+                    JavaRoot(virtualFile, rootType)
                 }
-
-                JavaRoot(virtualFile, rootType)
-            }
             }
 
     private fun updateClasspathFromRootsIndex(index: JvmDependenciesIndex) {
@@ -250,7 +254,7 @@ class MSACoreEnvironment private constructor(
                 // JPS may run many instances of the compiler in parallel (there's an option for compiling independent modules in parallel in IntelliJ)
                 // All projects share the same ApplicationEnvironment, and when the last project is disposed, the ApplicationEnvironment is disposed as well
                 Disposer.register(parentDisposable, Disposable {
-                    synchronized (APPLICATION_LOCK) {
+                    synchronized(APPLICATION_LOCK) {
                         if (--ourProjectCount <= 0) {
                             disposeApplicationEnvironment()
                         }
@@ -259,7 +263,7 @@ class MSACoreEnvironment private constructor(
             }
             val environment = MSACoreEnvironment(parentDisposable, appEnv, configuration)
 
-            synchronized (APPLICATION_LOCK) {
+            synchronized(APPLICATION_LOCK) {
                 ourProjectCount++
             }
             return environment
@@ -277,7 +281,7 @@ class MSACoreEnvironment private constructor(
         val applicationEnvironment: JavaCoreApplicationEnvironment? get() = ourApplicationEnvironment
 
         private fun getOrCreateApplicationEnvironmentForProduction(configuration: CompilerConfiguration, configFilePaths: List<String>): JavaCoreApplicationEnvironment {
-            synchronized (APPLICATION_LOCK) {
+            synchronized(APPLICATION_LOCK) {
                 if (ourApplicationEnvironment != null)
                     return ourApplicationEnvironment!!
 
@@ -285,7 +289,7 @@ class MSACoreEnvironment private constructor(
                 ourApplicationEnvironment = createApplicationEnvironment(parentDisposable, configuration, configFilePaths)
                 ourProjectCount = 0
                 Disposer.register(parentDisposable, Disposable {
-                    synchronized (APPLICATION_LOCK) {
+                    synchronized(APPLICATION_LOCK) {
                         ourApplicationEnvironment = null
                     }
                 })
@@ -294,7 +298,7 @@ class MSACoreEnvironment private constructor(
         }
 
         fun disposeApplicationEnvironment() {
-            synchronized (APPLICATION_LOCK) {
+            synchronized(APPLICATION_LOCK) {
                 val environment = ourApplicationEnvironment ?: return
                 ourApplicationEnvironment = null
                 Disposer.dispose(environment.parentDisposable)
@@ -341,7 +345,7 @@ class MSACoreEnvironment private constructor(
 
             val configs = File(configFilePath)
 
-            if(configs.exists()) {
+            if (configs.exists()) {
 
                 val pluginRoot = configs.parentFile.parentFile.parentFile
 
@@ -364,6 +368,26 @@ class MSACoreEnvironment private constructor(
                 registerParserDefinition(MSAParserDefinition())
                 application.registerService(JavaClassSupers::class.java, JavaClassSupersImpl::class.java)
                 application.registerService(TransactionGuard::class.java, TransactionGuardImpl::class.java)
+                //application.registerService(FileBasedIndex::class.java, FileBasedIndexImpl::class.java)
+                //application.registerService(StubIndex::class.java, StubIndexImpl::class.java)
+                //application.registerService(FileTypeManager::class.java, FileTypeManagerImpl::class.java)
+                //application.registerService(VirtualFileManager::class.java, VirtualFileManagerImpl::class.java)
+                //application.registerService(StubIndex::class.java, StubIndexImpl::class.java)
+                //application.registerService(MessageBus::class.java, MessageBusImpl::class.java)
+                //val fsRule = InMemoryFsRule()
+                //val schemeManagerFactory = SchemeManagerFactoryBase.TestSchemeManagerFactory(fsRule.fs.getPath(""))
+                //application.registerService(SchemeManagerFactory::class.java, schemeManagerFactory)
+                //application.registerService(PropertiesComponent::class.java, PropertiesComponentImpl::class.java)
+
+                /*val virtualFileManager = VirtualFileManager.getInstance()
+                val fileDocumentManager = FileDocumentManager.getInstance()
+                val fileTypeManager = application.getComponent(FileTypeManagerImpl::class.java)
+                val fileBasedIndexImpl = FileBasedIndexImpl(virtualFileManager, fileDocumentManager, fileTypeManager, application.messageBus)
+
+                application.addComponent(FileBasedIndexImpl::class.java, fileBasedIndexImpl)
+                val stubIndexImpl = StubIndexImpl(fileBasedIndexImpl)
+                stubIndexImpl.initComponent()
+                application.addComponent(StubIndex::class.java, stubIndexImpl)*/
             }
         }
 
@@ -376,18 +400,12 @@ class MSACoreEnvironment private constructor(
 
         // made public for Upsource
         @JvmStatic fun registerProjectServices(projectEnvironment: JavaCoreProjectEnvironment) {
-            with (projectEnvironment.project) {
 
-                /*val kotlinScriptDefinitionProvider = KotlinScriptDefinitionProvider()
-                registerService(KotlinScriptDefinitionProvider::class.java, kotlinScriptDefinitionProvider)
-                registerService(KotlinScriptExternalImportsProvider::class.java, KotlinScriptExternalImportsProvider(projectEnvironment.project, kotlinScriptDefinitionProvider))
-                registerService(KotlinJavaPsiFacade::class.java, KotlinJavaPsiFacade(this))
-                registerService(KtLightClassForFacade.FacadeStubCache::class.java, KtLightClassForFacade.FacadeStubCache(this))*/
-            }
+
         }
 
         private fun registerProjectServicesForCLI(projectEnvironment: JavaCoreProjectEnvironment) {
-            with (projectEnvironment.project) {
+            with(projectEnvironment.project) {
                 registerService(CoreJavaFileManager::class.java, ServiceManager.getService(this, JavaFileManager::class.java) as CoreJavaFileManager)
 
                 val area = Extensions.getArea(this)
@@ -427,7 +445,7 @@ fun getResourcePathForClass(aClass: Class<*>): File {
     return File(resourceRoot).absoluteFile
 }
 
-data class MSASourceRoot(val path: String): ContentRoot
+data class MSASourceRoot(val path: String) : ContentRoot
 
 fun CompilerConfiguration.addMSASourceRoot(source: String) {
     add(JVMConfigurationKeys.CONTENT_ROOTS, MSASourceRoot(source))
@@ -438,3 +456,20 @@ fun CompilerConfiguration.addMSASourceRoots(sources: List<String>): Unit =
 
 val CompilerConfiguration.MSASourceRoots: List<String>
     get() = get(JVMConfigurationKeys.CONTENT_ROOTS)?.filterIsInstance<MSASourceRoot>()?.map { it.path }.orEmpty()
+
+class InMemoryFsRule {
+    private var _fs: FileSystem? = null
+
+    val fs: FileSystem
+        get() {
+            var r = _fs
+            if (r == null) {
+                r = MemoryFileSystemBuilder
+                        .newLinux()
+                        .setCurrentWorkingDirectory("/")
+                        .build("test")
+                _fs = r
+            }
+            return r!!
+        }
+}

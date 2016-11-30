@@ -39,8 +39,7 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
         val pathForComponentName = element.containingFile.virtualFile.canonicalPath
         val packageIdentifier = (element.containingFile as MSAFile).getPackage()?.packageIdentifier
 
-        StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
-
+        MSAComponentDeclarationIndex.instance.get(componentName, element.project, GlobalSearchScope.allScope(element.project)).map {
             val referencePackage = it.qualifiedName
 
             val itPackageIdentifier = (it.containingFile as MSAFile).getPackage()?.packageIdentifier
@@ -70,7 +69,7 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
                 }
             }
             true
-        })
+        }
         return found.map(::PsiElementResolveResult).toTypedArray()
     }
 

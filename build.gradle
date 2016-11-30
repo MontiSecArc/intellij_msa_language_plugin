@@ -69,6 +69,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.25-incubating'
+    compile 'com.github.marschall:memoryfilesystem:0.9.0'
 }
 
 version = "$version.$buildNumber"

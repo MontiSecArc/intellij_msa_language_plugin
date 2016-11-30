@@ -1,20 +1,42 @@
 package de.monticore.lang.montisecarc.stubs.index
 
+import com.intellij.openapi.project.Project
+import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StringStubIndexExtension
+import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.stubs.StubIndexKey
 import de.monticore.lang.montisecarc.MSAFileElementType
 import de.monticore.lang.montisecarc.psi.MSAPortElement
 
 /**
- * Created by thomasbuning on 28.09.16.
- */
-class MSAPortIndex: StringStubIndexExtension<MSAPortElement>() {
+* Copyright 2016 thomasbuning
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+class MSAPortIndex : StringStubIndexExtension<MSAPortElement>() {
 
     override fun getVersion(): Int = MSAFileElementType.stubVersion
 
     override fun getKey(): StubIndexKey<String, MSAPortElement> = KEY
 
+    override fun get(key: String, project: Project, scope: GlobalSearchScope): MutableCollection<MSAPortElement> = StubIndex.getElements(KEY, key, project, scope, MSAPortElement::class.java)
+
+    private object Holder { val INSTANCE = MSAPortIndex() }
+
     companion object {
         val KEY: StubIndexKey<String, MSAPortElement> = StubIndexKey.createIndexKey("de.monticore.lang.montisecarc.stubs.index.MSAPortIndex")
+
+        val instance: MSAPortIndex by lazy { Holder.INSTANCE }
     }
 }
