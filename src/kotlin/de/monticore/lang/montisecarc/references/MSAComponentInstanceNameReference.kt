@@ -6,7 +6,10 @@ import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.util.PsiTreeUtil
-import de.monticore.lang.montisecarc.psi.*
+import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
+import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
+import de.monticore.lang.montisecarc.psi.MSAComponentInstanceName
+import de.monticore.lang.montisecarc.psi.MSAComponentName
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
 
@@ -96,55 +99,27 @@ class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textR
             }
             true
         })
-        val pathForComponentName = element.containingFile.virtualFile.canonicalPath
-        val packageIdentifier = (element.containingFile as MSAFile).getPackage()?.packageIdentifier
-        val imports = PsiTreeUtil.getChildrenOfType(element.containingFile, MSAImportDeclaration::class.java)?.map { it.text.replace("import ", "").replace(";", "") }.orEmpty()
         return found.filter {
 
             var isValid = false
-            val msaComponentDeclaration = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
+            var msaComponentDeclaration = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
+            fun foundInstanceName(msaComponentDeclaration: MSAComponentDeclaration): Boolean {
+                if (!wrappingComponentQualifiedName.isNullOrEmpty() && msaComponentDeclaration.qualifiedName.contains(wrappingComponentQualifiedName.orEmpty())) {
+                    return true
+                }
+                if (!instanceComponentQualifiedName.isNullOrEmpty() && msaComponentDeclaration.qualifiedName.contains(instanceComponentQualifiedName.orEmpty())) {
+                    return true
+                }
+
+                return superComponents.any { !it.qualifiedName.isNullOrEmpty() && msaComponentDeclaration.qualifiedName.contains(it.qualifiedName) }
+            }
+
             if (msaComponentDeclaration != null) {
-                if (msaComponentDeclaration.qualifiedName == wrappingComponentQualifiedName) {
-                    isValid = true
-                }
-                if (msaComponentDeclaration.qualifiedName == instanceComponentQualifiedName) {
-                    isValid = true
-                }
-                for (superComponent in superComponents) {
+                isValid = foundInstanceName(msaComponentDeclaration)
+                msaComponentDeclaration = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
 
-                    if (superComponent.qualifiedName == msaComponentDeclaration.qualifiedName) {
-
-                        isValid = true
-                        break
-                    }
-                }
-                val referencePackage = msaComponentDeclaration.qualifiedName
-
-                val itPackageIdentifier = (msaComponentDeclaration.containingFile as MSAFile).getPackage()?.packageIdentifier
-                val name = msaComponentDeclaration.componentSignature?.componentName?.componentName
-                if (name != null) {
-                    if (it.containingFile.virtualFile.canonicalPath == pathForComponentName || packageIdentifier == itPackageIdentifier) {
-
-                        isValid = true
-                    } else {
-                        for (import in imports) {
-
-                            if (import.indexOf("*") > 0) {
-
-                                if (referencePackage.substringBeforeLast(".") == import.substringBeforeLast(".")) {
-
-                                    isValid = true
-                                    break
-                                }
-                            } else {
-                                if (import.contains(referencePackage)) {
-
-                                    isValid = true
-                                    break
-                                }
-                            }
-                        }
-                    }
+                if (msaComponentDeclaration != null) {
+                    isValid = foundInstanceName(msaComponentDeclaration)
                 }
             }
             isValid
