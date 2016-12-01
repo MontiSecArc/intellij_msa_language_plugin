@@ -82,6 +82,7 @@ PortInstanceName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANam
 ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 pin=2
                                 methods=[getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations getSuperComponents]
+                                implements = ["de.monticore.lang.montisecarc.psi.MSAHighlightable"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
@@ -109,7 +110,8 @@ private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleCon
 
 PortDeclaration ::= Prefix port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
 PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
-    pin=2 name="port" methods=[isCritical getDirection getEnclosingComponent addPolicyViolation getPolicyViolations getPortName]
+    pin=2 name="port" methods=[isCritical getDirection getEnclosingComponent getPortName]
+    implements = ["de.monticore.lang.montisecarc.psi.MSAHighlightable"]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
     elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
     mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin"

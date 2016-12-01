@@ -27,7 +27,7 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitComponentDeclaration(@NotNull MSAComponentDeclaration o) {
-    visitCompositeElement(o);
+    visitHighlightable(o);
   }
 
   public void visitComponentExtension(@NotNull MSAComponentExtension o) {
@@ -35,7 +35,7 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitComponentInstanceDeclaration(@NotNull MSAComponentInstanceDeclaration o) {
-    visitCompositeElement(o);
+    visitHighlightable(o);
   }
 
   public void visitComponentInstanceName(@NotNull MSAComponentInstanceName o) {
@@ -119,7 +119,7 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitPortElement(@NotNull MSAPortElement o) {
-    visitCompositeElement(o);
+    visitHighlightable(o);
   }
 
   public void visitPortInstanceName(@NotNull MSAPortInstanceName o) {
@@ -171,6 +171,10 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitTypeVariableDeclaration(@NotNull MSATypeVariableDeclaration o) {
+    visitCompositeElement(o);
+  }
+
+  public void visitHighlightable(@NotNull MSAHighlightable o) {
     visitCompositeElement(o);
   }
 

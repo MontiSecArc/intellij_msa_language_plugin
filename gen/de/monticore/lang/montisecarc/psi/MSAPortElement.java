@@ -8,7 +8,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAPortElement extends MSACompositeElement, StubBasedPsiElement<MSAPortElementStub> {
+public interface MSAPortElement extends MSAHighlightable, StubBasedPsiElement<MSAPortElementStub> {
 
   @Nullable
   MSAJavaClassReference getJavaClassReference();
@@ -25,11 +25,6 @@ public interface MSAPortElement extends MSACompositeElement, StubBasedPsiElement
 
   @Nullable
   MSAComponentDeclaration getEnclosingComponent();
-
-  void addPolicyViolation(String violation);
-
-  @NotNull
-  List<String> getPolicyViolations();
 
   @JvmStatic
   @NotNull
