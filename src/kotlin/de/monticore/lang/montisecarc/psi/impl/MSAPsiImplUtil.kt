@@ -130,7 +130,13 @@ class MSAPsiImplUtil {
                 val resolve = referencesFromProviders[0].resolve()
                 if (resolve != null) {
 
-                    return PsiTreeUtil.getParentOfType(resolve, MSAPortElement::class.java)
+                    if(resolve is MSAPortElement) {
+
+                        return resolve
+                    } else {
+
+                        return PsiTreeUtil.getParentOfType(resolve, MSAPortElement::class.java)
+                    }
                 } else {
                     return null
                 }
