@@ -6,10 +6,10 @@ import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.psi.MSAComponentBody
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceName
-import de.monticore.lang.montisecarc.psi.MSAComponentName
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex
 import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
 
@@ -30,100 +30,63 @@ import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
  * limitations under the License.
  */
 
-class MSAComponentInstanceNameReference(element: MSAComponentInstanceName, textRange: TextRange, val reference: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
+class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, textRange: TextRange, val reference: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 
-        val instanceDeclarationParent = PsiTreeUtil.getParentOfType(element, MSAComponentInstanceDeclaration::class.java)
-        val parentComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
         val prevComponentInstanceName = PsiTreeUtil.getPrevSiblingOfType(element, MSAComponentInstanceName::class.java)
-        val superComponents = parentComponent?.superComponents.orEmpty()
-        var wrappingComponentQualifiedName: String? = parentComponent?.qualifiedName
 
         if (prevComponentInstanceName != null) {
 
             if (prevComponentInstanceName.references.isNotEmpty()) {
 
-                val componentInstanceDeclaration = prevComponentInstanceName.references[0]
-                if (componentInstanceDeclaration is MSAComponentInstanceNameReference) {
+                val resolve = prevComponentInstanceName.references[0].resolve()
 
-                    val multiResolve = componentInstanceDeclaration.multiResolve(false)
-                    if (multiResolve.isNotEmpty()) {
+                if(resolve != null && resolve is MSAComponentInstanceName) {
 
-                        val element = multiResolve[0].element
-                        if (element is MSAComponentDeclaration) {
-
-                            wrappingComponentQualifiedName = element.qualifiedName
-                        } else if (element is MSAComponentInstanceDeclaration) {
-
-                            wrappingComponentQualifiedName = element.qualifiedName
-                        }
-                    }
+                    return getResolveResult(resolve)
                 }
             }
+        } else {
+
+            return getResolveResult(element)
         }
 
-        var instanceComponentQualifiedName: String? = ""
+        return emptyArray()
+    }
 
-        if (instanceDeclarationParent != null) {
+    private fun getResolveResult(psiElement: MSAComponentInstanceName): Array<PsiElementResolveResult> {
+        val parentComponent = PsiTreeUtil.getParentOfType(psiElement, MSAComponentDeclaration::class.java)
 
-            val references = instanceDeclarationParent.componentNameWithTypeProjectionList.last().componentName.references
-            if (references.isNotEmpty()) {
+        if (parentComponent != null) {
 
-                for (resolveResult in (references[0] as MSAComponentNameReference).multiResolve(false)
-                        .filter { it.element is MSAComponentName }) {
+            fun getResolveResultFromBody(componentBody: MSAComponentBody?): Set<PsiElementResolveResult> {
+                val componentDeclarations = componentBody?.componentDeclarationList?.filter {
+                    it != null && it.componentSignature?.componentInstanceName?.text == element.text
+                }?.map { it.componentSignature?.componentInstanceName }.orEmpty().requireNoNulls()
 
-                    val msaComponentDeclaration = PsiTreeUtil.getParentOfType(resolveResult.element, MSAComponentDeclaration::class.java)
-                    if (!msaComponentDeclaration?.qualifiedName.isNullOrEmpty()) {
+                val componentInstanceDeclarations = componentBody?.componentInstanceDeclarationList?.filter {
+                    it != null && it.componentInstanceNameList.map { it.id.text }.contains(element.text)
+                }?.flatMap { it.componentInstanceNameList.filter { it.id.text == element.text } }.orEmpty()
 
-                        instanceComponentQualifiedName = msaComponentDeclaration!!.qualifiedName
-                        break
-                    }
-                }
+                return componentDeclarations.union(componentInstanceDeclarations).map(::PsiElementResolveResult).toSet()
             }
+
+            val componentResolutions = getResolveResultFromBody(parentComponent.componentBody)
+
+            val superComponentsResolutions = parentComponent.superComponents.flatMap {
+
+                getResolveResultFromBody(it.componentBody)
+            }
+
+            return componentResolutions.union(superComponentsResolutions).toTypedArray()
         }
 
-        val found = arrayListOf<MSAComponentInstanceName>()
+        /**
+         * ToDo: Add in Instance Declarations componentdeclarations and componentinstance declarations from reference
+         */
 
-        StubIndex.getInstance().processElements(MSAComponentInstanceIndex.KEY, reference, element.project, GlobalSearchScope.allScope(element.project), MSAComponentInstanceDeclaration::class.java, {
-
-            val instanceNames = it.componentInstanceNameList.filter { !it.text.isNullOrEmpty() }
-            found.addAll(instanceNames)
-            true
-        })
-
-        StubIndex.getInstance().processElements(MSAComponentInstanceDeclarationIndex.KEY, reference, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
-            val componentInstanceName = it.componentSignature?.componentInstanceName
-            if (componentInstanceName != null) {
-                found.add(componentInstanceName)
-            }
-            true
-        })
-        return found.filter {
-
-            var isValid = false
-            var msaComponentDeclaration = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
-            fun foundInstanceName(msaComponentDeclaration: MSAComponentDeclaration): Boolean {
-                if (!wrappingComponentQualifiedName.isNullOrEmpty() && msaComponentDeclaration.qualifiedName.contains(wrappingComponentQualifiedName.orEmpty())) {
-                    return true
-                }
-                if (!instanceComponentQualifiedName.isNullOrEmpty() && msaComponentDeclaration.qualifiedName.contains(instanceComponentQualifiedName.orEmpty())) {
-                    return true
-                }
-
-                return superComponents.any { !it.qualifiedName.isNullOrEmpty() && msaComponentDeclaration.qualifiedName.contains(it.qualifiedName) }
-            }
-
-            if (msaComponentDeclaration != null) {
-                isValid = foundInstanceName(msaComponentDeclaration)
-                msaComponentDeclaration = PsiTreeUtil.getParentOfType(it, MSAComponentDeclaration::class.java)
-
-                if (msaComponentDeclaration != null) {
-                    isValid = foundInstanceName(msaComponentDeclaration)
-                }
-            }
-            isValid
-        }.map(::PsiElementResolveResult).toTypedArray()
+        return emptyArray()
     }
 
     override fun resolve(): PsiElement? {

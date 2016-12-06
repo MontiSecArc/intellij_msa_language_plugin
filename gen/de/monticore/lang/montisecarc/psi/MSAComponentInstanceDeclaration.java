@@ -8,7 +8,7 @@ import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub;
 import kotlin.jvm.JvmStatic;
 
-public interface MSAComponentInstanceDeclaration extends MSAHighlightable, StubBasedPsiElement<MSAComponentInstanceStub> {
+public interface MSAComponentInstanceDeclaration extends MSACompositeElement, StubBasedPsiElement<MSAComponentInstanceStub> {
 
   @NotNull
   List<MSAComponentInstanceName> getComponentInstanceNameList();

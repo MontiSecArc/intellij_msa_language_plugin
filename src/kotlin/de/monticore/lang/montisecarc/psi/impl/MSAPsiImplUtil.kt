@@ -130,7 +130,7 @@ class MSAPsiImplUtil {
                 val resolve = referencesFromProviders[0].resolve()
                 if (resolve != null) {
 
-                    if(resolve is MSAPortElement) {
+                    if (resolve is MSAPortElement) {
 
                         return resolve
                     } else {
@@ -202,7 +202,15 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getQualifiedName(element: MSAComponentInstanceDeclaration): String {
 
-            val name = element.componentNameWithTypeProjectionList.map { "${it.componentName.name}<${it.typeProjections?.typeProjectionList?.joinToString(",")}>" }.joinToString(".")
+            val name = element.componentNameWithTypeProjectionList.map {
+
+                val typeProjectionList = it.typeProjections?.typeProjectionList
+                var typeProjectionString = ""
+                if(!typeProjectionList.isNullOrEmpty()) {
+                    typeProjectionString = "<${typeProjectionList!!.joinToString(",")}>"
+                }
+                "${it.componentName.name}$typeProjectionString"
+            }.joinToString(".")
 
             val wrappingComponent = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
 
@@ -244,9 +252,9 @@ class MSAPsiImplUtil {
                 for (superComponent in element.superComponents) {
 
                     val trustLevelList = superComponent.componentBody?.trustLevelStatementList.orEmpty()
-                    if(!trustLevelList.isNullOrEmpty()) {
+                    if (!trustLevelList.isNullOrEmpty()) {
                         try {
-                            if(trustLevelList.first().level != null) {
+                            if (trustLevelList.first().level != null) {
 
                                 lvl = trustLevelList.first().level!!.number.text.toInt()
                                 break
@@ -261,8 +269,7 @@ class MSAPsiImplUtil {
                 if (lvl != null) {
 
                     return lvl
-                }
-                else if (element.parent.elementType == MSAFileElementType) {
+                } else if (element.parent.elementType == MSAFileElementType) {
 
                     return -1
                 } else {
@@ -351,14 +358,14 @@ class MSAPsiImplUtil {
         @JvmStatic fun getPackageIdentifier(element: MSAPackageClause): String? {
 
             val identifier = element.text
-            if(identifier.isNullOrBlank()) {
+            if (identifier.isNullOrBlank()) {
 
                 return null
             }
 
             val packageIdentifier = identifier.replace("package", "").replace(";", "").trim()
 
-            if(packageIdentifier.isNullOrBlank()) {
+            if (packageIdentifier.isNullOrBlank()) {
 
                 return null
             }
@@ -366,5 +373,73 @@ class MSAPsiImplUtil {
         }
 
         @JvmStatic fun getPackageIdentifier(element: MSAFile): String? = element.getPackage()?.packageIdentifier
+
+        @JvmStatic fun getReferencedPort(element: MSAIdentityIdentifier): MSAPortElement? {
+
+            if (element.portInstanceName != null) {
+
+                return element.portInstanceName!!.referencedPortElement
+            }
+            return null
+        }
+
+        @JvmStatic fun getReferencedComponent(element: MSAIdentityIdentifier): MSAComponentDeclaration? {
+
+            if (element.componentInstanceNameList.isNotEmpty()) {
+
+                val instanceName = element.componentInstanceNameList.last()
+                if (instanceName.references.isNotEmpty()) {
+
+                    return instanceName.references[0].resolve() as? MSAComponentDeclaration
+                }
+            }
+            return null
+        }
+
+        @JvmStatic fun getReferencedComponentInstance(element: MSAIdentityIdentifier): MSAComponentInstanceDeclaration? {
+
+            if (element.componentInstanceNameList.isNotEmpty()) {
+
+                val instanceName = element.componentInstanceNameList.last()
+                if (instanceName.references.isNotEmpty()) {
+
+                    return instanceName.references[0].resolve() as? MSAComponentInstanceDeclaration
+                }
+            }
+            return null
+        }
+
+
     }
+}
+fun MSAComponentInstanceName.resolveToComponentDeclaration() : MSAComponentDeclaration? {
+
+    if (this.references.isNotEmpty()) {
+
+        val psiElement = this.references[0].resolve()
+        val msaComponentSignature = PsiTreeUtil.getParentOfType(psiElement, MSAComponentSignature::class.java)
+        val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(psiElement, MSAComponentInstanceDeclaration::class.java)
+
+        if (msaComponentSignature != null) {
+
+            return PsiTreeUtil.getParentOfType(msaComponentSignature, MSAComponentDeclaration::class.java)
+        } else if (msaComponentInstanceDeclaration != null) {
+
+            val projectionList = msaComponentInstanceDeclaration.componentNameWithTypeProjectionList
+
+            if (projectionList.isNotEmpty()) {
+
+                val componentNameReferences = projectionList.last().componentName.references
+                if (componentNameReferences.isNotEmpty()) {
+
+                    val element = componentNameReferences[0].resolve()
+
+                    val signature = PsiTreeUtil.getParentOfType(element, MSAComponentSignature::class.java)
+
+                    return PsiTreeUtil.getParentOfType(signature, MSAComponentDeclaration::class.java)
+                }
+            }
+        }
+    }
+    return null
 }

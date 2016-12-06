@@ -145,7 +145,7 @@ PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAR
 AccessControlStatement ::= Prefix? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
 IdentityStatement ::= Prefix IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
-IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName?
+IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName? { methods=[getReferencedPort getReferencedComponent getReferencedComponentInstance] }
 
 CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
 

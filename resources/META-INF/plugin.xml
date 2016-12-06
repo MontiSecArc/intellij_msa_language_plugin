@@ -43,13 +43,22 @@
                              implementationClass="de.monticore.lang.montisecarc.folding.MSAFoldingBuilder"/>
 
         <!-- Annotator -->
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidSemanticAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidPackageAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAProtocolAnnotator"/>
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortTypeAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.ThirdPartyComponentAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentInstanceAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentTypAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortInstanceAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SourceTargetAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SingleStatementsAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MainComponentAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.AccessRolesAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.TrustLevelAnnotator" />
 
         <completion.contributor language="MSA"
                                 implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>

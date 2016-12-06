@@ -65,6 +65,11 @@ object MSAElementFactory {
         return file.firstChild as MSAPackageClause
     }
 
+    fun createImportStatement(project: Project, actualImport: String): MSAImportDeclaration {
+        val file = createFile(project, "import $actualImport;")
+        return file.firstChild as MSAImportDeclaration
+    }
+
     fun createSuppressPolicyAnnotation(project: Project, commentText: String): PsiElement {
 
         val msaFile = createFile(project, commentText + " component A {}")
