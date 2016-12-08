@@ -38,6 +38,28 @@ intellij {
     updateSinceUntilBuild = false
 
     sandboxDirectory = "${rootProject.buildDir}/idea-sandbox"
+
+    plugins = ['com.neueda4j.intellij.plugin.cypher:2.2.0']
+}
+
+
+project.afterEvaluate {
+
+    def prepareSandboxTask = project.tasks.findByName("prepareSandbox")
+    prepareSandboxTask.doLast {
+
+        def libFiles = new File("$prepareSandboxTask.destinationDir/${project.name}/lib/")
+        libFiles.listFiles().each {
+            if(!it.name.contains("kotlin") && !it.name.contains("freemarker") && !it.name.contains("caffeine")) {
+
+                delete(it)
+            }
+        }
+        def graphDb = project(":GraphDatabase").name + "-" + project(":GraphDatabase").version
+        def jarFile2 = new File("$prepareSandboxTask.destinationDir/${project.name}/lib/${graphDb}.jar")
+        def zipFile2 = new File("$prepareSandboxTask.destinationDir/${project.name}/lib/${graphDb}.zip")
+        delete(jarFile2, zipFile2)
+    }
 }
 
 apply plugin: 'java'
@@ -62,8 +84,12 @@ repositories {
 }
 
 dependencies {
+    compile(project(":GraphDatabase"))
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.25-incubating'
+    compile 'com.github.ben-manes.caffeine:caffeine:2.3.5'
+
 }
 
 version = "$version.$buildNumber"
