@@ -1,4 +1,4 @@
-package de.monticore.lang.montisecarc.generator.docker.actions
+package de.monticore.lang.montisecarc.generator
 
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.notification.Notification
@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKeys
 import com.intellij.openapi.application.ApplicationManager
-import de.monticore.lang.montisecarc.generator.Generator
 import java.io.File
 import java.io.InputStream
 
