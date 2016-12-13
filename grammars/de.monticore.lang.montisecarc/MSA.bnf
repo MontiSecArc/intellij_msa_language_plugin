@@ -122,7 +122,8 @@ JavaClassReference ::= (JavaReference DOT)* JavaReference { methods=[getReferenc
 JavaReference ::= ID { methods=[getReferences]}
 
 private SimpleConnectPortStatement ::= Prefix? Connector
-Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource (ARROW | '-[' JavaClassReference ']->')  ConnectTarget (COMMA ConnectTarget)* {pin=3}
+Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource (ARROW | '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->')  ConnectTarget (COMMA ConnectTarget)* {pin=3
+    implements = ["de.monticore.lang.montisecarc.psi.MSAHighlightable"] mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAConnectorImplMixin"}
 
 ConnectSource ::= QualifiedIdentifier
 ConnectTarget ::= QualifiedIdentifier

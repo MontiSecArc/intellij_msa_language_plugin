@@ -1,11 +1,13 @@
-package de.monticore.lang.montisecarc.generator
+package de.monticore.lang.montisecarc.generator.graph
 
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.generator.FreeMarker
+import de.monticore.lang.montisecarc.generator.Generator
+import de.monticore.lang.montisecarc.generator.MSAGenerator
 import de.monticore.lang.montisecarc.psi.*
+import java.io.InputStream
 
 /**
  * Copyright 2016 Thomas Buning
@@ -23,78 +25,66 @@ import de.monticore.lang.montisecarc.psi.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GraphGenerator {
+class GraphGenerator() : Generator() {
 
-    private val files = mutableListOf<PsiFile>()
-    private val registeredGenerators = mutableMapOf<IElementType, List<Pair<MSAGenerator, (Any) -> Unit>>>()
+    override fun getExtension(): String = ".cyp"
+
+    override fun getDisplayName(): String = "Graph Generator"
+
     private val trustLevels = mutableSetOf<Int>()
     private val nodes = mutableSetOf<String>()
     private val connectors = mutableSetOf<String>()
-    private var psiRecursiveElementWalkingVisitor: MSAPsiRecursiveElementWalkingVisitor? = null
     private var referencedComponentInstances = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
     /**
      * Key is the super component that needs to be replaced by the value
      */
     private var componentExtendHierarchy = mutableMapOf<String, String>()
 
-    fun createGraph(): String {
-
-        return files.map { generate(it) }.filter { !it.isNullOrEmpty() }.joinToString("")
-    }
-
     private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean
             = componentQualifiedNames.filter { it != qualifiedName }.any { qualifiedName.contains(it) }
 
-    private fun generate(parseFile: PsiFile): String? {
+    override fun aggregateResultFor(parsedFile: PsiFile): InputStream? {
 
-        if (psiRecursiveElementWalkingVisitor != null) {
-            ApplicationManager.getApplication().runReadAction({
+        val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }.union(superComponents.map { it.second.qualifiedName }).toList()
+        referencedComponentInstances.union(superComponents).forEach {
 
-                parseFile.accept(psiRecursiveElementWalkingVisitor!!)
+            if (it.first != parsedFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
 
-                val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }.union(superComponents.map { it.second.qualifiedName }).toList()
-                referencedComponentInstances.union(superComponents).forEach {
-
-                    if (it.first != parseFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
-
-                        it.second.accept(psiRecursiveElementWalkingVisitor!!)
-                    }
-                }
-
-                /*
-                * - We got the original file (parseFile) and all files referenced by Instances
-                * - Now we need to collect all ports and components etc from superClasses and combine them in the extending class
-                * - Ports could be already imported from references, or components so it is needed to check if these are already included
-                * - SuperClasses don't need to be included because port etc. shall be combined in the extending class
-                * */
-                for ((superComponent, extendingComponent) in componentExtendHierarchy) {
-
-                    // Remove Super Components
-                    nodes.removeAll { it -> it.startsWith("($superComponent:Component") }
-
-                    // Fix Links
-                    connectors.mapInPlace { it.replace("($superComponent)", "($extendingComponent)") }
-                }
-
-            })
-
-            trustLevels.forEach {
-                nodes.add(TrustLevelGenerator.generateTrustLevelNode(it))
+                generate(it.second)
             }
-
-            nodes.addAll(connectors)
-
-            if (nodes.isEmpty()) {
-                return null
-            }
-
-            //CREATE ${nodes};
-            val model = mutableMapOf<String, String>()
-            model.put("nodes", nodes.filter { !it.isNullOrEmpty() }.joinToString())
-            val graph = FreeMarker.instance.generateModelOutput("ToGraph/Create.ftl", model)
-            return graph
         }
-        return null
+
+        /*
+        * - We got the original file (parsedFile) and all files referenced by Instances
+        * - Now we need to collect all ports and components etc from superClasses and combine them in the extending class
+        * - Ports could be already imported from references, or components so it is needed to check if these are already included
+        * - SuperClasses don't need to be included because port etc. shall be combined in the extending class
+        * */
+        for ((superComponent, extendingComponent) in componentExtendHierarchy) {
+
+            // Remove Super Components
+            nodes.removeAll { it -> it.startsWith("($superComponent:Component") }
+
+            // Fix Links
+            connectors.mapInPlace { it.replace("($superComponent)", "($extendingComponent)") }
+        }
+
+        trustLevels.forEach {
+            nodes.add(TrustLevelGenerator.generateTrustLevelNode(it))
+        }
+
+        nodes.addAll(connectors)
+
+        if (nodes.isEmpty()) {
+            return null
+        }
+
+        //CREATE ${nodes};
+        val model = mutableMapOf<String, String>()
+        model.put("nodes", nodes.filter { !it.isNullOrEmpty() }.joinToString())
+        val graph = FreeMarker.instance.generateModelOutput("ToGraph/Create.ftl", model)
+
+        return graph.byteInputStream()
     }
 
     inline fun <T> MutableSet<T>.mapInPlace(mutator: (T)->T) {
@@ -115,25 +105,9 @@ class GraphGenerator {
         }
     }
 
-    fun addFile(psiFile: PsiFile) = files.add(psiFile)
-
-    fun registerGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit) {
-        val pair = listOf(Pair(generator, callback))
-        if (registeredGenerators.contains(elementType)) {
-
-            registeredGenerators.put(elementType, registeredGenerators[elementType]!! + pair)
-
-        } else {
-
-            registeredGenerators.put(elementType, pair)
-        }
-
-        psiRecursiveElementWalkingVisitor = MSAPsiRecursiveElementWalkingVisitor(registeredGenerators)
-    }
-
     private val superComponents = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
 
-    fun registerDefaultGenerators() {
+    override fun registerGenerators() : GraphGenerator {
 
         fun extractStringsFromList(addTo: MutableSet<String>): (Any) -> Unit {
             return {
@@ -260,6 +234,8 @@ class GraphGenerator {
 
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
+
+        return this
     }
 }
 

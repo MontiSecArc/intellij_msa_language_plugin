@@ -3,6 +3,7 @@ package de.monticore.lang.montisecarc.visualization
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.ProjectComponent
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import de.tbuning.neo4j.graphdatabase.Neo4JGraphDatabase
 import org.neo4j.graphdb.GraphDatabaseService
@@ -25,6 +26,9 @@ import org.neo4j.graphdb.GraphDatabaseService
 */
 class GraphDatabase(private val project: Project) : ProjectComponent, Disposable {
 
+
+    val instance = Logger.getInstance(GraphDatabase::class.java)
+
     override fun disposeComponent() {
 
         dispose()
@@ -42,11 +46,16 @@ class GraphDatabase(private val project: Project) : ProjectComponent, Disposable
 
     override fun projectOpened() {
 
-        arrayOfNeo4JGraphDatabases = ApplicationManager.getApplication().getExtensions(Neo4JGraphDatabase.EP_NAME)
+        try {
+            arrayOfNeo4JGraphDatabases = ApplicationManager.getApplication().getExtensions(Neo4JGraphDatabase.EP_NAME)
 
-        arrayOfNeo4JGraphDatabases?.forEach {
+            arrayOfNeo4JGraphDatabases?.forEach {
 
-            it.startDatabase(project.basePath.orEmpty())
+                it.startDatabase(project.basePath.orEmpty())
+            }
+        } catch (ex: NoClassDefFoundError) {
+
+            Logger.getInstance(GraphDatabase::class.java).info("Graph Database Plugin not installed")
         }
     }
 
@@ -71,6 +80,7 @@ class GraphDatabase(private val project: Project) : ProjectComponent, Disposable
 
     fun createDatabase(graphQuery: String, forDir: String = "graph_editor"): GraphDatabaseService? {
 
+        instance.info("Create Database $graphQuery in $forDir")
         val database = arrayOfNeo4JGraphDatabases?.find { it.databaseFolder == forDir }
 
         if (database != null) {

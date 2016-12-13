@@ -8,9 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
+import de.monticore.lang.montisecarc.psi.impl.mixin.MSAConnectorImplMixin;
 import de.monticore.lang.montisecarc.psi.*;
 
-public class MSAConnectorImpl extends MSACompositeElementImpl implements MSAConnector {
+public class MSAConnectorImpl extends MSAConnectorImplMixin implements MSAConnector {
 
   public MSAConnectorImpl(ASTNode node) {
     super(node);

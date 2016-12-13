@@ -75,7 +75,7 @@ public class MSAVisitor extends PsiElementVisitor {
   }
 
   public void visitConnector(@NotNull MSAConnector o) {
-    visitCompositeElement(o);
+    visitHighlightable(o);
   }
 
   public void visitIdentityIdentifier(@NotNull MSAIdentityIdentifier o) {

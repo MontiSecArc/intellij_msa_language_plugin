@@ -10,7 +10,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
 import com.intellij.psi.PsiReference;
-import kotlin.jvm.JvmStatic;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements MSAPortInstanceName {
@@ -34,43 +33,36 @@ public class MSAPortInstanceNameImpl extends MSACompositeElementImpl implements 
     return notNullChild(findChildByType(ID));
   }
 
-  @JvmStatic
   @NotNull
   public String getName() {
     return MSAPsiImplUtil.getName(this);
   }
 
-  @JvmStatic
   @NotNull
   public String getPortName() {
     return MSAPsiImplUtil.getPortName(this);
   }
 
-  @JvmStatic
   @Nullable
   public String getComponentsPath() {
     return MSAPsiImplUtil.getComponentsPath(this);
   }
 
-  @JvmStatic
   @NotNull
   public PsiElement setName(String newName) {
     return MSAPsiImplUtil.setName(this, newName);
   }
 
-  @JvmStatic
   @NotNull
   public PsiReference[] getReferences() {
     return MSAPsiImplUtil.getReferences(this);
   }
 
-  @JvmStatic
   @Nullable
   public MSAPortElement getReferencedPortElement() {
     return MSAPsiImplUtil.getReferencedPortElement(this);
   }
 
-  @JvmStatic
   @NotNull
   public PsiElement getNameIdentifier() {
     return MSAPsiImplUtil.getNameIdentifier(this);

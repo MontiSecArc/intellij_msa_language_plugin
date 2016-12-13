@@ -4,7 +4,6 @@ package de.monticore.lang.montisecarc.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
-import kotlin.jvm.JvmStatic;
 
 public interface MSAIdentityIdentifier extends MSACompositeElement {
 
@@ -14,15 +13,12 @@ public interface MSAIdentityIdentifier extends MSACompositeElement {
   @Nullable
   MSAPortInstanceName getPortInstanceName();
 
-  @JvmStatic
   @Nullable
   MSAPortElement getReferencedPort();
 
-  @JvmStatic
   @Nullable
   MSAComponentDeclaration getReferencedComponent();
 
-  @JvmStatic
   @Nullable
   MSAComponentInstanceDeclaration getReferencedComponentInstance();
 

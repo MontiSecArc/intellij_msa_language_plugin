@@ -1,6 +1,7 @@
-package de.monticore.lang.montisecarc.generator
+package de.monticore.lang.montisecarc.generator.graph
 
 import com.intellij.psi.PsiElement
+import de.monticore.lang.montisecarc.generator.graph.TrustLevelGenerator
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 
 /**

@@ -6,11 +6,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.libraries.LibraryUtil
-import com.intellij.openapi.startup.StartupManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.util.PathUtil
-import de.monticore.lang.montisecarc.containsMSAFiles
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
@@ -64,63 +62,61 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
         val logger = Logger.getInstance(PolicyLoader::class.java)
 
         logger.info("project opened")
-        if (project != null && project.containsMSAFiles()) {
+        if (project != null) {
 
             logger.info("found project containing msa files")
-            StartupManager.getInstance(project).registerPostStartupActivity {
 
-                logger.info("after post startup")
-                val xsd = File(PathUtil.getJarPathForClass(PolicyLoader::class.java) + "/policy_schemes/Policies_v1.xsd")
+            logger.info("after post startup")
+            val xsd = File(PathUtil.getJarPathForClass(PolicyLoader::class.java) + "/policy_schemes/Policies_v1.xsd")
 
-                logger.info("found xsd file")
-                for (libraryRoot in LibraryUtil.getLibraryRoots(project, false, false)) {
+            logger.info("found xsd file")
+            for (libraryRoot in LibraryUtil.getLibraryRoots(project, false, false)) {
 
-                    val libraryEntry = LibraryUtil.findLibraryEntry(libraryRoot, project)
-                    if(libraryEntry != null) {
+                val libraryEntry = LibraryUtil.findLibraryEntry(libraryRoot, project)
+                if (libraryEntry != null) {
 
-                        for (file in libraryEntry.getFiles(OrderRootType.CLASSES)) {
-                            VfsUtilCore.iterateChildrenRecursively(file, VirtualFileFilter {
+                    for (file in libraryEntry.getFiles(OrderRootType.CLASSES)) {
+                        VfsUtilCore.iterateChildrenRecursively(file, VirtualFileFilter {
 
-                                it.name.endsWith(".jar") || it.isDirectory || it.name == "PolicyConfiguration.xml" || it.name.endsWith(".cyp")
-                            }, ContentIterator {
+                            it.name.endsWith(".jar") || it.isDirectory || it.name == "PolicyConfiguration.xml" || it.name.endsWith(".cyp")
+                        }, ContentIterator {
 
-                                logger.info("found ${it.name}")
-                                if (it.name == "PolicyConfiguration.xml" && validateAgainstXSD(it.inputStream, xsd.inputStream())) {
+                            logger.info("found ${it.name}")
+                            if (it.name == "PolicyConfiguration.xml" && validateAgainstXSD(it.inputStream, xsd.inputStream())) {
 
-                                    logger.info("is policy configuration")
-                                    val factory = SAXParserFactory.newInstance()
-                                    val parser = factory.newSAXParser()
-                                    val saxHandler = PoliciesV1SAXHandler(it.parent.path)
-                                    parser.parse(it.inputStream, saxHandler)
-                                    loadedPolicies.addAll(saxHandler.policies)
+                                logger.info("is policy configuration")
+                                val factory = SAXParserFactory.newInstance()
+                                val parser = factory.newSAXParser()
+                                val saxHandler = PoliciesV1SAXHandler(it.parent.path)
+                                parser.parse(it.inputStream, saxHandler)
+                                loadedPolicies.addAll(saxHandler.policies)
 
-                                    for ((path, inputString) in graphQueries) {
-                                        addGraphQueryToPolicy(path, inputString)
-                                    }
-                                } else if (it.name.endsWith(".cyp")) {
-
-                                    val inputString = it.inputStream.bufferedReader().use { it.readText() }
-
-                                    logger.info("graph query: $inputString")
-                                    if(!addGraphQueryToPolicy(it.path, inputString)) {
-
-                                        graphQueries.put(it.path, inputString)
-                                    }
+                                for ((path, inputString) in graphQueries) {
+                                    addGraphQueryToPolicy(path, inputString)
                                 }
-                                true
-                            })
-                        }
+                            } else if (it.name.endsWith(".cyp")) {
+
+                                val inputString = it.inputStream.bufferedReader().use { it.readText() }
+
+                                logger.info("graph query: $inputString")
+                                if (!addGraphQueryToPolicy(it.path, inputString)) {
+
+                                    graphQueries.put(it.path, inputString)
+                                }
+                            }
+                            true
+                        })
                     }
                 }
             }
         }
     }
 
-    fun addGraphQueryToPolicy(queryPath: String, inputString: String) : Boolean {
+    fun addGraphQueryToPolicy(queryPath: String, inputString: String): Boolean {
 
         for ((id, name, severity, inspection, fix) in loadedPolicies) {
 
-            if(inspection?.path == queryPath) {
+            if (inspection?.path == queryPath) {
 
                 inspection!!.inspection = inputString
                 return true
@@ -224,7 +220,7 @@ class PoliciesV1SAXHandler(val basePath: String) : DefaultHandler() {
         val text = kotlin.text.String(ch, start, length)
         if (isPath) {
 
-            if(basePath.endsWith("/")) {
+            if (basePath.endsWith("/")) {
                 currentPath = PathUtil.getLocalPath("$basePath$text")
             } else {
                 currentPath = PathUtil.getLocalPath("$basePath/$text")

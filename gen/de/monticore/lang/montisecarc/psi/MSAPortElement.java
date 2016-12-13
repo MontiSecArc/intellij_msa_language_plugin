@@ -6,7 +6,6 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub;
-import kotlin.jvm.JvmStatic;
 
 public interface MSAPortElement extends MSAHighlightable, StubBasedPsiElement<MSAPortElementStub> {
 
@@ -16,17 +15,14 @@ public interface MSAPortElement extends MSAHighlightable, StubBasedPsiElement<MS
   @Nullable
   MSAPortInstanceName getPortInstanceName();
 
-  @JvmStatic
   boolean isCritical();
 
-  @JvmStatic
   @NotNull
   String getDirection();
 
   @Nullable
   MSAComponentDeclaration getEnclosingComponent();
 
-  @JvmStatic
   @NotNull
   String getPortName();
 

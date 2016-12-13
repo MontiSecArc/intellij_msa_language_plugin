@@ -1,5 +1,7 @@
-package de.monticore.lang.montisecarc.generator
+package de.monticore.lang.montisecarc.generator.graph
 
+import de.monticore.lang.montisecarc.generator.FreeMarker
+import de.monticore.lang.montisecarc.generator.MSAGenerator
 import java.net.URL
 
 /**
@@ -52,8 +54,8 @@ abstract class TrustLevelGenerator: MSAGenerator() {
 
         fun generateTrustLevelNode(trustLevel: Int): String {
             val model = mutableMapOf<String, Any>()
-            model.put("id", TrustLevelGenerator.getTrustLevelIdentifier(trustLevel))
-            model.put("instance_name", TrustLevelGenerator.getTrustLevelString(trustLevel))
+            model.put("id", Companion.getTrustLevelIdentifier(trustLevel))
+            model.put("instance_name", Companion.getTrustLevelString(trustLevel))
             model.put("level", trustLevel)
             return FreeMarker.instance.generateModelOutput("ToGraph/TrustlevelMacro.ftl", model)
         }

@@ -10,7 +10,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
 import com.intellij.psi.PsiReference;
-import kotlin.jvm.JvmStatic;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 public class MSAJavaReferenceImpl extends MSACompositeElementImpl implements MSAJavaReference {
@@ -34,7 +33,6 @@ public class MSAJavaReferenceImpl extends MSACompositeElementImpl implements MSA
     return notNullChild(findChildByType(ID));
   }
 
-  @JvmStatic
   @NotNull
   public PsiReference[] getReferences() {
     return MSAPsiImplUtil.getReferences(this);

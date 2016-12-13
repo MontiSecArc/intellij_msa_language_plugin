@@ -1,4 +1,4 @@
-package de.monticore.lang.montisecarc.actions
+package de.monticore.lang.montisecarc.generator.docker.actions
 
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.notification.Notification
@@ -8,12 +8,12 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataKeys
 import com.intellij.openapi.application.ApplicationManager
-import de.monticore.lang.montisecarc.generator.graph.GraphGenerator
-import de.monticore.lang.montisecarc.visualization.GraphDatabase
-
+import de.monticore.lang.montisecarc.generator.Generator
+import java.io.File
+import java.io.InputStream
 
 /**
- * Copyright 2016 thomasbuning
+ * Copyright 2016 Thomas Buning
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,13 @@ import de.monticore.lang.montisecarc.visualization.GraphDatabase
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class MSAGenerateGraph : AnAction() {
+abstract class FileWriterGeneratorAction(val generator: Generator) : AnAction() {
+
+    private fun InputStream.toFile(path: String) {
+        use { input ->
+            File(path).outputStream().use { input.copyTo(it) }
+        }
+    }
 
     override fun actionPerformed(e: AnActionEvent?) {
 
@@ -44,12 +50,12 @@ class MSAGenerateGraph : AnAction() {
                 try {
                     ApplicationManager.getApplication().executeOnPooledThread {
 
-                        val createGraph = GraphGenerator().registerGenerators().generate(file)?.bufferedReader()?.use { it.readText() }
-                        val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
+                        val result = generator.registerGenerators().generate(file)
 
-                        if (!createGraph.isNullOrEmpty()) {
-                            graphDatabase.createDatabase(createGraph!!)
-                            Notifications.Bus.notify(Notification("MSA", "Success", "Successfully created graph database for file ${file.name}", NotificationType.INFORMATION))
+                        if(result != null) {
+
+                            result.toFile(file.name + generator.getExtension())
+                            Notifications.Bus.notify(Notification("MSA", "Success", "${generator.getDisplayName()} for file ${file.name}", NotificationType.INFORMATION))
                         }
                     }
 

@@ -554,8 +554,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "ComponentInstanceWithParameters_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, LPAREN);
-    r = r && consumeToken(b, ID);
+    r = consumeTokens(b, 0, LPAREN, ID);
     r = r && ComponentInstanceWithParameters_1_0_2(b, l + 1);
     r = r && consumeToken(b, RPAREN);
     exit_section_(b, m, null, r);
@@ -579,8 +578,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "ComponentInstanceWithParameters_1_0_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
-    r = r && consumeToken(b, ID);
+    r = consumeTokens(b, 0, COMMA, ID);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -817,7 +815,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource (ARROW | '-[' JavaClassReference ']->')  ConnectTarget (COMMA ConnectTarget)*
+  // [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource (ARROW | '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->')  ConnectTarget (COMMA ConnectTarget)*
   public static boolean Connector(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector")) return false;
     boolean r, p;
@@ -869,7 +867,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ARROW | '-[' JavaClassReference ']->'
+  // ARROW | '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->'
   private static boolean Connector_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector_3")) return false;
     boolean r;
@@ -880,14 +878,50 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // '-[' JavaClassReference ']->'
+  // '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->'
   private static boolean Connector_3_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector_3_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, "-[");
-    r = r && JavaClassReference(b, l + 1);
+    r = r && Connector_3_1_1(b, l + 1);
     r = r && consumeToken(b, "]->");
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]
+  private static boolean Connector_3_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_3_1_1")) return false;
+    Connector_3_1_1_0(b, l + 1);
+    return true;
+  }
+
+  // JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]
+  private static boolean Connector_3_1_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_3_1_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = JavaClassReference(b, l + 1);
+    if (!r) r = Connector_3_1_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // [ ENCRYPTED | UNENCRYPTED ]
+  private static boolean Connector_3_1_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_3_1_1_0_1")) return false;
+    Connector_3_1_1_0_1_0(b, l + 1);
+    return true;
+  }
+
+  // ENCRYPTED | UNENCRYPTED
+  private static boolean Connector_3_1_1_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_3_1_1_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ENCRYPTED);
+    if (!r) r = consumeToken(b, UNENCRYPTED);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1287,8 +1321,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Parameter_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, EQUAL);
-    r = r && consumeToken(b, ID);
+    r = consumeTokens(b, 0, EQUAL, ID);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1602,8 +1635,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "StereoValue_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, EQUAL);
-    r = r && consumeToken(b, STRING);
+    r = consumeTokens(b, 0, EQUAL, STRING);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1617,8 +1649,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, "<<");
     r = r && StereoValue(b, l + 1);
     r = r && Stereotype_2(b, l + 1);
-    r = r && consumeToken(b, GREATER);
-    r = r && consumeToken(b, GREATER);
+    r = r && consumeTokens(b, 0, GREATER, GREATER);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

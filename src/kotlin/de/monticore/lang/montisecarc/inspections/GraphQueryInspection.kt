@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.inspections
 
 import com.intellij.codeInspection.*
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import de.monticore.lang.montisecarc.analyzer.inspections.graphElementCanBeHighlighted
@@ -32,15 +33,27 @@ import org.neo4j.graphdb.Relationship
  */
 class GraphQueryInspection() : LocalInspectionTool() {
 
+    val instance = Logger.getInstance(GraphQueryInspection::class.java)
+
     override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<out ProblemDescriptor> {
 
+        if (file !is MSAFile) {
+
+            return emptyArray()
+        }
+
+        instance.info("Check File ${file.name}")
+        val problems = mutableListOf<String>()
         val problemDescriptors = mutableListOf<ProblemDescriptor>()
         doCheckFile(file, {
             element, loadedPolicy, quickFixes, problemType ->
             val problemDescriptor = manager.createProblemDescriptor(element, loadedPolicy.inspection!!.description, isOnTheFly, quickFixes, problemType)
 
+            problems.add(problemDescriptor.toString())
             problemDescriptors.add(problemDescriptor)
         })
+
+        instance.info("Found ${problemDescriptors.size} problems")
 
         return problemDescriptors.toTypedArray()
     }
@@ -54,10 +67,13 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
                 val policyLoader = file.project.getComponent(PolicyLoader::class.java)
 
+                instance.info("Found ${policyLoader.loadedPolicies.size} policies")
                 for (loadedPolicy in policyLoader.loadedPolicies) {
+
 
                     val graphQuery = loadedPolicy.inspection!!.inspection.orEmpty()
 
+                    instance.info("Execute $graphQuery")
                     if (!graphQuery.isNullOrEmpty()) {
 
                         val result = graphDatabaseService.execute(graphQuery)
@@ -87,7 +103,20 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
                                     } else if (value is Relationship) {
 
+                                        val element_offset = value.getProperty("element_offset", "") as String
 
+                                        val filePath = value.getProperty("file_path", "") as String
+
+                                        val sameFile = file.virtualFile.canonicalPath == filePath
+
+                                        if (!element_offset.isNullOrEmpty()) {
+
+                                            val offset = element_offset.toInt()
+                                            if (offset > 0 && sameFile) {
+
+                                                file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                            }
+                                        }
                                     }
                                 }
                             }

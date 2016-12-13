@@ -3,7 +3,7 @@ package de.monticore.lang.montisecarc.cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
 import com.intellij.psi.PsiFile
-import de.monticore.lang.montisecarc.generator.GraphGeneratorBuilder
+import de.monticore.lang.montisecarc.generator.graph.GraphGenerator
 import de.monticore.lang.montisecarc.visualization.GraphDatabase
 import org.neo4j.graphdb.GraphDatabaseService
 import java.util.concurrent.TimeUnit
@@ -37,13 +37,13 @@ object GraphCache {
 
     private fun  createGraphDatabase(file: PsiFile): GraphDatabaseService? {
 
-        val graph = GraphGeneratorBuilder().addFile(file).build().createGraph()
+        val createDatabaseQuery = GraphGenerator().registerGenerators().generate(file)?.bufferedReader()?.use { it.readText() }
 
-        if(graph.isNullOrEmpty()) {
+        if(createDatabaseQuery.isNullOrEmpty()) {
             return null
         }
 
         val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
-        return graphDatabase.createDatabase(graph, "analyzer")
+        return graphDatabase.createDatabase(createDatabaseQuery!!, "analyzer")
     }
 }
