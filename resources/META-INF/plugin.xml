@@ -115,10 +115,13 @@
                 text="MSA file" description="Create new MSA file">
             <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after"/>
         </action>
-        <action id="de.monticore.lang.montisecarc.GraphQueryEditor.MSAGenerateGraph" class="de.monticore.lang.montisecarc.actions.MSAGenerateGraph"
-                text="Generate Graph" description="Generate Graph from MSA File">
+        <group id="MSAGenerators" text="Generators" description="Generator Extensions for MSA Language" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <keyboard-shortcut first-keystroke="alt shift G" keymap="$default" />
-        </action>
+            <action id="de.monticore.lang.montisecarc.GraphQueryEditor.MSAGenerateGraph" class="de.monticore.lang.montisecarc.actions.MSAGenerateGraph"
+                    text="Generate Graph" description="Generate Graph from MSA File">
+                <add-to-group group-id="MSAGenerators" />
+                <keyboard-shortcut first-keystroke="alt shift G" keymap="$default" />
+            </action>
+        </group>
     </actions>
 </idea-plugin>

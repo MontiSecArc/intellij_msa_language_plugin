@@ -63,7 +63,7 @@ class ConnectorGenerator : MSAGenerator() {
                     extras.put("file_path", msaConnector.containingFile.virtualFile.canonicalPath.orEmpty())
                     connector_model.put("extra_arguments", extras)
 
-                    val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+                    val connector = FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
                     connectors.add(connector)
                 }
             }

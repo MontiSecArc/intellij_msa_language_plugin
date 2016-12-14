@@ -37,13 +37,15 @@ object GraphCache {
 
     private fun  createGraphDatabase(file: PsiFile): GraphDatabaseService? {
 
-        val createDatabaseQuery = GraphGenerator().registerGenerators().generate(file)?.bufferedReader()?.use { it.readText() }
+        val createDatabaseQuery = GraphGenerator()
+        createDatabaseQuery.generate(file)
+        val input = createDatabaseQuery.generatedInputStream?.bufferedReader()?.use { it.readText() }
 
-        if(createDatabaseQuery.isNullOrEmpty()) {
+        if(input.isNullOrEmpty()) {
             return null
         }
 
         val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
-        return graphDatabase.createDatabase(createDatabaseQuery!!, "analyzer")
+        return graphDatabase.createDatabase(input!!, "analyzer")
     }
 }

@@ -21,29 +21,20 @@ import java.io.StringWriter
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-class FreeMarker() {
+class FreeMarker(val clazz : Class<Any>) {
 
     private var cfg = Configuration(Configuration.VERSION_2_3_23)
     init {
 
         with(cfg) {
-            setDirectoryForTemplateLoading(File(PathUtil.getJarPathForClass(FreeMarker::class.java)))
+            setDirectoryForTemplateLoading(File(PathUtil.getJarPathForClass(clazz)))
             defaultEncoding = "UTF-8"
             templateExceptionHandler = freemarker.template.TemplateExceptionHandler.RETHROW_HANDLER
         }
     }
 
-    private object Holder {
-        val INSTANCE = FreeMarker()
-    }
-
-    companion object {
-        val instance: FreeMarker by lazy { Holder.INSTANCE }
-    }
-
-
     fun generateModelOutput(template: String, model: Map<String, Any>): String {
-        val temp = instance.cfg.getTemplate(template)
+        val temp = cfg.getTemplate(template)
 
         /* Merge data-model with template */
         val out = StringWriter()

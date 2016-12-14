@@ -44,11 +44,13 @@ class MSAGenerateGraph : AnAction() {
                 try {
                     ApplicationManager.getApplication().executeOnPooledThread {
 
-                        val createGraph = GraphGenerator().registerGenerators().generate(file)?.bufferedReader()?.use { it.readText() }
+                        val createGraph = GraphGenerator()
+                        createGraph.generate(file)
+                        val inputText = createGraph.generatedInputStream?.bufferedReader()?.use { it.readText() }
                         val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
 
-                        if (!createGraph.isNullOrEmpty()) {
-                            graphDatabase.createDatabase(createGraph!!)
+                        if (!inputText.isNullOrEmpty()) {
+                            graphDatabase.createDatabase(inputText!!)
                             Notifications.Bus.notify(Notification("MSA", "Success", "Successfully created graph database for file ${file.name}", NotificationType.INFORMATION))
                         }
                     }

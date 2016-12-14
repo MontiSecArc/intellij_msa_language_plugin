@@ -24,33 +24,37 @@ import java.io.InputStream
  */
 abstract class Generator() {
 
-    abstract fun getDisplayName() : String
+    abstract fun getDisplayName(): String
 
-    abstract fun getExtension() : String
+    abstract fun getExtension(): String
+
+    abstract fun getSuffix(): String
 
     private val registeredGenerators = mutableMapOf<IElementType, List<Pair<MSAGenerator, (Any) -> Unit>>>()
     private var psiRecursiveElementWalkingVisitor: MSAPsiRecursiveElementWalkingVisitor? = null
 
-    fun generate(parseFile: PsiFile): InputStream? {
+    var generatedInputStream: InputStream? = null
+
+    fun generate(parseFile: PsiFile) {
+
+        registerGenerators()
 
         psiRecursiveElementWalkingVisitor = MSAPsiRecursiveElementWalkingVisitor(registeredGenerators)
         if (psiRecursiveElementWalkingVisitor != null) {
-            var aggregatedResult: InputStream? = null
             ApplicationManager.getApplication().runReadAction({
 
                 parseFile.accept(psiRecursiveElementWalkingVisitor!!)
 
-                aggregatedResult = aggregateResultFor(parseFile)
+                generatedInputStream = aggregateResultFor(parseFile)
             })
-
-            return aggregatedResult
         }
-        return null
+
+        save(parseFile)
     }
 
     fun generate(psiElement: PsiElement) = psiRecursiveElementWalkingVisitor ?: psiElement.accept(psiRecursiveElementWalkingVisitor!!)
 
-    fun registerGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit) : Generator {
+    protected fun registerGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit): Generator {
         val pair = listOf(Pair(generator, callback))
         if (registeredGenerators.contains(elementType)) {
 
@@ -64,7 +68,9 @@ abstract class Generator() {
         return this
     }
 
-    abstract fun registerGenerators() : Generator
+    abstract protected fun save(parseFile: PsiFile)
+
+    abstract protected fun registerGenerators(): Generator
 
     abstract fun aggregateResultFor(parsedFile: PsiFile): InputStream?
 }

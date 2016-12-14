@@ -106,6 +106,6 @@ class ComponentInstanceInstanceGenerator : MSAGenerator() {
 
         model.put("extra_arguments", extras)
 
-        return FreeMarker.instance.generateModelOutput("ToGraph/InstanceMacro.ftl", model)
+        return FreeMarker(this.javaClass).generateModelOutput("ToGraph/InstanceMacro.ftl", model)
     }
 }

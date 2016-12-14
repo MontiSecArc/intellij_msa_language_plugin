@@ -27,6 +27,12 @@ import java.io.InputStream
  */
 class GraphGenerator() : Generator() {
 
+    override fun getSuffix(): String = ""
+
+    override fun save(parseFile: PsiFile) {
+        //Noop
+    }
+
     override fun getExtension(): String = ".cyp"
 
     override fun getDisplayName(): String = "Graph Generator"
@@ -82,7 +88,7 @@ class GraphGenerator() : Generator() {
         //CREATE ${nodes};
         val model = mutableMapOf<String, String>()
         model.put("nodes", nodes.filter { !it.isNullOrEmpty() }.joinToString())
-        val graph = FreeMarker.instance.generateModelOutput("ToGraph/Create.ftl", model)
+        val graph = FreeMarker(this.javaClass).generateModelOutput("ToGraph/Create.ftl", model)
 
         return graph.byteInputStream()
     }
@@ -309,7 +315,7 @@ class ConnectorIdentityGenerator : MSAGenerator() {
                             connector_model.put("start_port", startIdentifier!!)
                             connector_model.put("target_port", stopIdentifier!!)
                             connector_model.put("element_offset", psiElement.textOffset)
-                            val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+                            val connector = FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
 
                             connectors.add(connector)
                         }

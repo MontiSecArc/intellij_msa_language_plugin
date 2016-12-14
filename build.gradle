@@ -50,7 +50,7 @@ project.afterEvaluate {
 
         def libFiles = new File("$prepareSandboxTask.destinationDir/${project.name}/lib/")
         libFiles.listFiles().each {
-            if(!it.name.contains("kotlin") && !it.name.contains("freemarker") && !it.name.contains("caffeine")) {
+            if(!it.name.contains("freemarker") && !it.name.contains("caffeine")) {
 
                 delete(it)
             }

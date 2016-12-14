@@ -124,7 +124,7 @@ class ComponentDeclarationGenerator : MSAGenerator() {
 
             model.put("extra_arguments", extras)
 
-            return FreeMarker.instance.generateModelOutput("ToGraph/ComponentMacro.ftl", model)
+            return FreeMarker(this.javaClass).generateModelOutput("ToGraph/ComponentMacro.ftl", model)
         }
         return null
     }

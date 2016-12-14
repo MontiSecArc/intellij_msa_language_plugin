@@ -3,7 +3,6 @@ package de.monticore.lang.montisecarc.generator.graph
 import com.intellij.psi.PsiElement
 import de.monticore.lang.montisecarc.generator.FreeMarker
 import de.monticore.lang.montisecarc.generator.MSAGenerator
-import de.monticore.lang.montisecarc.generator.graph.ComponentDeclarationGenerator
 import de.monticore.lang.montisecarc.psi.MSAPortElement
 
 /**
@@ -40,7 +39,7 @@ class PortElementConnectorGenerator : MSAGenerator() {
                 connector_model.put("relationship_type", ":DECLARES_IN")
             }
 
-            return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+            return FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
         }
     }
 

@@ -32,7 +32,7 @@ class ComponentInstanceDeclarationConnectorGenerator : MSAGenerator() {
         connector_model.put("target_port", targetIdentifier)
         connector_model.put("relationship_type", ":$relationship")
 
-        return FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+        return FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
     }
 
     override fun generate(psiElement: PsiElement): Any? {

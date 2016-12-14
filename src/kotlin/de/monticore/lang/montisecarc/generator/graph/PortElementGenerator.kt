@@ -161,7 +161,7 @@ class PortElementGenerator : MSAGenerator() {
 
                 model.put("extra_arguments", extras)
 
-                ports.add(FreeMarker.instance.generateModelOutput("ToGraph/PortMacro.ftl", model))
+                ports.add(FreeMarker(this.javaClass).generateModelOutput("ToGraph/PortMacro.ftl", model))
             }
 
             return ports.joinToString(",")

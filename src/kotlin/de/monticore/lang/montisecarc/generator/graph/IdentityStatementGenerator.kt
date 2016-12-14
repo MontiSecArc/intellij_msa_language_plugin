@@ -112,7 +112,7 @@ class IdentityStatementGenerator : MSAGenerator() {
                             connector_model.put("start_port", start)
                             connector_model.put("target_port", stop)
                             connector_model.put("element_offset", msaIdentityStatement.textOffset)
-                            val connector = FreeMarker.instance.generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+                            val connector = FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
 
                             connectors.add(connector)
                         }
