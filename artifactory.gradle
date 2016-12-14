@@ -1,7 +1,7 @@
 publishing {
     publications {
         zip(MavenPublication) {
-            groupId libraryGroupId
+            groupId "${libraryGroupId}.plugin"
             version version
             artifactId libraryArtifactId
 
