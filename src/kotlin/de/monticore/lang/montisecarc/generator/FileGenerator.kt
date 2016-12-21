@@ -23,6 +23,7 @@ import java.io.InputStream
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@Suppress("unused")
 abstract class FileGenerator : Generator() {
 
     private fun InputStream.toFile(path: String) {
@@ -31,7 +32,9 @@ abstract class FileGenerator : Generator() {
         }
     }
 
-    protected fun getFileName(psiFile: PsiFile): String = "${psiFile.name.substringBeforeLast(".")}${if (!getSuffix().isNullOrEmpty()) "${getSuffix()}" else ""}${getExtension()}"
+    protected fun getFileName(psiFile: PsiFile): String = "${psiFile.name.substringBeforeLast(".")}${if (!getSuffix().isNullOrEmpty()) getSuffix() else ""}${getExtension()}"
+
+    protected fun getFileNameWithoutSuffix(psiFile: PsiFile): String = "${psiFile.name.substringBeforeLast(".")}${getExtension()}"
 
     override fun save(parseFile: PsiFile) {
 
@@ -42,5 +45,4 @@ abstract class FileGenerator : Generator() {
             Notifications.Bus.notify(Notification("MSA", "Success", "${getDisplayName()} generated: $presentableUrl", NotificationType.INFORMATION))
         }
     }
-
 }

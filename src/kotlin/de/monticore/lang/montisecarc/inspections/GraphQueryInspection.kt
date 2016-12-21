@@ -35,11 +35,11 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
     val instance = Logger.getInstance(GraphQueryInspection::class.java)
 
-    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<out ProblemDescriptor> {
+    override fun checkFile(file: PsiFile, manager: InspectionManager, isOnTheFly: Boolean): Array<out ProblemDescriptor>? {
 
         if (file !is MSAFile) {
 
-            return emptyArray()
+            return null
         }
 
         instance.info("Check File ${file.name}")
