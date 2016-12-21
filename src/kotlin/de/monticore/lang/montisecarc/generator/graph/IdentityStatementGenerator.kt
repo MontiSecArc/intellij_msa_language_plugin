@@ -5,8 +5,6 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.containers.isNullOrEmpty
 import de.monticore.lang.montisecarc.generator.FreeMarker
 import de.monticore.lang.montisecarc.generator.MSAGenerator
-import de.monticore.lang.montisecarc.generator.graph.ComponentInstanceGenerator
-import de.monticore.lang.montisecarc.generator.graph.ComponentInstanceInstanceGenerator
 import de.monticore.lang.montisecarc.psi.*
 
 /**
@@ -60,12 +58,7 @@ class IdentityStatementGenerator : MSAGenerator() {
                         startIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
                     } else if (msaComponentInstanceDeclaration != null && msaComponentInstanceDeclaration is MSAComponentInstanceDeclaration) {
 
-                        val componentName = msaComponentInstanceDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
-
-                        val componentDeclaration = PsiTreeUtil.getParentOfType(componentName, MSAComponentDeclaration::class.java)
-                        if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
-                            startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name))
-                        }
+                        startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentInstanceDeclaration, componentInstanceName.name))
                     }
                 }
             }
@@ -91,13 +84,8 @@ class IdentityStatementGenerator : MSAGenerator() {
 
                         stopIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
                     } else if (msaComponentInstanceDeclaration != null && msaComponentInstanceDeclaration is MSAComponentInstanceDeclaration) {
+                        startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentInstanceDeclaration, componentInstanceName.name))
 
-                        val componentName = msaComponentInstanceDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
-
-                        val componentDeclaration = PsiTreeUtil.getParentOfType(componentName, MSAComponentDeclaration::class.java)
-                        if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
-                            startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, componentInstanceName.name))
-                        }
                     }
                 }
 

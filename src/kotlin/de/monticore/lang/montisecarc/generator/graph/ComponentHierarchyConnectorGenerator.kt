@@ -47,20 +47,12 @@ class ComponentHierarchyConnectorGenerator : MSAGenerator() {
 
                 listOf(getModel("PARENT_OF", componentIdentifier, childComponentIdentifier), getModel("CHILD_OF", childComponentIdentifier, componentIdentifier))
             }
-            val hierarchy2 = psiElement.componentBody?.componentInstanceDeclarationList?.flatMap {
+            val hierarchy2 = psiElement.componentBody?.componentInstanceDeclarationList?.flatMap { instance ->
 
-                val msaComponentName = it.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
+                instance.componentInstanceNameList.map {
 
-                val msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
-
-                if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
-
-                    val childComponentIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
-
-                    listOf(getModel("PARENT_OF", componentIdentifier, childComponentIdentifier), getModel("CHILD_OF", childComponentIdentifier, componentIdentifier))
-                } else {
-
-                    emptyList<String>()
+                    val componentInstanceIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(instance, it.name)
+                    listOf(getModel("PARENT_OF", componentIdentifier, componentInstanceIdentifier), getModel("CHILD_OF", componentInstanceIdentifier, componentIdentifier))
                 }
             }
 

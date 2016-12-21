@@ -57,7 +57,7 @@ class PortComponentInstanceConnectorGenerator : MSAGenerator() {
 
                 return psiElement.componentInstanceNameList.filter { it.name.isNotEmpty() }.flatMap {
 
-                    val componentIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentDeclaration, it.name)
+                    val componentIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(psiElement, it.name)
 
                     msaComponentDeclaration.componentBody?.portDeclarationList.orEmpty().flatMap {
                         it.portElementList.flatMap {

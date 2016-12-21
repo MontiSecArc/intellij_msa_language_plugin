@@ -47,18 +47,22 @@ class GraphGenerator() : Generator() {
     private var componentExtendHierarchy = mutableMapOf<String, String>()
 
     private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean
-            = componentQualifiedNames.filter { it != qualifiedName }.any { qualifiedName.contains(it) }
+            = componentQualifiedNames.filter { it != qualifiedName }.any { qualifiedName.startsWith(it) && qualifiedName.contains(it) }
 
     override fun aggregateResultFor(parsedFile: PsiFile): InputStream? {
 
-        val referencedComponentNames = referencedComponentInstances.map { it.second.qualifiedName }.union(superComponents.map { it.second.qualifiedName }).toList()
-        referencedComponentInstances.union(superComponents).forEach {
+        val filteredInstances = referencedComponentInstances.filter { it.first != parsedFile }
+        val filterSuperComponents = superComponents.filter { it.first != parsedFile }
 
-            if (it.first != parsedFile && !isSubComponent(referencedComponentNames, it.second.qualifiedName)) {
+        var qualifiedNames = filteredInstances.map { it.second.qualifiedName }.union(filterSuperComponents.map { it.second.qualifiedName }).toList()
+        qualifiedNames = qualifiedNames.filter { !isSubComponent(qualifiedNames, it) }
 
-                generate(it.second)
-            }
-        }
+        referencedComponentInstances.union(superComponents)
+                .filter { qualifiedNames.contains(it.second.qualifiedName) }
+                .forEach {
+
+                    walkElement(it.second)
+                }
 
         /*
         * - We got the original file (parsedFile) and all files referenced by Instances
@@ -93,7 +97,7 @@ class GraphGenerator() : Generator() {
         return graph.byteInputStream()
     }
 
-    inline fun <T> MutableSet<T>.mapInPlace(mutator: (T)->T) {
+    inline fun <T> MutableSet<T>.mapInPlace(mutator: (T) -> T) {
         val iterate = this.iterator()
         val nodesToUpdate = mutableListOf<Pair<T, T>>()
         while (iterate.hasNext()) {
@@ -113,7 +117,7 @@ class GraphGenerator() : Generator() {
 
     private val superComponents = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
 
-    override fun registerGenerators() : GraphGenerator {
+    override fun registerGenerators(): GraphGenerator {
 
         fun extractStringsFromList(addTo: MutableSet<String>): (Any) -> Unit {
             return {
@@ -225,6 +229,31 @@ class GraphGenerator() : Generator() {
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstanceDeclarationConnectorGenerator(), extractStringsFromList(connectors))
 
+        registerGenerator(MSACompositeElementTypes.COMPONENT_INSTANCE_DECLARATION, ComponentInstancePortElementGenerator(), {
+
+            if (it is Pair<*, *>) {
+
+                if (it.first is List<*>) {
+
+                    (it.first as List<*>).forEach {
+                        if (it is String) {
+
+                            nodes.add(it)
+                        }
+                    }
+                }
+                if (it.second is List<*>) {
+
+                    (it.second as List<*>).forEach {
+                        if (it is String) {
+
+                            connectors.add(it)
+                        }
+                    }
+                }
+            }
+        })
+
         registerGenerator(MSACompositeElementTypes.IDENTITY_STATEMENT, IdentityStatementGenerator(), extractStringsFromList(connectors))
 
         registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorGenerator(), extractStringsFromList(connectors))
@@ -236,7 +265,6 @@ class GraphGenerator() : Generator() {
          *
          * ToDo: Extends in Instance Declarations
          */
-
 
 
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
@@ -287,29 +315,29 @@ class ConnectorIdentityGenerator : MSAGenerator() {
 
     override fun generate(psiElement: PsiElement): Any? {
 
-        if(psiElement is MSAConnector) {
+        if (psiElement is MSAConnector) {
 
             val weak = psiElement.node.findChildByType(MSATokenElementTypes.WEAK)
             val strong = psiElement.node.findChildByType(MSATokenElementTypes.STRONG)
-            
-            if(weak != null || strong != null) {
+
+            if (weak != null || strong != null) {
 
                 val startComponentInstanceNames = psiElement.connectSource.qualifiedIdentifier.componentInstanceNameList
 
                 val startIdentifier = getIdentifier(psiElement, startComponentInstanceNames)
-                if(!startIdentifier.isNullOrEmpty()) {
+                if (!startIdentifier.isNullOrEmpty()) {
 
 
                     val connectors = mutableListOf<String>()
 
-                    val link = if(weak != null) ":WEAK" else ":STRONG"
+                    val link = if (weak != null) ":WEAK" else ":STRONG"
                     psiElement.connectTargetList.forEach {
 
                         val stopComponentInstanceNames = it.qualifiedIdentifier.componentInstanceNameList
 
                         val stopIdentifier = getIdentifier(psiElement, stopComponentInstanceNames)
 
-                        if(!stopIdentifier.isNullOrEmpty()) {
+                        if (!stopIdentifier.isNullOrEmpty()) {
                             val connector_model = mutableMapOf<String, Any>()
                             connector_model.put("relationship_type", link)
                             connector_model.put("start_port", startIdentifier!!)

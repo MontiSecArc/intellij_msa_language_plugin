@@ -61,12 +61,12 @@ class MSAPortTypeAnnotator : Annotator {
 
             val variants = PsiShortNamesCache.getInstance(o.project).allClassNames.filter { it.contains(o.id.text) }
 
-            if (variants.size < 3) {
+            if (variants.size <= 3) {
 
                 registerQuickFixForImports(variants, createErrorAnnotation, o.project, o.textRange)
             } else {
 
-                registerQuickFixForImports(variants.subList(0, 4), createErrorAnnotation, o.project, o.textRange)
+                registerQuickFixForImports(variants.subList(0, 3), createErrorAnnotation, o.project, o.textRange)
             }
         }
     }

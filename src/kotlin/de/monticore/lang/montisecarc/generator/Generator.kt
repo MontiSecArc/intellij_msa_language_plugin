@@ -52,7 +52,15 @@ abstract class Generator() {
         save(parseFile)
     }
 
-    fun generate(psiElement: PsiElement) = psiRecursiveElementWalkingVisitor ?: psiElement.accept(psiRecursiveElementWalkingVisitor!!)
+    fun walkElement(psiElement: PsiElement) {
+
+        val visitor = MSAPsiRecursiveElementWalkingVisitor(registeredGenerators)
+        ApplicationManager.getApplication().runReadAction({
+
+            psiElement.accept(visitor)
+        })
+    }
+
 
     protected fun registerGenerator(elementType: IElementType, generator: MSAGenerator, callback: (Any) -> Unit): Generator {
         val pair = listOf(Pair(generator, callback))

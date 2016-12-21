@@ -29,9 +29,9 @@ class ComponentInstanceInstanceGenerator : MSAGenerator() {
 
     companion object {
 
-        fun createComponentInstanceIdentifier(msaComponentDeclaration: MSAComponentDeclaration, instanceName: String): String {
+        fun createComponentInstanceIdentifier(msaComponentInstanceDeclaration: MSAComponentInstanceDeclaration, instanceName: String): String {
 
-            return ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration) + "_" + instanceName
+            return msaComponentInstanceDeclaration.qualifiedName.replace(".", "_") + "_" + instanceName
         }
     }
 
@@ -63,7 +63,7 @@ class ComponentInstanceInstanceGenerator : MSAGenerator() {
         val model = mutableMapOf<String, Any>()
 
         //<@node id="${id}" instance_name="${instance_name}"><#list extra_arguments!{} as attrName, attrVal>, ${attrName}:"${attrVal}"</#list></@node>
-        val componentIdentifier = createComponentInstanceIdentifier(msaComponentDeclaration, instanceName)
+        val componentIdentifier = createComponentInstanceIdentifier(msaComponentInstanceName, instanceName)
         model.put("id", componentIdentifier)
         model.put("instance_name", instanceName)
 

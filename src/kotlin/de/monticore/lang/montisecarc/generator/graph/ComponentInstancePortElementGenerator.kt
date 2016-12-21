@@ -3,8 +3,6 @@ package de.monticore.lang.montisecarc.generator.graph
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.generator.MSAGenerator
-import de.monticore.lang.montisecarc.generator.graph.PortElementConnectorGenerator
-import de.monticore.lang.montisecarc.generator.graph.PortElementGenerator
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 
@@ -28,10 +26,10 @@ class ComponentInstancePortElementGenerator : MSAGenerator() {
     override fun generate(psiElement: PsiElement): Any? {
 
         if (psiElement is MSAComponentInstanceDeclaration) {
-            val componentName = psiElement.componentNameWithTypeProjectionList.last().componentName
-            if (componentName.references.isNotEmpty()) {
+            val _componentName = psiElement.componentNameWithTypeProjectionList.last().componentName
+            if (_componentName.references.isNotEmpty()) {
 
-                val componentName = componentName.references[0].resolve()
+                val componentName = _componentName.references[0].resolve()
                 val componentDeclaration = PsiTreeUtil.getParentOfType(componentName, MSAComponentDeclaration::class.java)
                 if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
 
@@ -45,7 +43,7 @@ class ComponentInstancePortElementGenerator : MSAGenerator() {
                             val portIdentifier = PortElementGenerator.createPortIdentifiers(msaPortElement)
 
                             psiElement.componentInstanceNameList
-                                    .map { ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(componentDeclaration, it.name) }
+                                    .map { ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(psiElement, it.name) }
                                     .forEach {
                                         val componentInstanceIdentifier = it
                                         connectors.addAll(portIdentifier.map { PortElementConnectorGenerator.getModel(msaPortElement.direction, componentInstanceIdentifier, it) })

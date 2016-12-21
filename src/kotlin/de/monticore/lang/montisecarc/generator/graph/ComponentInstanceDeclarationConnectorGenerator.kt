@@ -48,11 +48,11 @@ class ComponentInstanceDeclarationConnectorGenerator : MSAGenerator() {
                 val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
 
                 return psiElement.componentInstanceNameList.flatMap {
-                    val componentInstanceIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentDeclaration, it.name)
+                    val componentInstanceIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(psiElement, it.name)
 
                     listOf(
                             getModel("INSTANCE_OF", componentInstanceIdentifier, componentIdentifier),
-                            getModel("INSTANTIATION_OF", componentIdentifier, componentInstanceIdentifier)
+                            getModel("DEFINES", componentIdentifier, componentInstanceIdentifier)
                     )
                 }
             }

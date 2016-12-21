@@ -49,15 +49,30 @@ class ComponentDeclarationConnectorGenerator : MSAGenerator() {
 
             val componentIdentifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
 
+            val instanceDefinitions = mutableListOf<String>()
             if (msaComponentDeclaration.instanceName.isNotEmpty()) {
 
                 val componentInstanceIdentifier = ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration)
 
-                return listOf(
+                instanceDefinitions.addAll(listOf(
                         getModel("INSTANCE_OF", componentInstanceIdentifier, componentIdentifier),
-                        getModel("INSTANTIATION_OF", componentIdentifier, componentInstanceIdentifier)
-                )
+                        getModel("DEFINES", componentIdentifier, componentInstanceIdentifier)
+                ))
             }
+
+            val instanceDeclarations = msaComponentDeclaration.componentBody?.componentInstanceDeclarationList?.flatMap { instance ->
+
+                instance.componentInstanceNameList.flatMap {
+                    val componentInstanceIdentifier = ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(instance, it.name)
+                    listOf(
+                            getModel("CHILD_OF", componentInstanceIdentifier, componentIdentifier),
+                            getModel("PARENT_OF", componentIdentifier, componentInstanceIdentifier)
+                    )
+                }
+            }
+
+            instanceDefinitions.addAll(instanceDeclarations.orEmpty())
+            return instanceDefinitions
         }
         return null
     }

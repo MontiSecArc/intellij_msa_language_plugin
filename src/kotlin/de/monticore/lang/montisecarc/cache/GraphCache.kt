@@ -45,7 +45,13 @@ object GraphCache {
             return null
         }
 
-        val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
-        return graphDatabase.createDatabase(input!!, "analyzer")
+        try {
+            val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
+            return graphDatabase.createDatabase(input!!, "analyzer")
+        } catch (e: Exception) {
+
+            //Graph Database Plugin not installed, fail gracefully
+        }
+        return null
     }
 }
