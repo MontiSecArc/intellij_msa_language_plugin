@@ -62,59 +62,61 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
         if (file is MSAFile) {
 
-            val graphDatabaseService = GraphCache.graphLoader.get(file)
-            if (graphDatabaseService != null) {
+            try {
+                val graphDatabaseService = GraphCache.graphLoader.get(file)
+                if (graphDatabaseService != null) {
 
-                val policyLoader = file.project.getComponent(PolicyLoader::class.java)
+                    val policyLoader = file.project.getComponent(PolicyLoader::class.java)
 
-                instance.info("Found ${policyLoader.loadedPolicies.size} policies")
-                for (loadedPolicy in policyLoader.loadedPolicies) {
+                    instance.info("Found ${policyLoader.loadedPolicies.size} policies")
+                    for (loadedPolicy in policyLoader.loadedPolicies) {
 
 
-                    val graphQuery = loadedPolicy.inspection!!.inspection.orEmpty()
+                        val graphQuery = loadedPolicy.inspection!!.inspection.orEmpty()
 
-                    instance.info("Execute $graphQuery")
-                    if (!graphQuery.isNullOrEmpty()) {
+                        instance.info("Execute $graphQuery")
+                        if (!graphQuery.isNullOrEmpty()) {
 
-                        val result = graphDatabaseService.execute(graphQuery)
+                            val result = graphDatabaseService.execute(graphQuery)
 
-                        if (result != null) {
+                            if (result != null) {
 
-                            while (result.hasNext()) {
+                                while (result.hasNext()) {
 
-                                for ((key, value) in result.next()) {
+                                    for ((key, value) in result.next()) {
 
-                                    if (value is Node && value.graphElementCanBeHighlighted()) {
+                                        if (value is Node && value.graphElementCanBeHighlighted()) {
 
-                                        val element_offset = value.getProperty("element_offset", "") as String
+                                            val element_offset = value.getProperty("element_offset", "") as String
 
-                                        val filePath = value.getProperty("file_path", "") as String
+                                            val filePath = value.getProperty("file_path", "") as String
 
-                                        val sameFile = file.virtualFile.canonicalPath == filePath
+                                            val sameFile = file.virtualFile.canonicalPath == filePath
 
-                                        if (!element_offset.isNullOrEmpty()) {
+                                            if (!element_offset.isNullOrEmpty()) {
 
-                                            val offset = element_offset.toInt()
-                                            if (offset > 0 && sameFile) {
+                                                val offset = element_offset.toInt()
+                                                if (offset > 0 && sameFile) {
 
-                                                file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                    file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                }
                                             }
-                                        }
 
-                                    } else if (value is Relationship) {
+                                        } else if (value is Relationship) {
 
-                                        val element_offset = value.getProperty("element_offset", "") as String
+                                            val element_offset = value.getProperty("element_offset", "") as String
 
-                                        val filePath = value.getProperty("file_path", "") as String
+                                            val filePath = value.getProperty("file_path", "") as String
 
-                                        val sameFile = file.virtualFile.canonicalPath == filePath
+                                            val sameFile = file.virtualFile.canonicalPath == filePath
 
-                                        if (!element_offset.isNullOrEmpty()) {
+                                            if (!element_offset.isNullOrEmpty()) {
 
-                                            val offset = element_offset.toInt()
-                                            if (offset > 0 && sameFile) {
+                                                val offset = element_offset.toInt()
+                                                if (offset > 0 && sameFile) {
 
-                                                file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                    file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                }
                                             }
                                         }
                                     }
@@ -123,6 +125,8 @@ class GraphQueryInspection() : LocalInspectionTool() {
                         }
                     }
                 }
+            } catch (e: NoClassDefFoundError) {
+                //Ignore Database Plugin not installed
             }
         }
     }
