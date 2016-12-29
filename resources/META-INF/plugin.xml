@@ -71,6 +71,7 @@
         <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MainComponentAnnotator" />
         <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.AccessRolesAnnotator" />
         <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.TrustLevelAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.CVEAnnotator" />
 
         <completion.contributor language="MSA"
                                 implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>
