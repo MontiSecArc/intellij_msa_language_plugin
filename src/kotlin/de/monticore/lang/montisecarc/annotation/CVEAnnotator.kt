@@ -60,15 +60,23 @@ class CVEAnnotator : Annotator {
 
                                         if (json is JsonArray<*>) {
 
-                                            //ToDo CVE as Annotations
                                             json.forEach {
 
                                                 if (it is JsonObject) {
                                                     val summary = it["summary"]
                                                     val cwe = it["cwe"]
                                                     val cvss = it["cvss"]
+                                                    var cvssFloatValue: Float? = null
 
-                                                    holder.createInfoAnnotation(o, "$summary ($cwe, CVSS: $cvss)")
+                                                    if (cvss != null && cvss is String) {
+                                                        cvssFloatValue = cvss.toFloat()
+                                                    }
+
+                                                    if (cvssFloatValue != null && cvssFloatValue >= 7.0) {
+                                                        holder.createErrorAnnotation(o, "$summary ($cwe, CVSS: $cvss)")
+                                                    } else {
+                                                        holder.createInfoAnnotation(o, "$summary ($cwe, CVSS: $cvss)")
+                                                    }
                                                 }
                                             }
                                         }
