@@ -10,9 +10,13 @@ This projects brings the MontiSecArc language to the popular IntelliJ IDE. The p
 - [Contribution](contribution)
 
 # Quickstart
-1. Check-Out project `git clone https://git.rwth-aachen.de/ma_buning/msa.git --remote --recursive`
-2. Import project into IntelliJ. Instructions can be found [here](https://www.jetbrains.com/help/idea/2016.3/importing-project-from-gradle-model.html)
-3. 
+1. Check-Out project:
+
+    `git clone https://git.rwth-aachen.de/ma_buning/msa.git --remote --recursive`
+2. Import project into IntelliJ. Instructions can be found [here](https://www.jetbrains.com/help/idea/2016.3/importing-project-from-gradle-model.html).
+3. Run an IDEA instance with the MSA language plugins pre-installed:
+    1. Run/Debug `runIdea` from the gradle task list:
+    
 
 # Usage Examples
 
