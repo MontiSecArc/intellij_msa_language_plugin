@@ -6,6 +6,7 @@ This projects brings the MontiSecArc language to the popular IntelliJ IDE. The p
 - [Quickstart](quickstart)
 - [Usage Examples](usage_examples)
 - [Features](features)
+- [Create New Version](create_new_version)
 - [Troubleshooting](troubleshooting)
 - [Contribution](contribution)
 
@@ -22,6 +23,7 @@ This projects brings the MontiSecArc language to the popular IntelliJ IDE. The p
 
 # Features
 
+# Create New Version
 
 # Troubleshooting
 
