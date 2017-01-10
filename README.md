@@ -3,13 +3,13 @@
 This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
 
 # Contents
-- [Quickstart](quickstart)
-- [Install Plugin into IntelliJ Installation](install_plugin_into_intelliJ_installation)
-- [Usage Examples](usage_examples)
-- [Features](features)
-- [Create New Version](create_new_version)
-- [Troubleshooting](troubleshooting)
-- [Contribution](contribution)
+- [Quickstart](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#quickstart)
+- [Install Plugin into IntelliJ Installation](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#install_plugin_into_intelliJ_installation)
+- [Usage Examples](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#usage_examples)
+- [Features](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#features)
+- [Create New Version](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#create_new_version)
+- [Troubleshooting](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#troubleshooting)
+- [Contribution](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#contribution)
 
 # Quickstart
 1. Check-Out project:
@@ -28,6 +28,55 @@ Download the newest version of the plugin from [here](https://git.rwth-aachen.de
 Click the "Install plugin from disk" button and select the downloaded zip file.
 
 # Usage Examples
+## Simple Environment Component
+```java
+package de.monticore.lang.montisecarc.simple.secarc;
+
+import de.monticore.lang.montisecarc.simple.secarc.ServiceA;
+import de.monticore.lang.montisecarc.simple.secarc.ServiceB;
+
+// Enclosing Component Environment
+component ServiceEnvironment {
+
+    // The environment is untrusted
+    trustlevel -1 "Untrusted public network";
+    
+    // Create instance of service A
+    ServiceA serviceA;
+    
+    // Create instance of service B
+    ServiceB serviceB;
+    
+    // Service B is strongly authenticated at service A
+    identity strong serviceB -> serviceA;
+    
+    // Connect the defined ports
+    // Uses default connection protocol but requires it to be encrypted
+    connect encrypted serviceB.outDataPackage -> serviceA.inDataPackage;
+    
+    // Connect two ports
+    // Define the used protocol for the connection as HTTPS
+    connect serviceB.outDataPackage -[HTTPS]-> serviceA.inDataPackage;
+}
+```
+## Simple Service Component
+```java
+package de.monticore.lang.montisecarc.simple.secarc;
+
+import de.monticore.lang.montisecarc.simple.msg.*;
+
+component ServiceA {
+
+    // Access to the service needs to be checked by identities
+    accesscontrol on;
+    
+    // Define that inDataPackage port can only be access by privilegedUser
+    access inDataPackage(privilegedUser);
+    
+    // Define ingoing port
+    port in DataPackage inDataPackage;
+}
+```
 
 # Features
 
