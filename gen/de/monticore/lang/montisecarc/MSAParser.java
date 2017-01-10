@@ -815,18 +815,17 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [ ENCRYPTED | UNENCRYPTED ] [ STRONG | WEAK  ] ConnectSource (ARROW | '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->')  ConnectTarget (COMMA ConnectTarget)*
+  // [ ENCRYPTED | UNENCRYPTED ] ConnectSource (ARROW | '-[' [JavaClassReference]']->')  ConnectTarget (COMMA ConnectTarget)*
   public static boolean Connector(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Connector")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, CONNECTOR, "<connector>");
     r = Connector_0(b, l + 1);
-    r = r && Connector_1(b, l + 1);
     r = r && ConnectSource(b, l + 1);
-    p = r; // pin = 3
-    r = r && report_error_(b, Connector_3(b, l + 1));
+    p = r; // pin = 2
+    r = r && report_error_(b, Connector_2(b, l + 1));
     r = p && report_error_(b, ConnectTarget(b, l + 1)) && r;
-    r = p && Connector_5(b, l + 1) && r;
+    r = p && Connector_4(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -849,98 +848,51 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // [ STRONG | WEAK  ]
-  private static boolean Connector_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_1")) return false;
-    Connector_1_0(b, l + 1);
-    return true;
-  }
-
-  // STRONG | WEAK
-  private static boolean Connector_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, STRONG);
-    if (!r) r = consumeToken(b, WEAK);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // ARROW | '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->'
-  private static boolean Connector_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_3")) return false;
+  // ARROW | '-[' [JavaClassReference]']->'
+  private static boolean Connector_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, ARROW);
-    if (!r) r = Connector_3_1(b, l + 1);
+    if (!r) r = Connector_2_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // '-[' [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]']->'
-  private static boolean Connector_3_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_3_1")) return false;
+  // '-[' [JavaClassReference]']->'
+  private static boolean Connector_2_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_2_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, "-[");
-    r = r && Connector_3_1_1(b, l + 1);
+    r = r && Connector_2_1_1(b, l + 1);
     r = r && consumeToken(b, "]->");
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // [JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]]
-  private static boolean Connector_3_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_3_1_1")) return false;
-    Connector_3_1_1_0(b, l + 1);
+  // [JavaClassReference]
+  private static boolean Connector_2_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_2_1_1")) return false;
+    JavaClassReference(b, l + 1);
     return true;
-  }
-
-  // JavaClassReference | [ ENCRYPTED | UNENCRYPTED ]
-  private static boolean Connector_3_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_3_1_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = JavaClassReference(b, l + 1);
-    if (!r) r = Connector_3_1_1_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // [ ENCRYPTED | UNENCRYPTED ]
-  private static boolean Connector_3_1_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_3_1_1_0_1")) return false;
-    Connector_3_1_1_0_1_0(b, l + 1);
-    return true;
-  }
-
-  // ENCRYPTED | UNENCRYPTED
-  private static boolean Connector_3_1_1_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_3_1_1_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, ENCRYPTED);
-    if (!r) r = consumeToken(b, UNENCRYPTED);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   // (COMMA ConnectTarget)*
-  private static boolean Connector_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_5")) return false;
+  private static boolean Connector_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_4")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!Connector_5_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "Connector_5", c)) break;
+      if (!Connector_4_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "Connector_4", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // COMMA ConnectTarget
-  private static boolean Connector_5_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "Connector_5_0")) return false;
+  private static boolean Connector_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "Connector_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);

@@ -1,7 +1,6 @@
 package de.monticore.lang.montisecarc.formatting
 
 import com.intellij.formatting.Alignment
-import com.intellij.formatting.alignment.AlignmentStrategy
 import com.intellij.lang.ASTNode
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
@@ -25,7 +24,7 @@ limitations under the License.
 class MSAAlignmentProcessor {
 
     companion object {
-        fun createChildAlignment(child: ASTNode, myNode: ASTNode, cmSettings: CommonCodeStyleSettings): Alignment? {
+        fun createChildAlignment(myNode: ASTNode, cmSettings: CommonCodeStyleSettings): Alignment? {
 
             val elementType = myNode.elementType
             val myBaseAlignment = Alignment.createAlignment()

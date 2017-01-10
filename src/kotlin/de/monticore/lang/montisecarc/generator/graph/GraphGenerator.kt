@@ -25,7 +25,7 @@ import java.io.InputStream
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GraphGenerator() : Generator() {
+class GraphGenerator : Generator() {
 
     override fun getSuffix(): String = ""
 

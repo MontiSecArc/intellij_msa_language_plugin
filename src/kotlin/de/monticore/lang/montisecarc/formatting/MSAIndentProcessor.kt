@@ -2,10 +2,7 @@ package de.monticore.lang.montisecarc.formatting
 
 import com.intellij.formatting.Indent
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.Condition
 import com.intellij.psi.*
-import com.intellij.psi.codeStyle.CommonCodeStyleSettings
-import com.intellij.util.Function
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
 import de.monticore.lang.montisecarc.psi.MSATokenElementTypes
 
@@ -29,16 +26,13 @@ class MSAIndentProcessor {
 
     companion object {
 
-        fun getChildIndent(node: ASTNode, cmSettings: CommonCodeStyleSettings): Indent {
+        fun getChildIndent(node: ASTNode): Indent {
 
             val elementType = node.elementType
             val prevSibling = UsefulPsiTreeUtil.getPrevSiblingSkipWhiteSpacesAndComments(node)
-            val nextSibling = UsefulPsiTreeUtil.getNextSiblingSkipWhiteSpacesAndComments(node)
             val prevSiblingType = prevSibling?.elementType
             val parent = node.treeParent
             val parentType = parent?.elementType
-            val superParent = parent?.treeParent
-            val superParentType = superParent?.elementType
 
             if (parent == null || parent.treeParent == null) {
                 return Indent.getNoneIndent()
@@ -57,9 +51,9 @@ class MSAIndentProcessor {
             }
             if (elementType === MSATokenElementTypes.RPAREN && parentType === MSACompositeElementTypes.PORT_DECLARATION) {
                 if (prevSiblingType === MSACompositeElementTypes.PORT_ELEMENT) {
-                    val childs = prevSibling!!.getChildren(null)
-                    val n = childs.size
-                    if (n > 2 && childs[n - 1] is PsiErrorElement && childs[n - 2].elementType === MSATokenElementTypes.COMMA) {
+                    val children = prevSibling!!.getChildren(null)
+                    val n = children.size
+                    if (n > 2 && children[n - 1] is PsiErrorElement && children[n - 2].elementType === MSATokenElementTypes.COMMA) {
                         return Indent.getContinuationWithoutFirstIndent()
                     }
                 }
@@ -81,21 +75,6 @@ class UsefulPsiTreeUtil {
 
     companion object {
 
-
-        private fun findChildIndex(children: Array<ASTNode>, offset: Int): Int {
-            var i = 0
-            val length = children.size
-            while (i < length) {
-                val child = children[i]
-                if (child.textRange.contains(offset)) {
-                    return i
-                }
-                i++
-            }
-
-            return -1
-        }
-
         fun isWhitespaceOrComment(element: PsiElement): Boolean {
             return element is PsiWhiteSpace || element is PsiComment
         }
@@ -106,48 +85,6 @@ class UsefulPsiTreeUtil {
 
             while (result != null && isWhitespaceOrComment(result.psi)) {
                 result = result.treePrev
-            }
-            return result
-        }
-
-        fun getPrevSiblingSkipWhiteSpacesCommentsAndComma(sibling: ASTNode?): ASTNode? {
-
-            if (sibling == null) return null
-            var result: ASTNode? = sibling.treePrev
-
-            while (result != null && (isWhitespaceOrComment(result.psi) || result.elementType == MSATokenElementTypes.COMMA)) {
-                result = result.treePrev
-            }
-            return result
-        }
-
-        fun getNextSiblingSkipWhiteSpacesAndComments(sibling: ASTNode?): ASTNode? {
-
-            if (sibling == null) return null
-            var result: ASTNode? = sibling.treeNext
-
-            while (result != null && isWhitespaceOrComment(result.psi)) {
-                result = result.treeNext
-            }
-            return result
-        }
-
-
-        private fun getPrevSiblingSkippingCondition(sibling: PsiElement?,
-                                                    condition: Condition<PsiElement>,
-                                                    strictly: Boolean): PsiElement? {
-            return getSiblingSkippingCondition(sibling, Function<com.intellij.psi.PsiElement, com.intellij.psi.PsiElement> { element -> element.prevSibling }, condition, strictly)
-        }
-
-        private fun getSiblingSkippingCondition(sibling: PsiElement?,
-                                                nextSibling: Function<PsiElement, PsiElement>,
-                                                condition: Condition<PsiElement>,
-                                                strictly: Boolean): PsiElement? {
-            if (sibling == null) return null
-            if (sibling is PsiFile) return sibling
-            var result: PsiElement? = if (strictly) nextSibling.`fun`(sibling) else sibling
-            while (result != null && result !is PsiFile && condition.value(result)) {
-                result = nextSibling.`fun`(result)
             }
             return result
         }
