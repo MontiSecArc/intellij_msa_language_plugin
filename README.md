@@ -109,5 +109,9 @@ Publishing a new version requires a valid Artifactory user. This user needs to b
 
 It is necessary to update the Java Version. Working (tested) is version 1.8.0_102
 
+**Programming Language**
+
+The program is mostly written in [Kotlin](kotlinlang.org), a short primer into the usage can be found [here](https://kotlinlang.org/docs/reference/)
+
 # Contribution
 We welcome contributions in the form of issues or pull requests. If you need help with this process, we've created a brief overview [here](https://git.rwth-aachen.de/ma_buning/msa/blob/master/CONTRIBUTING.md).
