@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.tbuning.de" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Policies" type="tbun:PoliciesType" xmlns:tbun="http://www.tbuning.de"/>
+    <xs:complexType name="PoliciesType">
+        <xs:sequence>
+            <xs:element type="tbun:PolicyType" name="Policy" maxOccurs="unbounded" minOccurs="0" xmlns:tbun="http://www.tbuning.de"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="PolicyType">
+        <xs:sequence>
+            <xs:element type="tbun:GraphQueryInspectionType" name="GraphQueryInspection" xmlns:tbun="http://www.tbuning.de"/>
+            <xs:element type="tbun:GraphQueryFixType" name="GraphQueryFix" minOccurs="0" xmlns:tbun="http://www.tbuning.de"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="id" use="optional"/>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="severity" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="GraphQueryFixType">
+        <xs:sequence>
+            <xs:element name="Path" type="xs:string" />
+            <xs:element name="FixDescription" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="GraphQueryInspectionType">
+        <xs:sequence>
+            <xs:element name="Path" type="xs:string" />
+            <xs:element name="ProblemDescription" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

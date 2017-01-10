@@ -1,10 +1,13 @@
 package de.monticore.lang.montisecarc.references
 
 import com.intellij.codeInsight.completion.JavaLookupElementBuilder
+import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
+import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.psi.*
 import de.monticore.lang.montisecarc.psi.MSAJavaReference
 
 /**
@@ -27,7 +30,56 @@ class MSAJavaReference(element: MSAJavaReference, textRange: TextRange, val refe
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 
-        return PsiShortNamesCache.getInstance(element.project).getClassesByName(reference, GlobalSearchScope.allScope(element.project)).map(::PsiElementResolveResult).toTypedArray()
+        val imports = PsiTreeUtil.getChildrenOfType(element.containingFile, MSAImportDeclaration::class.java)?.map { it.text.replace("import ", "").replace(";", "") }.orEmpty()
+
+        /*
+        * Traverse Tree Up and collect all Generic Types, because these can be Java References
+        * */
+        return PsiShortNamesCache
+                .getInstance(element.project)
+                .getClassesByName(reference, GlobalSearchScope.allScope(element.project))
+                .filter {
+                    val packageName = (it.containingFile as? PsiJavaFile)?.packageStatement?.packageName
+                    var foundPackageInImport = false
+                    for (import in imports) {
+
+                        if (import.endsWith("*")) {
+
+                            if (import.substringBeforeLast(".") == packageName) {
+
+                                foundPackageInImport = true
+                                break
+                            }
+
+                        } else {
+
+                            if (import == packageName + "." + it.name) {
+                                foundPackageInImport = true
+                                break
+                            }
+                        }
+                    }
+                    foundPackageInImport
+                }
+                .map(::PsiElementResolveResult)
+                .union(
+                        getTypeParametersFromTreeParents()
+                                .filter { it.id.text == reference }
+                                .map(::PsiElementResolveResult)
+                ).toTypedArray()
+    }
+
+    private fun getTypeParametersFromTreeParents(): MutableList<MSATypeVariableDeclaration> {
+        var msaComponentDeclaration = PsiTreeUtil.getParentOfType(element, MSAComponentDeclaration::class.java)
+
+        val collectedTypeVariable = mutableListOf<MSATypeVariableDeclaration>()
+        while (msaComponentDeclaration != null) {
+
+            val typeVariables = msaComponentDeclaration.componentSignature?.componentNameWithType?.typeParameters?.typeVariableDeclarationList?.filter { !it.id.text.isNullOrEmpty() }.orEmpty()
+            collectedTypeVariable.addAll(typeVariables)
+            msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentDeclaration, MSAComponentDeclaration::class.java)
+        }
+        return collectedTypeVariable
     }
 
     override fun resolve(): PsiElement? {
@@ -40,8 +92,32 @@ class MSAJavaReference(element: MSAJavaReference, textRange: TextRange, val refe
 
         val map = PsiShortNamesCache.getInstance(element.project).allClassNames.flatMap {
             className ->
-            PsiShortNamesCache.getInstance(element.project).getClassesByName(className, GlobalSearchScope.allScope(element.project)).map { aClass -> JavaLookupElementBuilder.forClass(aClass) }
+            PsiShortNamesCache.getInstance(element.project).getClassesByName(className, GlobalSearchScope.allScope(element.project)).map { aClass ->
+                JavaLookupElementBuilder.forClass(aClass).withInsertHandler { insertionContext, lookupElement ->
+
+                    val psiElement = lookupElement.psiElement
+                    if (psiElement != null) {
+
+                        if (psiElement.containingFile is PsiJavaFile) {
+
+                            val psiJavaFile = psiElement.containingFile as PsiJavaFile
+                            val packageName = psiJavaFile.packageStatement?.packageName
+                            if (packageName != null) {
+
+                                (element.containingFile as MSAFile)
+                            }
+                        }
+                    }
+                }
+            }
         }
-        return map.toTypedArray()
+
+        return map.union(getTypeParametersFromTreeParents().filter { it.id.text == reference }.map {
+            val lookupElementBuilder = LookupElementBuilder.create(it)
+            lookupElementBuilder.withLookupString(it.id.text)
+            if (it.javaClassReference != null) {
+                lookupElementBuilder.withTailText("(" + it.javaClassReference!!.text + ")")
+            }
+        }).toTypedArray()
     }
 }

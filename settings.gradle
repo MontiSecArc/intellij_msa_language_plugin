@@ -1,2 +1,4 @@
 rootProject.name = 'IntelliJ_MSA'
 
+include 'GraphDatabase'
+project(":GraphDatabase").projectDir = new File("graphdatabase/")

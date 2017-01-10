@@ -1,18 +1,18 @@
 package de.monticore.lang.montisecarc.completion
 
-import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.completion.CompletionContributor
+import com.intellij.codeInsight.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.AutoCompletionPolicy
 import com.intellij.openapi.project.DumbAware
-import com.intellij.patterns.*
+import com.intellij.patterns.PlatformPatterns
+import com.intellij.patterns.PsiElementPattern
+import com.intellij.patterns.StandardPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiErrorElement
 import com.intellij.psi.PsiWhiteSpace
-import com.intellij.psi.tree.IElementType
-import com.intellij.psi.tree.TokenSet
-import com.intellij.util.ProcessingContext
-import com.sun.xml.internal.bind.api.impl.NameConverter
 import de.monticore.lang.montisecarc.psi.*
-import de.monticore.lang.montisecarc.psi.MSATokenElementTypes
 import org.jetbrains.annotations.NotNull
 
 /**
@@ -82,6 +82,5 @@ class MSAKeywordCompletionContributor : CompletionContributor, DumbAware {
 
     override fun fillCompletionVariants(@NotNull parameters: CompletionParameters, @NotNull result: CompletionResultSet) {
         super.fillCompletionVariants(parameters, result)
-        val position = parameters.position
     }
 }

@@ -22,7 +22,4 @@ public interface MSAComponentSignature extends MSACompositeElement {
   @NotNull
   MSAComponentNameWithType getComponentName();
 
-  @Nullable
-  MSAComponentNameWithType getComponentExtensionName();
-
 }

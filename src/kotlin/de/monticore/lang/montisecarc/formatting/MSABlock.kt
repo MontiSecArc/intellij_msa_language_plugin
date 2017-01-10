@@ -54,7 +54,7 @@ class MSABlock(node: ASTNode, wrap: Wrap?, alignment: Alignment?, @NotNull val s
                 continue
             }
             val childBlock = MSABlock(childNode, createChildWrap(childNode),
-                    createChildAlignment(childNode), settings)
+                    createChildAlignment(), settings)
             childBlock.parent = this
             tlChildren.add(childBlock)
             childNode = childNode.treeNext
@@ -66,29 +66,15 @@ class MSABlock(node: ASTNode, wrap: Wrap?, alignment: Alignment?, @NotNull val s
         return MSAWrappingProcessor.createChildWrap(child, Wrap.createWrap(WrapType.NONE, false), myNode, settings)
     }
 
-    fun createChildAlignment(child: ASTNode): Alignment? {
-        return MSAAlignmentProcessor.createChildAlignment(child, myNode, settings)
+    fun createChildAlignment(): Alignment? {
+        return MSAAlignmentProcessor.createChildAlignment(myNode, settings)
     }
 
     override fun getIndent(): Indent {
-        return MSAIndentProcessor.getChildIndent(node, settings)
+        return MSAIndentProcessor.getChildIndent(node)
     }
 
     override fun isLeaf(): Boolean {
         return myNode.firstChildNode == null
     }
-
-    var mySubMSABlocks: MutableList<MSABlock> = mutableListOf()
-
-    fun getSubMSABlocks(): List<MSABlock> {
-        if (mySubMSABlocks.isEmpty()) {
-            mySubMSABlocks = mutableListOf<MSABlock>()
-            for (block in subBlocks) {
-                mySubMSABlocks.add(block as MSABlock)
-            }
-        }
-        return mySubMSABlocks
-    }
 }
-
-

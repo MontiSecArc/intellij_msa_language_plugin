@@ -6,9 +6,8 @@ import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.StubBasedPsiElement;
 import de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub;
-import kotlin.jvm.JvmStatic;
 
-public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiElement<MSAComponentDeclarationStub> {
+public interface MSAComponentDeclaration extends MSAHighlightable, StubBasedPsiElement<MSAComponentDeclarationStub> {
 
   @Nullable
   MSAComponentBody getComponentBody();
@@ -22,26 +21,17 @@ public interface MSAComponentDeclaration extends MSANamedElement, StubBasedPsiEl
   @Nullable
   MSASuppressAnnotation getSuppressAnnotation();
 
-  @JvmStatic
-  @NotNull
-  String getName();
-
-  @JvmStatic
   @NotNull
   String getQualifiedName();
 
-  @JvmStatic
   @NotNull
   String getComponentName();
 
-  @JvmStatic
   @NotNull
   String getInstanceName();
 
-  @JvmStatic
   int getTrustLevel();
 
-  @JvmStatic
   int getAbsoluteTrustLevel();
 
   void addPolicyViolation(String violation);

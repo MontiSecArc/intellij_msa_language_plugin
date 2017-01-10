@@ -32,7 +32,7 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 
-        val found = arrayListOf<MSAComponentDeclaration>()
+        val found = arrayListOf<MSAComponentName>()
 
         val imports = PsiTreeUtil.getChildrenOfType(element.containingFile, MSAImportDeclaration::class.java)?.map { it.text.replace("import ", "").replace(";", "") }.orEmpty()
 
@@ -44,24 +44,27 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
             val referencePackage = it.qualifiedName
 
             val itPackageIdentifier = (it.containingFile as MSAFile).getPackage()?.packageIdentifier
+            val name = it.componentSignature?.componentName?.componentName
+            if (name != null) {
+                if (it.containingFile.virtualFile.canonicalPath == pathForComponentName || packageIdentifier == itPackageIdentifier) {
 
-            if (it.containingFile.virtualFile.canonicalPath == pathForComponentName || packageIdentifier == itPackageIdentifier) {
-                found.add(it)
-            } else {
-                for (import in imports) {
+                    found.add(name)
+                } else {
+                    for (import in imports) {
 
-                    if (import.indexOf("*") > 0) {
+                        if (import.indexOf("*") > 0) {
 
-                        if (referencePackage.substringBeforeLast(".") == import.substringBeforeLast(".")) {
+                            if (referencePackage.substringBeforeLast(".") == import.substringBeforeLast(".")) {
 
-                            found.add(it)
-                            break
-                        }
-                    } else {
-                        if (import.contains(referencePackage)) {
+                                found.add(name)
+                                break
+                            }
+                        } else {
+                            if (import.contains(referencePackage)) {
 
-                            found.add(it)
-                            break
+                                found.add(name)
+                                break
+                            }
                         }
                     }
                 }
@@ -79,18 +82,20 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
 
     override fun getVariants(): Array<out Any> {
 
-        val found = arrayListOf<MSAComponentDeclaration>()
+        val found = arrayListOf<MSAComponentName>()
         StubIndex.getInstance().getAllKeys(MSAComponentDeclarationIndex.KEY, element.project).forEach { componentDeclaration ->
             StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentDeclaration, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
-                found.add(it)
+                val name = it.componentSignature?.componentName?.componentName
+                if (name != null) {
+                    found.add(name)
+                }
                 true
             })
         }
-        val foundComponentInstanceNames = found.filter { !it.instanceName.isNullOrEmpty() }
+        val foundComponentInstanceNames = found.filter { !it.text.isNullOrEmpty() }
         val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {
             val lookupElementBuilder = LookupElementBuilder.create(it)
-            lookupElementBuilder.withLookupString(it.instanceName)
-            lookupElementBuilder.withTailText("(" + it.qualifiedName + ")")
+            lookupElementBuilder.withLookupString(it.text)
 
         }.toTypedArray()
 

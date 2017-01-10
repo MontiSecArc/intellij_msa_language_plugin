@@ -70,7 +70,7 @@ class NewMSAFileAction : CreateFileFromTemplateAction("Create MSA file", "Create
         return javaClass.hashCode()
     }
 
-    override fun equals(obj: Any?): Boolean {
-        return obj is NewMSAFileAction
+    override fun equals(other: Any?): Boolean {
+        return other is NewMSAFileAction
     }
 }

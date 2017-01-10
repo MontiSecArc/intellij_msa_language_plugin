@@ -35,6 +35,7 @@ class MSAInvalidPackageAnnotator : Annotator {
 
         override fun visitPackageClause(o: MSAPackageClause) {
 
+            super.visitPackageClause(o)
             val directory = element.containingFile.containingDirectory
 
             val dirPackageName = JavaDirectoryService.getInstance().getPackage(directory)?.qualifiedName

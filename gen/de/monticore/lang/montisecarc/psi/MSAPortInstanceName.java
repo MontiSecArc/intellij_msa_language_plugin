@@ -5,31 +5,31 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
-import kotlin.jvm.JvmStatic;
 
-public interface MSAPortInstanceName extends MSACompositeElement {
+public interface MSAPortInstanceName extends MSANamedElement {
 
   @NotNull
   PsiElement getId();
 
-  @JvmStatic
+  @NotNull
+  String getName();
+
   @NotNull
   String getPortName();
 
-  @JvmStatic
   @Nullable
   String getComponentsPath();
 
-  @JvmStatic
   @NotNull
   PsiElement setName(String newName);
 
-  @JvmStatic
   @NotNull
   PsiReference[] getReferences();
 
-  @JvmStatic
   @Nullable
   MSAPortElement getReferencedPortElement();
+
+  @NotNull
+  PsiElement getNameIdentifier();
 
 }

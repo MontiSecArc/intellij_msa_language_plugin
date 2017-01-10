@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
-import kotlin.jvm.JvmStatic;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 public class MSAPackageClauseImpl extends MSACompositeElementImpl implements MSAPackageClause {
@@ -27,7 +26,6 @@ public class MSAPackageClauseImpl extends MSACompositeElementImpl implements MSA
     else super.accept(visitor);
   }
 
-  @JvmStatic
   @Nullable
   public String getPackageIdentifier() {
     return MSAPsiImplUtil.getPackageIdentifier(this);

@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MSAConnector extends MSACompositeElement {
+public interface MSAConnector extends MSAHighlightable {
 
   @NotNull
   MSAConnectSource getConnectSource();
 
   @NotNull
   List<MSAConnectTarget> getConnectTargetList();
+
+  @Nullable
+  MSAJavaClassReference getJavaClassReference();
 
 }

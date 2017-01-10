@@ -27,8 +27,8 @@ public class MSAComponentExtensionImpl extends MSACompositeElementImpl implement
 
   @Override
   @NotNull
-  public MSAComponentNameWithType getComponentNameWithType() {
-    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentNameWithType.class));
+  public MSAComponentNameWithTypeProjection getComponentNameWithTypeProjection() {
+    return notNullChild(PsiTreeUtil.getChildOfType(this, MSAComponentNameWithTypeProjection.class));
   }
 
 }

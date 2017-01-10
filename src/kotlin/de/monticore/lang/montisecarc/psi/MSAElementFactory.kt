@@ -27,8 +27,7 @@ object MSAElementFactory {
 
     fun createPortInstanceName(project: Project, name: String): MSAPortInstanceName {
 
-        val file = createFile(project, name)
-        return file.firstChild as MSAPortInstanceName
+        return createFile(project, "component A { port in A $name; }").firstChild.children[1].children[0].children[0].children[1] as MSAPortInstanceName
     }
 
     // ToDo: Anders erzeugen!
@@ -64,6 +63,11 @@ object MSAElementFactory {
     fun createPackageStatement(project: Project, actualPackage: String): MSAPackageClause {
         val file = createFile(project, "package $actualPackage;")
         return file.firstChild as MSAPackageClause
+    }
+
+    fun createImportStatement(project: Project, actualImport: String): MSAImportDeclaration {
+        val file = createFile(project, "import $actualImport;")
+        return file.firstChild as MSAImportDeclaration
     }
 
     fun createSuppressPolicyAnnotation(project: Project, commentText: String): PsiElement {

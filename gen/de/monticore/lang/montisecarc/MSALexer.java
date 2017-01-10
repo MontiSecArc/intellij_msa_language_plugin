@@ -2,11 +2,10 @@
 
 package de.monticore.lang.montisecarc;
 
-import com.intellij.lexer.*;
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
+import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 
 /**

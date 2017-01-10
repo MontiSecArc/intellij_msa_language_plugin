@@ -74,23 +74,24 @@ private package_recover ::= !(';' | '<<' | <<eof>> | import | component | AT)
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
 private import_recover ::= !('<<' | component | import | semi | AT)
 
-ComponentName ::= ID { methods=[getName setName getReferences] }
-ComponentInstanceName ::= ID { methods=[getName setName getReferences] }
+ComponentName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName setName getReferences getNameIdentifier] }
+ComponentInstanceName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName setName getReferences getNameIdentifier] }
 RoleName ::= ID { methods=[] }
-PortInstanceName ::= ID { methods=[getPortName getComponentsPath setName getReferences getReferencedPortElement] }
+PortInstanceName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName getPortName getComponentsPath setName getReferences getReferencedPortElement getNameIdentifier] }
 
 ComponentDeclaration ::= Prefix? component ComponentSignature ComponentBody {
                                 pin=2
-                                methods=[getName getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations getSuperComponents]
-                                implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+                                methods=[getQualifiedName getComponentName getInstanceName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations getSuperComponents]
+                                implements = ["de.monticore.lang.montisecarc.psi.MSAHighlightable"]
                                 stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub"
                                 elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
                                 mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin"
                                 }
 
 ComponentSignature ::= ComponentNameWithType ComponentParameters ComponentExtension? ComponentInstanceWithParameters? {pin=1 methods=[ComponentName="/ComponentNameWithType" ComponentExtensionName="/ComponentExtension/ComponentNameWithType"] recoverWhile=signature_recover}
-ComponentExtension ::= extends ComponentNameWithType
+ComponentExtension ::= extends ComponentNameWithTypeProjection
 ComponentNameWithType ::= ComponentName TypeParameters? {pin=1}
+ComponentNameWithTypeProjection ::= ComponentName TypeProjections? {pin=1}
 private ComponentParameters ::= ("(" Parameter ("," Parameter)* ")")?
 private signature_recover ::= !(<<eof>> | LBRACE | RBRACE | component)
 
@@ -98,20 +99,19 @@ ComponentBody ::= LBRACE (Statement)* RBRACE {pin=1}
 
 ComponentInstanceDeclaration ::= Prefix?  ComponentNamesWithTypes ComponentParameters SuppressAnnotation? ComponentInstance (COMMA SuppressAnnotation? ComponentInstance)* semi {
         pin=3
-        methods=[getName getQualifiedName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
-        implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+        methods=[getQualifiedName getTrustLevel getAbsoluteTrustLevel addPolicyViolation getPolicyViolations]
         stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAComponentInstanceStub"
         elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
         mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentInstanceImplMixin"
     }
-private ComponentNamesWithTypes ::= ComponentNameWithType (DOT ComponentNameWithType)* {pin=1}
+private ComponentNamesWithTypes ::= ComponentNameWithTypeProjection (DOT ComponentNameWithTypeProjection)* {pin=1}
 private ComponentInstanceWithParameters ::= ComponentInstanceName ("(" ID ("," ID)* ")")?
 private ComponentInstance ::=  ComponentInstanceWithParameters (LBRACK SimpleConnectPortStatement (semi SimpleConnectPortStatement)* RBRACK)?
 
 PortDeclaration ::= Prefix port SuppressAnnotation? PortElement ( COMMA SuppressAnnotation? PortElement )* semi {pin=3}
 PortElement ::= 'critical'? { 'in' | 'out' } JavaClassReference [PortInstanceName] {
-    pin=2 name="port" methods=[getName isCritical getDirection getEnclosingComponent addPolicyViolation getPolicyViolations]
-    implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"]
+    pin=2 name="port" methods=[isCritical getDirection getEnclosingComponent getPortName]
+    implements = ["de.monticore.lang.montisecarc.psi.MSAHighlightable"]
     stubClass="de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub"
     elementTypeFactory = "de.monticore.lang.montisecarc.stubs.ElementFactoryKt.factory"
     mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin"
@@ -122,7 +122,8 @@ JavaClassReference ::= (JavaReference DOT)* JavaReference { methods=[getReferenc
 JavaReference ::= ID { methods=[getReferences]}
 
 private SimpleConnectPortStatement ::= Prefix? Connector
-Connector ::=  [ ENCRYPTED | UNENCRYPTED ] [ WEAK_AUTH | STRONG_AUTH ] ConnectSource ARROW ConnectTarget (COMMA ConnectTarget)* {pin=3}
+Connector ::=  [ ENCRYPTED | UNENCRYPTED ] ConnectSource (ARROW | '-[' [JavaClassReference]']->')  ConnectTarget (COMMA ConnectTarget)* {pin=2
+    implements = ["de.monticore.lang.montisecarc.psi.MSAHighlightable"] mixin="de.monticore.lang.montisecarc.psi.impl.mixin.MSAConnectorImplMixin"}
 
 ConnectSource ::= QualifiedIdentifier
 ConnectTarget ::= QualifiedIdentifier
@@ -145,7 +146,7 @@ PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAR
 AccessControlStatement ::= Prefix? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
 IdentityStatement ::= Prefix IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
-IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName?
+IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName? { methods=[getReferencedPort getReferencedComponent getReferencedComponentInstance] }
 
 CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
 
@@ -170,8 +171,10 @@ private statement_recover ::= !( '<<' | AT | semi | trustlevel | trustlevelrelat
 Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
 private StereoValue ::= ID ("=" STRING)?
 
+TypeProjections ::= LESS TypeProjection (COMMA TypeProjection)* GREATER
 TypeParameters ::= LESS TypeVariableDeclaration (COMMA TypeVariableDeclaration)* GREATER
-private TypeVariableDeclaration ::= ID (extends JavaClassReference)?
+TypeVariableDeclaration ::= ID (extends JavaClassReference)?
+TypeProjection ::= JavaClassReference
 
 private Parameter ::= JavaClassReference ID ("=" ID)?
 
@@ -179,4 +182,4 @@ private Prefix ::= SuppressAnnotation? Stereotype?
 
 SuppressAnnotation ::= SuppressAnnotationKeyword '(' Policy (COMMA Policy)* ')' {pin=1}
 SuppressAnnotationKeyword ::= AT SUPPRESS_POLICY_TOKEN {pin=1}
-Policy ::= STRING
+Policy ::= ID

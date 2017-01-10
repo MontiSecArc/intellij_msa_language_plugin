@@ -5,19 +5,16 @@ import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs.IStubElementType
-import de.monticore.lang.montisecarc.psi.MSAElementFactory
 import de.monticore.lang.montisecarc.psi.MSAFile
-import de.monticore.lang.montisecarc.psi.MSANamedElement
 import de.monticore.lang.montisecarc.psi.MSATokenElementTypes
-import de.monticore.lang.montisecarc.psi.util.module
-import de.monticore.lang.montisecarc.stubs.MSANamedElementStub
+import de.monticore.lang.montisecarc.stubs.MSAElementStub
 
 /**
  * Created by thomasbuning on 28.09.16.
  */
 abstract class MSAStubbedNamedElementImpl<StubT> : MSAStubbedElementImpl<StubT>,
-        MSANamedElement
-where StubT : MSANamedElementStub<*> {
+        PsiElement
+where StubT : MSAElementStub<*> {
 
     constructor(node: ASTNode) : super(node)
 
@@ -25,16 +22,6 @@ where StubT : MSANamedElementStub<*> {
 
     protected open val nameElement: PsiElement?
         get() = findChildByType(MSATokenElementTypes.ID)
-
-    override fun getName(): String? {
-        val stub = stub
-        return if (stub != null) stub.name else nameElement?.text
-    }
-
-    override fun setName(name: String): PsiElement? {
-        nameElement?.replace(MSAElementFactory.createIdentifier(project, name))
-        return this
-    }
 
     override fun getNavigationElement(): PsiElement = nameElement ?: this
 

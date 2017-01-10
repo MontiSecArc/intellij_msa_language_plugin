@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MSAComponentExtension extends MSACompositeElement {
 
   @NotNull
-  MSAComponentNameWithType getComponentNameWithType();
+  MSAComponentNameWithTypeProjection getComponentNameWithTypeProjection();
 
 }

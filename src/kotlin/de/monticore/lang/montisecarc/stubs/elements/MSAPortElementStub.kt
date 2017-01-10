@@ -3,7 +3,7 @@ package de.monticore.lang.montisecarc.stubs.elements
 import com.intellij.psi.stubs.*
 import de.monticore.lang.montisecarc.psi.MSAPortElement
 import de.monticore.lang.montisecarc.psi.impl.MSAPortElementImpl
-import de.monticore.lang.montisecarc.stubs.MSANamedElementStub
+import de.monticore.lang.montisecarc.stubs.MSAElementStub
 import de.monticore.lang.montisecarc.stubs.MSANamedStubElementType
 import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
 
@@ -38,7 +38,6 @@ object MSAPortStubElementType : MSANamedStubElementType<MSAPortElementStub, MSAP
                     dataStream.readNameAsString(), dataStream.readNameAsString(), dataStream.readBoolean())
 
     override fun indexStub(stub: MSAPortElementStub, sink: IndexSink) {
-        super.indexStub(stub, sink)
 
         val stubName = stub.name ?: stub.type?.decapitalize()
         stubName.let { if(!it.isNullOrEmpty()) { sink.occurrence(MSAPortIndex.KEY, it!!)} }
@@ -49,7 +48,7 @@ object MSAPortStubElementType : MSANamedStubElementType<MSAPortElementStub, MSAP
 class MSAPortElementStub(
         parent: StubElement<*>?,
         elementType: IStubElementType<*, *>,
-        name: String?,
+        val name: String?,
         val type: String?,
         val directionIsIn: Boolean
-) : MSANamedElementStub<MSAPortElement>(parent, elementType, name ?: type?.decapitalize() ?: "")
+) : MSAElementStub<MSAPortElement>(parent, elementType)

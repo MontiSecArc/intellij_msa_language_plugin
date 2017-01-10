@@ -1,0 +1,3 @@
+[submodule "graphdatabase"]
+	path = graphdatabase
+	url = https://git.rwth-aachen.de/ma_buning/graphdatabase.git

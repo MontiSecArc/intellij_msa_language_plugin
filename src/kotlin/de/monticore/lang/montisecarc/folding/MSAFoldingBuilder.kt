@@ -39,7 +39,6 @@ class MSAFoldingBuilder: CustomFoldingBuilder(), DumbAware {
     }
 
     override fun getLanguagePlaceholderText(node: ASTNode, range: TextRange): String? {
-        val elementType = node.elementType
         val psiElement = node.psi
 
         if (psiElement is MSAFile) return "/.../"

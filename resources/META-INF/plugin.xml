@@ -1,7 +1,7 @@
 <idea-plugin version="4">
     <id>de.monticore.lang.montisecarc.MontiSecArcLanguagePlugin</id>
     <name>MontiSecArc Language Plugin</name>
-    <version>0.7.8</version>
+    <version>0.8.0</version>
     <vendor email="thomas.buning@rwth-aachen.de"/>
 
     <description><![CDATA[
@@ -11,6 +11,18 @@
     <change-notes><![CDATA[
     ]]>
     </change-notes>
+
+    <depends optional="true">de.tbuning.neo4j.graphdatabase</depends>
+    <depends optional="true">com.neueda4j.intellij.plugin.cypher</depends>
+
+    <project-components>
+        <component>
+            <implementation-class>de.monticore.lang.montisecarc.visualization.GraphDatabase</implementation-class>
+        </component>
+        <component>
+            <implementation-class>de.monticore.lang.montisecarc.policy.PolicyLoader</implementation-class>
+        </component>
+    </project-components>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="141.0"/>
@@ -25,7 +37,7 @@
                 implementation="de.monticore.lang.montisecarc.actions.MSATemplatePropertiesProvider"/>
         <createFromTemplateHandler implementation="de.monticore.lang.montisecarc.actions.MSACreateFromTemplateHandler"/>
 
-        <stubElementTypeHolder class="de.monticore.lang.montisecarc.psi.MSACompositeElementType"/>
+        <stubElementTypeHolder class="de.monticore.lang.montisecarc.psi.MSACompositeElementTypes"/>
 
         <!-- Add your extensions here -->
         <fileTypeFactory implementation="de.monticore.lang.montisecarc.MSAFileTypeFactory"/>
@@ -43,11 +55,23 @@
                              implementationClass="de.monticore.lang.montisecarc.folding.MSAFoldingBuilder"/>
 
         <!-- Annotator -->
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidSemanticAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidPackageAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAProtocolAnnotator"/>
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortTypeAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.ThirdPartyComponentAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentInstanceAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentTypAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortInstanceAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SourceTargetAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SingleStatementsAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MainComponentAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.AccessRolesAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.TrustLevelAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.CVEAnnotator" />
 
         <completion.contributor language="MSA"
                                 implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>
@@ -76,6 +100,15 @@
         <localInspection level="WARNING" enabledByDefault="true"
                          implementationClass="de.monticore.lang.montisecarc.inspections.MSAPortTypMissingImplementationInspection"
                          displayName="Unresolved Port Type Reference" language="MSA" groupName="MSA"/>
+        <lang.inspectionSuppressor language="MSA"
+                                   implementationClass="de.monticore.lang.montisecarc.analyzer.inspections.MSAInspectionSuppressor"/>
+        <localInspection implementationClass="de.monticore.lang.montisecarc.inspections.GraphQueryInspection"
+                         displayName="Policy Check" groupName="MSA"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="de.tbuning.neo4j.graphdatabase">
+        <Neo4JGraphDatabase databaseFolder="graph_editor" withServer="true" />
+        <Neo4JGraphDatabase databaseFolder="analyzer" withServer="false" />
     </extensions>
 
     <actions>
@@ -83,6 +116,13 @@
                 text="MSA file" description="Create new MSA file">
             <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after"/>
         </action>
+        <group id="MSAGenerators" text="Generators" description="Generator Extensions for MSA Language" popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <action id="de.monticore.lang.montisecarc.GraphQueryEditor.MSAGenerateGraph" class="de.monticore.lang.montisecarc.actions.MSAGenerateGraph"
+                    text="Generate Graph" description="Generate Graph from MSA File">
+                <add-to-group group-id="MSAGenerators" />
+                <keyboard-shortcut first-keystroke="alt shift G" keymap="$default" />
+            </action>
+        </group>
     </actions>
-
 </idea-plugin>

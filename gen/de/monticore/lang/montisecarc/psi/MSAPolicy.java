@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MSAPolicy extends MSACompositeElement {
 
   @NotNull
-  PsiElement getString();
+  PsiElement getId();
 
 }

@@ -10,7 +10,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.impl.mixin.MSAComponentDeclarationImplMixin;
 import de.monticore.lang.montisecarc.psi.*;
-import kotlin.jvm.JvmStatic;
 import de.monticore.lang.montisecarc.stubs.elements.MSAComponentDeclarationStub;
 import com.intellij.psi.stubs.IStubElementType;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
@@ -58,36 +57,25 @@ public class MSAComponentDeclarationImpl extends MSAComponentDeclarationImplMixi
     return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
   }
 
-  @JvmStatic
-  @NotNull
-  public String getName() {
-    return MSAPsiImplUtil.getName(this);
-  }
-
-  @JvmStatic
   @NotNull
   public String getQualifiedName() {
     return MSAPsiImplUtil.getQualifiedName(this);
   }
 
-  @JvmStatic
   @NotNull
   public String getComponentName() {
     return MSAPsiImplUtil.getComponentName(this);
   }
 
-  @JvmStatic
   @NotNull
   public String getInstanceName() {
     return MSAPsiImplUtil.getInstanceName(this);
   }
 
-  @JvmStatic
   public int getTrustLevel() {
     return MSAPsiImplUtil.getTrustLevel(this);
   }
 
-  @JvmStatic
   public int getAbsoluteTrustLevel() {
     return MSAPsiImplUtil.getAbsoluteTrustLevel(this);
   }

@@ -10,7 +10,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.impl.mixin.MSAPortElementImplMixin;
 import de.monticore.lang.montisecarc.psi.*;
-import kotlin.jvm.JvmStatic;
 import de.monticore.lang.montisecarc.stubs.elements.MSAPortElementStub;
 import com.intellij.psi.stubs.IStubElementType;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
@@ -46,15 +45,18 @@ public class MSAPortElementImpl extends MSAPortElementImplMixin implements MSAPo
     return PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class);
   }
 
-  @JvmStatic
   public boolean isCritical() {
     return MSAPsiImplUtil.isCritical(this);
   }
 
-  @JvmStatic
   @NotNull
   public String getDirection() {
     return MSAPsiImplUtil.getDirection(this);
+  }
+
+  @NotNull
+  public String getPortName() {
+    return MSAPsiImplUtil.getPortName(this);
   }
 
 }
