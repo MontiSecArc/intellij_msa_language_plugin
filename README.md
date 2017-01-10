@@ -10,11 +10,7 @@ This projects brings the MontiSecArc language to the popular IntelliJ IDE. The p
 - [Contribution](contribution)
 
 # Quickstart
-1. Check-Out project 
-
-```shell
-git clone https://git.rwth-aachen.de/ma_buning/msa.git --remote --recursive
-```
+1. Check-Out project `git clone https://git.rwth-aachen.de/ma_buning/msa.git --remote --recursive`
 2. 
 
 # Usage Examples
