@@ -79,6 +79,16 @@ component ServiceA {
 ```
 
 # Features
+- Syntax Highlighting
+- Keyword-Autocompletion
+- Brace Matching
+- New File Integration
+- MontiSecArc templates for components and ports
+- Component and port folding support
+- Contex Condition checks
+- Reference Resolution
+- Find-Usage
+- Graph Generation (with these two plugins installed: [1](https://git.rwth-aachen.de/ma_buning/graphdatabase.git), [2](https://plugins.jetbrains.com/idea/plugin/8087-graph-database-support)
 
 # Create New Version
 
