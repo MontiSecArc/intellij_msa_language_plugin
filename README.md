@@ -2,6 +2,9 @@
 ![Bildschirmfoto_2016-11-11_um_09.27.00](/uploads/bb4676c2ca848e1420f3d5ad710ce210/Bildschirmfoto_2016-11-11_um_09.27.00.png)
 This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
 
+
+[IntelliJ_MSA_Language-0.8.9.SNAPSHOT.zip](http://138.68.65.103:8081/artifactory/intellij_plugins_snapshot_local/de/monticore/lang/montisecarc/plugin/IntelliJ_MSA_Language/0.8.9.SNAPSHOT/IntelliJ_MSA_Language-0.8.9.SNAPSHOT.zip) &#8226; [IntelliJ_MSA_Language-0.8.9.SNAPSHOT.jar](http://138.68.65.103:8081/artifactory/intellij_plugins_snapshot_local/de/monticore/lang/montisecarc/IntelliJ_MSA_Language/0.8.9.SNAPSHOT/IntelliJ_MSA_Language-0.8.9.SNAPSHOT.jar)
+
 # Contents
 - [Quickstart](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#quickstart)
 - [Install Plugin into IntelliJ Installation](https://git.rwth-aachen.de/ma_buning/msa/edit/master/README.md#install_plugin_into_intelliJ_installation)
