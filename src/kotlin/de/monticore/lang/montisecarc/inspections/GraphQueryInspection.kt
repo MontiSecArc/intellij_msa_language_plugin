@@ -181,8 +181,17 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
         if(element != null) {
 
+            var arrayOfLocalQuickFixes = emptyArray<LocalQuickFix>()
+            val fix = loadedPolicy.fix?.fix
+
+            if (!fix.isNullOrEmpty()) {
+
+
+                arrayOfLocalQuickFixes = arrayOf(GraphQueryQuickFix(fix!!, loadedPolicy.name))
+            }
+
             (element as MSAHighlightable).addPolicyViolation(loadedPolicy.id)
-            callback(element, loadedPolicy, emptyArray<LocalQuickFix>(), ProblemHighlightType.valueOf(loadedPolicy.severity))
+            callback(element, loadedPolicy, arrayOfLocalQuickFixes, ProblemHighlightType.valueOf(loadedPolicy.severity))
         }
     }
 }

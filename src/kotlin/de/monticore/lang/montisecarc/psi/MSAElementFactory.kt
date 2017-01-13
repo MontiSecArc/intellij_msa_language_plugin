@@ -30,6 +30,12 @@ object MSAElementFactory {
         return createFile(project, "component A { port in A $name; }").firstChild.children[1].children[0].children[0].children[1] as MSAPortInstanceName
     }
 
+    fun createConnector(project: Project, from: String, to: String, isEncrypted: Boolean) : MSAConnector {
+
+        val encrypted = if (isEncrypted) "encrypted" else ""
+        return createFile(project, "component A { connect ${encrypted} $from -> $to; }").firstChild.children[1].children[0] as MSAConnector
+    }
+
     // ToDo: Anders erzeugen!
     fun createIdentifier(project: Project, name: String): PsiElement =
             createFromText<MSAPortElement>(project, "mod $name;")!!.javaClassReference!!
