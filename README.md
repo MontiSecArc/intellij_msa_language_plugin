@@ -27,7 +27,7 @@ This projects brings the MontiSecArc language to the popular IntelliJ IDE. The p
 # Install Plugin into IntelliJ Installation
 The plugin requires IntelliJ Version [2016.X.X](https://www.jetbrains.com/idea/download/) to be installed.
 
-Download the newest version of the plugin from [here](https://git.rwth-aachen.de/ma_buning/msa/builds/3094/artifacts/file/build/distributions/IntelliJ_MSA-0.7.7.SNAPSHOT.zip). Do not unzip the file, just open the IntelliJ preferences and locate "Plugins" from the left menu.
+Download the newest version of the plugin from [here](http://138.68.65.103:8081/artifactory/intellij_plugins_snapshot_local/de/monticore/lang/montisecarc/plugin/IntelliJ_MSA_Language/0.8.9.SNAPSHOT/IntelliJ_MSA_Language-0.8.9.SNAPSHOT.zip). Do not unzip the file, just open the IntelliJ preferences and locate "Plugins" from the left menu.
 ![Bildschirmfoto_2016-11-11_um_09.38.51](/uploads/5870fcef0107641983a5800cd0fdc99f/Bildschirmfoto_2016-11-11_um_09.38.51.png)
 Click the "Install plugin from disk" button and select the downloaded zip file.
 
