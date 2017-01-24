@@ -58,7 +58,12 @@ class MSASpacingProcessor(val child1: Block?, val child2: Block, val myNode: AST
             return addLineBreak(1)
         }
 
-        if(type1 == MSACompositeElementTypes.PACKAGE_CLAUSE || type1 == MSACompositeElementTypes.IMPORT_DECLARATION) {
+        if(type1 == MSACompositeElementTypes.IMPORT_DECLARATION || type2 == MSACompositeElementTypes.IMPORT_DECLARATION) {
+
+            return addLineBreak(1)
+        }
+
+        if(type1 == MSACompositeElementTypes.PACKAGE_CLAUSE || (type1 == MSACompositeElementTypes.IMPORT_DECLARATION && type2 != MSACompositeElementTypes.IMPORT_DECLARATION)) {
 
             return addLineBreak(2)
         }

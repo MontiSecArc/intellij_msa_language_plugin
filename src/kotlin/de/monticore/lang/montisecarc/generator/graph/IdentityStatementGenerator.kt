@@ -53,12 +53,16 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaComponentName = componentInstanceName.references[0].resolve()
                     val msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
                     val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentInstanceDeclaration::class.java)
-                    if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
-                        startIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
-                    } else if (msaComponentInstanceDeclaration != null && msaComponentInstanceDeclaration is MSAComponentInstanceDeclaration) {
+                    /**
+                     * Don't change order
+                     */
+                    if (msaComponentInstanceDeclaration != null && msaComponentInstanceDeclaration is MSAComponentInstanceDeclaration) {
 
                         startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentInstanceDeclaration, componentInstanceName.name))
+                    } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
+
+                        startIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
                     }
                 }
             }
@@ -80,12 +84,14 @@ class IdentityStatementGenerator : MSAGenerator() {
                     val msaComponentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
                     val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentInstanceDeclaration::class.java)
 
-                    if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
+                    /**
+                     * Order is important because if it is an instance declaration we can also find a parent component declaration (in most cases)
+                     */
+                    if (msaComponentInstanceDeclaration != null && msaComponentInstanceDeclaration is MSAComponentInstanceDeclaration) {
+                        stopIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentInstanceDeclaration, componentInstanceName.name))
+                    } else if (msaComponentDeclaration != null && msaComponentDeclaration is MSAComponentDeclaration) {
 
                         stopIdentifier = listOf(ComponentInstanceGenerator.createComponentIdentifier(msaComponentDeclaration))
-                    } else if (msaComponentInstanceDeclaration != null && msaComponentInstanceDeclaration is MSAComponentInstanceDeclaration) {
-                        startIdentifier = listOf(ComponentInstanceInstanceGenerator.createComponentInstanceIdentifier(msaComponentInstanceDeclaration, componentInstanceName.name))
-
                     }
                 }
 
