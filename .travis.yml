@@ -1,3 +1,1 @@
-language: java
-
-./gradlew clean build buildPlugin
+./gradlew clean build
