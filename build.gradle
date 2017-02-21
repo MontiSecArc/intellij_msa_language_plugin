@@ -14,8 +14,8 @@ buildscript {
         maven {
             url 'http://138.68.65.103:8081/artifactory/plugins-release'
             credentials {
-                username = user
-                password = creds
+                username = $user
+                password = $creds
             }
         }
     }
