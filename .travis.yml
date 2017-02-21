@@ -1,1 +1,4 @@
-./gradlew clean build
+language: java
+
+script:
+    - ./gradlew clean build
