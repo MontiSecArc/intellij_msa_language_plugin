@@ -16,14 +16,16 @@ publishing {
         }
     }
 }
-
+def user = hasProperty('artifactory_user') ? artifactory_user : System.getenv('artifactory_user')
+def creds = hasProperty('artifactory_password') ? artifactory_password : System.getenv('artifactory_password')
+        
 artifactory {
     contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
     publish {
         repository {
             repoKey = 'intellij_plugins_snapshot_local'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
+            username = "${user}"
+            password = "${creds}"
             maven = true
         }
         defaults {
@@ -33,8 +35,8 @@ artifactory {
     resolve {
         repository {
             repoKey = 'intellij_plugins_snapshot'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
+            username = "${user}"
+            password = "${creds}"
             maven = true
         }
     }
