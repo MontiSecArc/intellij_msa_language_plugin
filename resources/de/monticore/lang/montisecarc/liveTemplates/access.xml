@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<templateSet group="MSA">
+    <template name="accessPort" description="trustlevelrelation definition" toReformat="false" toShortenFQNames="true"
+              value="access $PORT$($POLICY$);$END$">
+
+        <variable name="PORT" expression="" defaultValue="&quot;portInstanceName&quot;" alwaysStopAt="true"/>
+        <variable name="POLICY" expression="" defaultValue="&quot;policy&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_COMPONENT_BODY" value="true" />
+        </context>
+    </template>
+    <template name="accessComponent" description="trustlevelrelation definition" toReformat="false" toShortenFQNames="true"
+              value="access $POLICY$;$END$">
+
+        <variable name="POLICY" expression="" defaultValue="&quot;policy&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_COMPONENT_BODY" value="true" />
+        </context>
+    </template>
+</templateSet>

@@ -43,8 +43,20 @@ class MSAReferenceContributor : PsiReferenceContributor() {
 
                 val instanceName = msaPortInstanceName.text
 
-                if (!instanceName.isEmpty() && instanceName.first().isLowerCase()) {
-                    return arrayOf(MSAPortInstanceNameReference(msaPortInstanceName, TextRange(0, instanceName.length), instanceName))
+                val msaConnectSource = PsiTreeUtil.getParentOfType(element, MSAConnectSource::class.java)
+                val msaConnectTarget = PsiTreeUtil.getParentOfType(element, MSAConnectTarget::class.java)
+
+                if (msaConnectSource != null) {
+
+                    val last = msaConnectSource.qualifiedIdentifier.componentInstanceNameList.lastOrNull()
+
+                    return arrayOf(MSAPortInstanceNameReference(msaPortInstanceName, last, TextRange(0, instanceName.length), instanceName))
+
+                } else if (msaConnectTarget != null) {
+
+                    val last = msaConnectTarget.qualifiedIdentifier.componentInstanceNameList.lastOrNull()
+
+                    return arrayOf(MSAPortInstanceNameReference(msaPortInstanceName, last, TextRange(0, instanceName.length), instanceName))
                 } else {
                     return PsiReference.EMPTY_ARRAY
                 }

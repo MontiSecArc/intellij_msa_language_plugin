@@ -49,20 +49,27 @@ class GraphGenerator : Generator() {
     private fun isSubComponent(componentQualifiedNames: List<String>, qualifiedName: String): Boolean
             = componentQualifiedNames.filter { it != qualifiedName }.any { qualifiedName.startsWith(it) && qualifiedName.contains(it) }
 
-    override fun aggregateResultFor(parsedFile: PsiFile): InputStream? {
-
+    private fun filterReferencedComponentInstances(parsedFile: PsiFile): List<MSAComponentDeclaration> {
         val filteredInstances = referencedComponentInstances.filter { it.first != parsedFile }
         val filterSuperComponents = superComponents.filter { it.first != parsedFile }
 
         var qualifiedNames = filteredInstances.map { it.second.qualifiedName }.union(filterSuperComponents.map { it.second.qualifiedName }).toList()
         qualifiedNames = qualifiedNames.filter { !isSubComponent(qualifiedNames, it) }
 
-        referencedComponentInstances.union(superComponents)
-                .filter { qualifiedNames.contains(it.second.qualifiedName) }
-                .forEach {
+        return referencedComponentInstances.union(superComponents)
+                .filter { qualifiedNames.contains(it.second.qualifiedName) }.map { it.second }
+    }
 
-                    walkElement(it.second)
-                }
+    override fun aggregateResultFor(parsedFile: PsiFile): InputStream? {
+
+        val list = filterReferencedComponentInstances(parsedFile)
+
+        referencedComponentInstances.clear()
+
+        list.forEach {
+
+            walkElement(it)
+        }
 
         /*
         * - We got the original file (parsedFile) and all files referenced by Instances

@@ -42,7 +42,7 @@ class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, t
 
                 val resolve = prevComponentInstanceName.references[0].resolve()
 
-                if(resolve != null && resolve is MSAComponentInstanceName) {
+                if (resolve != null && resolve is MSAComponentInstanceName) {
 
                     return getResolveResult(resolve)
                 }
@@ -60,7 +60,7 @@ class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, t
 
         if (parentComponent != null) {
 
-            fun getResolveResultFromBody(componentBody: MSAComponentBody?): Set<PsiElementResolveResult> {
+            fun getResolveResultFromBody(componentBody: MSAComponentBody?): Set<MSAComponentInstanceName> {
                 val componentDeclarations = componentBody?.componentDeclarationList?.filter {
                     it != null && it.componentSignature?.componentInstanceName?.text == element.text
                 }?.map { it.componentSignature?.componentInstanceName }.orEmpty().requireNoNulls()
@@ -69,7 +69,7 @@ class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, t
                     it != null && it.componentInstanceNameList.map { it.id.text }.contains(element.text)
                 }?.flatMap { it.componentInstanceNameList.filter { it.id.text == element.text } }.orEmpty()
 
-                return componentDeclarations.union(componentInstanceDeclarations).map(::PsiElementResolveResult).toSet()
+                return componentDeclarations.union(componentInstanceDeclarations)
             }
 
             val componentResolutions = getResolveResultFromBody(parentComponent.componentBody)
@@ -79,12 +79,8 @@ class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, t
                 getResolveResultFromBody(it.componentBody)
             }
 
-            return componentResolutions.union(superComponentsResolutions).toTypedArray()
+            return componentResolutions.union(superComponentsResolutions).map(::PsiElementResolveResult).toTypedArray()
         }
-
-        /**
-         * ToDo: Add in Instance Declarations componentdeclarations and componentinstance declarations from reference
-         */
 
         return emptyArray()
     }
@@ -98,6 +94,7 @@ class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, t
     override fun getVariants(): Array<out Any> {
 
         val found = arrayListOf<MSAComponentInstanceName>()
+
         StubIndex.getInstance().getAllKeys(MSAComponentInstanceIndex.KEY, element.project).forEach { portInstanceName ->
             StubIndex.getInstance().processElements(MSAComponentInstanceIndex.KEY, portInstanceName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentInstanceDeclaration::class.java, {
                 found.addAll(it.componentInstanceNameList.filter { !it.text.isNullOrEmpty() })

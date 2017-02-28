@@ -65,4 +65,12 @@ sealed class MSAContextType(
             return PsiTreeUtil.findFirstParent(element, { element -> element is MSAComponentBody }) is MSAComponentBody
         }
     }
+
+    //MSA_COMPONENT_BODY
+    class ComponentBody: MSAContextType("MSA_COMPONENT_BODY", "component_body", Generic::class) {
+        override fun isInContext(element: PsiElement): Boolean {
+
+            return PsiTreeUtil.findFirstParent(element, { element -> element is MSAComponentBody }) is MSAComponentBody
+        }
+    }
 }

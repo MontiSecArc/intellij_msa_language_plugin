@@ -36,7 +36,7 @@ class NewMSAFileAction : CreateFileFromTemplateAction("Create MSA file", "Create
     private val DEFAULT_MSA_TEMPLATE_PROPERTY = "DefaultMSATemplateProperty"
 
     override fun buildDialog(project: Project, directory: PsiDirectory, @NotNull builder: CreateFileFromTemplateDialog.Builder) {
-        builder.setTitle(NEW_MSA_FILE).addKind("Empty file", MSAIcons.FILE, FILE_TEMPLATE).addKind("Simple Component", MSAIcons.FILE, APPLICATION_TEMPLATE)
+        builder.setTitle(NEW_MSA_FILE).addKind("Simple Component", MSAIcons.FILE, APPLICATION_TEMPLATE)
     }
 
     @Nullable

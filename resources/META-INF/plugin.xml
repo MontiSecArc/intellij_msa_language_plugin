@@ -1,17 +1,20 @@
 <idea-plugin version="4">
     <id>de.monticore.lang.montisecarc.MontiSecArcLanguagePlugin</id>
     <name>MontiSecArc Language Plugin</name>
-    <version>0.8.0</version>
+    <version>0.8.10</version>
     <vendor email="thomas.buning@rwth-aachen.de"/>
 
     <description><![CDATA[
-      MontiSecArc IntelliJ Language Plugin
+      This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
     ]]></description>
 
     <change-notes><![CDATA[
     ]]>
     </change-notes>
 
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.vcs</depends>
     <depends optional="true">de.tbuning.neo4j.graphdatabase</depends>
     <depends optional="true">com.neueda4j.intellij.plugin.cypher</depends>
 
@@ -25,7 +28,7 @@
     </project-components>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="141.0"/>
+    <idea-version since-build="143.0"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -88,6 +91,7 @@
                 implementation="de.monticore.lang.montisecarc.templates.MSALiveTemplatesProvider"/>
         <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$Component"/>
         <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$Port"/>
+        <liveTemplateContext implementation="de.monticore.lang.montisecarc.templates.MSAContextType$ComponentBody"/>
 
         <!-- Indices -->
         <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSANamedElementIndex"/>
