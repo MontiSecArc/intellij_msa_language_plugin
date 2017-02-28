@@ -1,34 +1,21 @@
 buildscript {
 
     repositories {
-        mavenCentral()
         jcenter()
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
         maven {
             url "https://plugins.gradle.org/m2/"
         }
-        maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
-        maven {
-            url 'http://138.68.65.103:8081/artifactory/plugins-release'
-            credentials {
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-            }
-        }
+
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "gradle.plugin.org.jetbrains:gradle-intellij-plugin:0.1.10"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.2.5"
     }
 }
-
+apply plugin: "org.jetbrains.intellij"
 group 'de.monticore.lang.montisecarc'
 
-apply plugin: "com.jfrog.artifactory"
-apply plugin: 'maven-publish'
-
-apply plugin: 'org.jetbrains.intellij'
 intellij {
     pluginName name
     version ideaVersion
@@ -98,5 +85,3 @@ dependencies {
 }
 
 version = "$version.$buildNumber"
-
-apply from: "artifactory.gradle"
