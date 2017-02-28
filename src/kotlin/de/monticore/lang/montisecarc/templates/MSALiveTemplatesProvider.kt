@@ -17,8 +17,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-class MSALiveTemplatesProvider: DefaultLiveTemplatesProvider {
-    override fun getDefaultLiveTemplateFiles(): Array<out String> = arrayOf("/de/monticore/lang/montisecarc/liveTemplates/components", "/de/monticore/lang/montisecarc/liveTemplates/ports")
+class MSALiveTemplatesProvider : DefaultLiveTemplatesProvider {
+    override fun getDefaultLiveTemplateFiles(): Array<out String> = arrayOf(
+            "/de/monticore/lang/montisecarc/liveTemplates/components",
+            "/de/monticore/lang/montisecarc/liveTemplates/ports",
+            "/de/monticore/lang/montisecarc/liveTemplates/access",
+            "/de/monticore/lang/montisecarc/liveTemplates/accesscontrol",
+            "/de/monticore/lang/montisecarc/liveTemplates/identity",
+            "/de/monticore/lang/montisecarc/liveTemplates/trustlevel",
+            "/de/monticore/lang/montisecarc/liveTemplates/trustlevelrelation"
+    )
 
     override fun getHiddenLiveTemplateFiles(): Array<out String>? = null
 }

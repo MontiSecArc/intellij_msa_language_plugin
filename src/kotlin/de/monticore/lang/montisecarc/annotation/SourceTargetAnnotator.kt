@@ -35,11 +35,11 @@ class SourceTargetAnnotator : Annotator {
 
                 if(startComponentInstanceName.references.isNotEmpty()) {
 
-                    val startInstanceName = startComponentInstanceName.references.first().resolve() as MSAComponentInstanceName
+                    val startInstanceName = startComponentInstanceName.references.first().resolve() as? MSAComponentInstanceName
 
                     if(targetComponentInstanceName.references.isNotEmpty()) {
 
-                        val targetInstanceName = targetComponentInstanceName.references.first().resolve() as MSAComponentInstanceName
+                        val targetInstanceName = targetComponentInstanceName.references.first().resolve() as? MSAComponentInstanceName
 
                         val startQualifiedName = (PsiTreeUtil.getParentOfType(startInstanceName, MSAComponentSignature::class.java)?.parent as? MSAComponentDeclaration)?.qualifiedName
                         val startQualifiedInstanceName = PsiTreeUtil.getParentOfType(startInstanceName, MSAComponentInstanceDeclaration::class.java)?.qualifiedName

@@ -64,11 +64,10 @@ class MSAFoldingBuilder: CustomFoldingBuilder(), DumbAware {
 
 
     private fun foldComponentBodies(descriptors: MutableList<FoldingDescriptor>, squirrelFile: MSAFile) {
-        for (componentBody in PsiTreeUtil.findChildrenOfType(squirrelFile, MSAComponentBody::class.java)) {
-            val body = componentBody
-            if (body != null && body.textLength > 2) {
-                descriptors.add(FoldingDescriptor(body, body.textRange))
-            }
-        }
+        PsiTreeUtil.findChildrenOfType(squirrelFile, MSAComponentBody::class.java)
+                .asSequence()
+                .map { it }
+                .filter { it != null && it.textLength > 2 }
+                .mapTo(descriptors) { FoldingDescriptor(it, it.textRange) }
     }
 }

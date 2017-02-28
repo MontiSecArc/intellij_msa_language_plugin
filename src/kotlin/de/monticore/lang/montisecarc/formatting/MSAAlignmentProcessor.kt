@@ -29,7 +29,7 @@ class MSAAlignmentProcessor {
             val elementType = myNode.elementType
             val myBaseAlignment = Alignment.createAlignment()
 
-            if(elementType == MSACompositeElementTypes.PORT_DECLARATION) {
+            if(elementType === MSACompositeElementTypes.PORT_ELEMENT) {
 
                 if(cmSettings.ALIGN_MULTILINE_PARAMETERS) {
 

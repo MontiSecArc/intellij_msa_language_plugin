@@ -1,6 +1,5 @@
 package de.monticore.lang.montisecarc.references
 
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.*
 import com.intellij.psi.search.GlobalSearchScope
@@ -36,14 +35,14 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
 
         val imports = PsiTreeUtil.getChildrenOfType(element.containingFile, MSAImportDeclaration::class.java)?.map { it.text.replace("import ", "").replace(";", "") }.orEmpty()
 
-        val pathForComponentName = element.containingFile.virtualFile.canonicalPath
-        val packageIdentifier = (element.containingFile as MSAFile).getPackage()?.packageIdentifier
+        val pathForComponentName = element.containingFile?.virtualFile?.canonicalPath
+        val packageIdentifier = (element.containingFile as? MSAFile)?.getPackage()?.packageIdentifier
 
         StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
 
             val referencePackage = it.qualifiedName
 
-            val itPackageIdentifier = (it.containingFile as MSAFile).getPackage()?.packageIdentifier
+            val itPackageIdentifier = (it.containingFile as? MSAFile)?.getPackage()?.packageIdentifier
             val name = it.componentSignature?.componentName?.componentName
             if (name != null) {
                 if (it.containingFile.virtualFile.canonicalPath == pathForComponentName || packageIdentifier == itPackageIdentifier) {
@@ -82,23 +81,9 @@ class MSAComponentNameReference(element: MSAComponentName, textRange: TextRange,
 
     override fun getVariants(): Array<out Any> {
 
-        val found = arrayListOf<MSAComponentName>()
-        StubIndex.getInstance().getAllKeys(MSAComponentDeclarationIndex.KEY, element.project).forEach { componentDeclaration ->
-            StubIndex.getInstance().processElements(MSAComponentDeclarationIndex.KEY, componentDeclaration, element.project, GlobalSearchScope.allScope(element.project), MSAComponentDeclaration::class.java, {
-                val name = it.componentSignature?.componentName?.componentName
-                if (name != null) {
-                    found.add(name)
-                }
-                true
-            })
-        }
-        val foundComponentInstanceNames = found.filter { !it.text.isNullOrEmpty() }
-        val arrayOfLookupElementBuilders = foundComponentInstanceNames.map {
-            val lookupElementBuilder = LookupElementBuilder.create(it)
-            lookupElementBuilder.withLookupString(it.text)
-
-        }.toTypedArray()
-
-        return arrayOfLookupElementBuilders
+        return StubIndex.getInstance()
+                .getAllKeys(MSAComponentDeclarationIndex.KEY,
+                        element.project)
+                .toTypedArray()
     }
 }

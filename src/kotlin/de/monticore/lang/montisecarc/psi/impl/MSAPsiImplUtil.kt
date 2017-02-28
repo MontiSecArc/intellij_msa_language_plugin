@@ -412,7 +412,12 @@ class MSAPsiImplUtil {
 
     }
 }
-fun MSAComponentInstanceName.resolveToComponentDeclaration() : MSAComponentDeclaration? {
+fun MSAComponentInstanceName?.resolveToComponentDeclaration() : MSAComponentDeclaration? {
+
+    if (this == null) {
+
+        return null
+    }
 
     if (this.references.isNotEmpty()) {
 

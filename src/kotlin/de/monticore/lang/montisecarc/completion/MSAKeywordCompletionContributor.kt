@@ -30,18 +30,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-class MSAKeywordCompletionContributor : CompletionContributor, DumbAware {
-
-    constructor() : super() {
-
-        this.extend(CompletionType.BASIC, packagePattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, AutoCompletionPolicy.ALWAYS_AUTOCOMPLETE, arrayOf("package")))
-        this.extend(CompletionType.BASIC, importPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("import")))
-        this.extend(CompletionType.BASIC, componentPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("component")))
-        this.extend(CompletionType.BASIC, inComponentPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("component","access","port","connect","autoconnect","accesscontrol","trustlevel","trustlevelrelation","identity","cpe","configuration")))
-        this.extend(CompletionType.BASIC, portInOutPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("in", "out")))
-        this.extend(CompletionType.BASIC, portStartPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("critical", "in", "out")))
-        this.extend(CompletionType.BASIC, accessControlPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("on", "off")))
-    }
+class MSAKeywordCompletionContributor : CompletionContributor(), DumbAware {
 
     private fun importPattern(): PsiElementPattern.Capture<PsiElement> {
 
@@ -82,5 +71,15 @@ class MSAKeywordCompletionContributor : CompletionContributor, DumbAware {
 
     override fun fillCompletionVariants(@NotNull parameters: CompletionParameters, @NotNull result: CompletionResultSet) {
         super.fillCompletionVariants(parameters, result)
+    }
+
+    init {
+        this.extend(CompletionType.BASIC, packagePattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, AutoCompletionPolicy.ALWAYS_AUTOCOMPLETE, arrayOf("package")))
+        this.extend(CompletionType.BASIC, importPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("import")))
+        this.extend(CompletionType.BASIC, componentPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("component")))
+        this.extend(CompletionType.BASIC, inComponentPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("component","access","port","connect","autoconnect","accesscontrol","trustlevel","trustlevelrelation","identity","cpe","configuration")))
+        this.extend(CompletionType.BASIC, portInOutPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("in", "out")))
+        this.extend(CompletionType.BASIC, portStartPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("critical", "in", "out")))
+        this.extend(CompletionType.BASIC, accessControlPattern(), MSAKeywordCompletionProvider(MSACompletionUtil.KEYWORD_PRIORITY, arrayOf("on", "off")))
     }
 }

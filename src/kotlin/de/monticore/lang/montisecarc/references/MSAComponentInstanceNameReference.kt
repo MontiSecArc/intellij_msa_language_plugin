@@ -94,6 +94,7 @@ class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, t
     override fun getVariants(): Array<out Any> {
 
         val found = arrayListOf<MSAComponentInstanceName>()
+
         StubIndex.getInstance().getAllKeys(MSAComponentInstanceIndex.KEY, element.project).forEach { portInstanceName ->
             StubIndex.getInstance().processElements(MSAComponentInstanceIndex.KEY, portInstanceName, element.project, GlobalSearchScope.allScope(element.project), MSAComponentInstanceDeclaration::class.java, {
                 found.addAll(it.componentInstanceNameList.filter { !it.text.isNullOrEmpty() })

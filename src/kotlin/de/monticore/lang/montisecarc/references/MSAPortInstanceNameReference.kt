@@ -6,11 +6,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.PsiReferenceBase
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.stubs.StubIndex
 import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.psi.*
-import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
+import de.monticore.lang.montisecarc.psi.impl.resolveToComponentDeclaration
 
 /**
  * Copyright 2016 Thomas Buning
@@ -28,7 +26,7 @@ import de.monticore.lang.montisecarc.stubs.index.MSAPortIndex
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class MSAPortInstanceNameReference(val element: MSAPortInstanceName, textRange: TextRange, val instanceName: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
+class MSAPortInstanceNameReference(val element: MSAPortInstanceName, val componentInstanceName: MSAComponentInstanceName?, textRange: TextRange, val instanceName: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
 
     override fun multiResolve(incompleteCode: Boolean): Array<out PsiElementResolveResult> {
 
@@ -77,7 +75,7 @@ class MSAPortInstanceNameReference(val element: MSAPortInstanceName, textRange: 
         return emptyArray()
     }
 
-    private fun resolveIfInstance(elementInInstance: PsiElement?) : Pair<PsiElement?, Boolean> {
+    private fun resolveIfInstance(elementInInstance: PsiElement?): Pair<PsiElement?, Boolean> {
 
         val instanceDeclaration = PsiTreeUtil.getParentOfType(elementInInstance, MSAComponentInstanceDeclaration::class.java)
 
@@ -138,28 +136,18 @@ class MSAPortInstanceNameReference(val element: MSAPortInstanceName, textRange: 
 
     override fun getVariants(): Array<out Any> {
 
-        val found = arrayListOf<MSAPortInstanceName>()
-        StubIndex.getInstance().getAllKeys(MSAPortIndex.KEY, element.project).forEach { portInstanceName ->
-            StubIndex.getInstance().processElements(MSAPortIndex.KEY, portInstanceName, element.project, GlobalSearchScope.allScope(element.project), MSAPortElement::class.java, {
+        val componentDeclaration = componentInstanceName?.resolveToComponentDeclaration()
+        var msaComponentBody: MSAComponentBody? = PsiTreeUtil.getParentOfType(element, MSAComponentBody::class.java)
 
-                var portInstanceNameLocal = it.portInstanceName
-                if (portInstanceNameLocal == null) {
+        if (componentDeclaration != null) {
 
-                    portInstanceNameLocal = MSAElementFactory.createPortInstanceName(element.project, it.portName)
-                }
-
-                if (!portInstanceNameLocal.text.isNullOrEmpty()) {
-                    found.add(portInstanceNameLocal)
-                }
-                true
-            })
+            msaComponentBody = componentDeclaration.componentBody
         }
-        val foundPortInstanceNames = found.filter { it.text.orEmpty().isNotEmpty() }
-        val arrayOfLookupElementBuilders = foundPortInstanceNames.map {
+
+        val flatMap = msaComponentBody?.portDeclarationList?.flatMap { it.portElementList.map { it.portInstanceName } }?.filter { it != null && it.text.orEmpty().isNotEmpty() }?.requireNoNulls()
+
+        return flatMap?.map {
             LookupElementBuilder.create(it).withLookupString(it.text)
-
-        }.toTypedArray()
-
-        return arrayOfLookupElementBuilders
+        }.orEmpty().toTypedArray()
     }
 }

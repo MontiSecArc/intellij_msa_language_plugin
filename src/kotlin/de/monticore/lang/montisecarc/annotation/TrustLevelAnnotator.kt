@@ -36,8 +36,8 @@ class TrustLevelAnnotator : Annotator {
 
             if (!startComponentInstanceNameList.isNullOrEmpty() && !targetComponentInstanceNameList.isNullOrEmpty()) {
 
-                val startTrustLevel = startComponentInstanceNameList!!.last().resolveToComponentDeclaration()?.trustLevel ?: 0
-                val targetTrustLevel = targetComponentInstanceNameList!!.last().resolveToComponentDeclaration()?.trustLevel ?: 0
+                val startTrustLevel = startComponentInstanceNameList!!.last().resolveToComponentDeclaration()?.absoluteTrustLevel ?: 0
+                val targetTrustLevel = targetComponentInstanceNameList!!.last().resolveToComponentDeclaration()?.absoluteTrustLevel ?: 0
 
                 val greater = o.node.findChildByType(MSATokenElementTypes.GREATER)
                 val equal = o.node.findChildByType(MSATokenElementTypes.EQUAL)

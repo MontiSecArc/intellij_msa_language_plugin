@@ -55,7 +55,7 @@
      SINGLE_LINE_COMMENT = "regexp:(//|#)[^\r\n]*"
      MULTI_LINE_COMMENT = "regexp:/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*+/)"
     NUMBER='regexp:\d+(\.\d*)?'
-    ID='regexp:\p{Alpha}\w*'
+    ID='regexp:[a-zA-Z_]+[a-zA-Z_0-9]*'
     STRING="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
     DOT='.'
     ASTERIX='*'
@@ -64,15 +64,15 @@
   generateTokens=false
 }
 
-File ::= [PackageClause] (ImportDeclaration)* ComponentDeclaration? { methods=[getPackageIdentifier] }
+File ::= !<<eof>> [PackageClause] (ImportDeclaration)* ComponentDeclaration? { methods=[getPackageIdentifier] }
 
 private semi ::= SEMICOLON_SYNTHETIC | SEMICOLON | <<eof>> { name="semicolon" }
 
 PackageClause ::= package (DOT | ID)+ semi {pin=1 methods=[getPackageIdentifier] recoverWhile=package_recover}
-private package_recover ::= !(';' | '<<' | <<eof>> | import | component | AT)
+private package_recover ::= !(semi | '<<' | <<eof>> | 'import' | 'component' | AT)
 
 ImportDeclaration ::= import ID (DOT (ID DOT)* ASTERIX | (DOT ID)*) semi {pin=1 recoverWhile=import_recover}
-private import_recover ::= !('<<' | component | import | semi | AT)
+private import_recover ::= !(';' | '<<' | <<eof>> | import | component | AT)
 
 ComponentName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName setName getReferences getNameIdentifier] }
 ComponentInstanceName ::= ID { implements=[ "de.monticore.lang.montisecarc.psi.MSANamedElement"] methods=[getName setName getReferences getNameIdentifier] }
@@ -146,7 +146,7 @@ PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAR
 AccessControlStatement ::= Prefix? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
 IdentityStatement ::= Prefix IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
-IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName? { methods=[getReferencedPort getReferencedComponent getReferencedComponentInstance] }
+IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName { methods=[getReferencedPort getReferencedComponent getReferencedComponentInstance] }
 
 CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
 

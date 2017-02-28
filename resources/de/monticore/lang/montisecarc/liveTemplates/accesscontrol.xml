@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<templateSet group="MSA">
+    <template name="accesscontrol" description="accesscontrol definition" toReformat="false" toShortenFQNames="true"
+              value="accesscontrol $SOURCE$;$END$">
+
+        <variable name="SOURCE" expression="" defaultValue="&quot;on&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_COMPONENT_BODY" value="true" />
+        </context>
+    </template>
+</templateSet>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<templateSet group="MSA">
+    <template name="trustlevelrelation" description="trustlevelrelation definition" toReformat="false" toShortenFQNames="true"
+              value="trustlevelrelation $SOURCE$ $TYPE$ $TARGET$;$END$">
+
+        <variable name="SOURCE" expression="" defaultValue="&quot;source&quot;" alwaysStopAt="true"/>
+        <variable name="TYPE" expression="enum($lt;,$gt;,$eq;)" alwaysStopAt="true"/>
+        <variable name="TARGET" expression="" defaultValue="&quot;target&quot;" alwaysStopAt="true"/>
+
+        <context>
+            <option name="MSA_COMPONENT_BODY" value="true" />
+        </context>
+    </template>
+</templateSet>
