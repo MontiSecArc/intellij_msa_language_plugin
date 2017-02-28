@@ -2,10 +2,6 @@
 ![Bildschirmfoto_2016-11-11_um_09.27.00](/resources/img/Bildschirmfoto_2016-11-11_um_09.27.00.png)
 This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
 
-**Downloads**
-
-[IntelliJ_MSA_Language-0.8.9.SNAPSHOT.zip](http://138.68.65.103:8081/artifactory/intellij_plugins_snapshot_local/de/monticore/lang/montisecarc/plugin/IntelliJ_MSA_Language/0.8.9.SNAPSHOT/IntelliJ_MSA_Language-0.8.9.SNAPSHOT.zip) &#8226; [IntelliJ_MSA_Language-0.8.9.SNAPSHOT.jar](http://138.68.65.103:8081/artifactory/intellij_plugins_snapshot_local/de/monticore/lang/montisecarc/IntelliJ_MSA_Language/0.8.9.SNAPSHOT/IntelliJ_MSA_Language-0.8.9.SNAPSHOT.jar)
-
 # Quickstart
 1. Check-Out project:
 
@@ -109,4 +105,4 @@ It is necessary to update the Java Version. Working (tested) is version 1.8.0_10
 The program is mostly written in [Kotlin](kotlinlang.org), a short primer into the usage can be found [here](https://kotlinlang.org/docs/reference/)
 
 # Contribution
-We welcome contributions in the form of issues or pull requests. If you need help with this process, we've created a brief overview [here](https://github.com/MontiSecArc/intellij_msa_language_plugin/CONTRIBUTING.md).
+We welcome contributions in the form of issues or pull requests. If you need help with this process, we've created a brief overview [here](https://github.com/MontiSecArc/intellij_msa_language_plugin/blob/master/CONTRIBUTING.md).
