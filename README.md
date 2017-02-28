@@ -1,6 +1,7 @@
 # MontiSecArc IntelliJ Language Plugin
 ![Bildschirmfoto_2016-11-11_um_09.27.00](/resources/img/Bildschirmfoto_2016-11-11_um_09.27.00.png)
 [![Build Status](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin.svg?branch=master)](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin)
+
 This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
 
 # Quickstart
@@ -15,7 +16,7 @@ This projects brings the MontiSecArc language to the popular IntelliJ IDE. The p
 # Install Plugin into IntelliJ Installation
 The plugin requires IntelliJ Version [2016.X.X](https://www.jetbrains.com/idea/download/) to be installed.
 
-Download the newest version of the plugin from [here](http://138.68.65.103:8081/artifactory/intellij_plugins_snapshot_local/de/monticore/lang/montisecarc/plugin/IntelliJ_MSA_Language/0.8.9.SNAPSHOT/IntelliJ_MSA_Language-0.8.9.SNAPSHOT.zip). Do not unzip the file, just open the IntelliJ preferences and locate "Plugins" from the left menu.
+Download the newest version of the plugin from [here](https://github.com/MontiSecArc/intellij_msa_language_plugin/releases/latest). Do not unzip the file, just open the IntelliJ preferences and locate "Plugins" from the left menu.
 ![Bildschirmfoto_2016-11-11_um_09.38.51](/resources/img/Bildschirmfoto_2016-11-11_um_09.38.51.png)
 Click the "Install plugin from disk" button and select the downloaded zip file.
 
@@ -80,7 +81,7 @@ component ServiceA {
 - Contex Condition checks
 - Reference Resolution
 - Find-Usage
-- Graph Generation (with these two plugins installed: [1](https://git.rwth-aachen.de/ma_buning/graphdatabase.git), [2](https://plugins.jetbrains.com/idea/plugin/8087-graph-database-support))
+- Graph Generation (with these two plugins installed: [1](https://github.com/MontiSecArc/graphdatabase/releases/latest), [2](https://plugins.jetbrains.com/idea/plugin/8087-graph-database-support))
 
 # Create New Version
 1. Update the version property in **gradle.properties** to the new version 
