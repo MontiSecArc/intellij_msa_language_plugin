@@ -1,11 +1,6 @@
 package de.monticore.lang.montisecarc.generator
 
-import com.intellij.util.PathUtil
-import freemarker.cache.ClassTemplateLoader
-import freemarker.cache.FileTemplateLoader
-import freemarker.cache.MultiTemplateLoader
 import freemarker.template.Configuration
-import java.io.File
 import java.io.StringWriter
 
 /**
@@ -30,7 +25,7 @@ class FreeMarker(val clazz : Class<Any>) {
     init {
 
         with(cfg) {
-            templateLoader = MultiTemplateLoader(arrayOf(ClassTemplateLoader(clazz, "/"), FileTemplateLoader(File(PathUtil.getJarPathForClass(clazz)))))
+            setClassForTemplateLoading(clazz, "/")
             defaultEncoding = "UTF-8"
             templateExceptionHandler = freemarker.template.TemplateExceptionHandler.IGNORE_HANDLER
         }
