@@ -53,6 +53,22 @@ repositories {
     jcenter()
 }
 
+project.afterEvaluate {
+
+    def prepareSandboxTask = project.tasks.findByName("prepareSandbox")
+    prepareSandboxTask.doLast {
+
+        def libFiles = new File("$prepareSandboxTask.destinationDir/${project.name}/lib/")
+        libFiles.listFiles().each {
+
+            if(!it.name.contains("freemarker") && !it.name.contains("caffeine") && !it.name.contains("fuel") && !it.name.contains("result") && !it.name.contains("klaxon") && !it.name.contains("IntelliJ_MSA")) {
+
+                delete(it)
+            }
+        }
+    }
+}
+
 dependencies {
     compileOnly(project(":GraphDatabase"))
 
@@ -61,7 +77,6 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     compile group: 'org.freemarker', name: 'freemarker', version: '2.3.25-incubating'
     compile 'com.github.ben-manes.caffeine:caffeine:2.4.0'
-
 }
 
 version = "$version"
