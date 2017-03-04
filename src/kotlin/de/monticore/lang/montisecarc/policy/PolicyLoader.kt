@@ -6,9 +6,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ContentIterator
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.libraries.LibraryUtil
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.util.PathUtil
+import com.intellij.util.io.URLUtil
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
@@ -67,7 +69,9 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
             logger.info("found project containing msa files")
 
             logger.info("after post startup")
-            val xsd = File(PathUtil.getJarPathForClass(PolicyLoader::class.java) + "/policy_schemes/Policies_v1.xsd")
+            val jarEntryURL = URLUtil.getJarEntryURL(File(PathUtil.getJarPathForClass(PolicyLoader::class.java)), "/policy_schemes/Policies_v1.xsd")
+
+            val findFileByURL = VfsUtil.findFileByURL(jarEntryURL) ?: return
 
             logger.info("found xsd file")
             for (libraryRoot in LibraryUtil.getLibraryRoots(project, false, false)) {
@@ -82,7 +86,7 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
                         }, ContentIterator {
 
                             logger.info("found ${it.name}")
-                            if (it.name == "PolicyConfiguration.xml" && validateAgainstXSD(it.inputStream, xsd.inputStream())) {
+                            if (it.name == "PolicyConfiguration.xml" && validateAgainstXSD(it.inputStream, findFileByURL.inputStream)) {
 
                                 logger.info("is policy configuration")
                                 val factory = SAXParserFactory.newInstance()
