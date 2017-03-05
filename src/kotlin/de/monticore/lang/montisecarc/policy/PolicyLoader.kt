@@ -118,15 +118,15 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
 
     fun addGraphQueryToPolicy(queryPath: String, inputString: String): Boolean {
 
-        for ((id, name, severity, inspection, fix) in loadedPolicies) {
+        for ((_, _, _, inspection, fix) in loadedPolicies) {
 
             if (inspection?.path == queryPath) {
 
-                inspection!!.inspection = inputString
+                inspection.inspection = inputString
                 return true
             } else if (fix?.path == queryPath) {
 
-                fix!!.fix = inputString
+                fix.fix = inputString
                 return true
             }
         }
