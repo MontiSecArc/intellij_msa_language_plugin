@@ -3,6 +3,7 @@ package de.monticore.lang.montisecarc.import.data
 import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.psi.search.GlobalSearchScope
@@ -42,20 +43,24 @@ open class NewMSAFileFromImporter(val importer: Importer) : AnAction() {
 
             if (directories.isNotEmpty()) {
 
-                try {
-                    directories[0].checkCreateSubdirectory(fileName)
-                    directories[0].createSubdirectory(fileName)
-                } catch (e: Exception) {
-                }
-                val path = directories[0].subdirectories.filter { it.name == fileName }.first().virtualFile.path
+                ApplicationManager.getApplication().runWriteAction {
 
-                val (components, inPortNeededIds, outPortNeededIds) = importer.toComponents(chooseFile.inputStream, path, packageName)
+                    try {
+                        directories[0].checkCreateSubdirectory(fileName)
+                        directories[0].createSubdirectory(fileName)
+                    } catch (e: Exception) {
+                    }
 
-                components.forEach {
+                    val path = directories[0].subdirectories.filter { it.name == fileName }.first().virtualFile.path
 
-                    val modelFor = getModelFor(it, inPortNeededIds, outPortNeededIds, packageName)
-                    val file = File("$path/${it.typeName}.secarc")
-                    file.writeText(modelFor)
+                    val (components, inPortNeededIds, outPortNeededIds) = importer.toComponents(chooseFile.inputStream, path, packageName)
+
+                    components.forEach {
+
+                        val modelFor = getModelFor(it, inPortNeededIds, outPortNeededIds, packageName)
+                        val file = File("$path/${it.typeName}.secarc")
+                        file.writeText(modelFor)
+                    }
                 }
             }
         }

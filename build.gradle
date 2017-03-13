@@ -24,7 +24,7 @@ intellij {
     pluginName name
     version ideaVersion
 
-    plugins = ['com.neueda4j.intellij.plugin.cypher:2.4.1', project('GraphDatabase')]
+    plugins = ['com.neueda4j.intellij.plugin.cypher:2.4.1', project(':GraphDatabase')]
 }
 
 apply plugin: 'java'
@@ -47,6 +47,22 @@ sourceSets {
 repositories {
     mavenCentral()
     jcenter()
+}
+
+project.afterEvaluate {
+
+    def prepareSandboxTask = project.tasks.findByName("prepareSandbox")
+    prepareSandboxTask.doLast {
+
+        def libFiles = new File("$prepareSandboxTask.destinationDir/${project.name}/lib/")
+        libFiles.listFiles().each {
+
+            if(it.name.contains("kotlin")) {
+
+                delete(it)
+            }
+        }
+    }
 }
 
 dependencies {
