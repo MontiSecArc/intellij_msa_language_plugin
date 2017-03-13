@@ -24,34 +24,37 @@ import java.util.concurrent.TimeUnit
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-object GraphCache {
+class GraphCache {
 
-    val graphLoader: LoadingCache<PsiFile, GraphDatabaseService?> = Caffeine
-            .newBuilder()
-            .maximumSize(50)
-            .expireAfterAccess(5, TimeUnit.MINUTES)
-            .refreshAfterWrite(1, TimeUnit.MINUTES)
-            .build({
-                file: PsiFile -> createGraphDatabase(file)
-            })
+    companion object {
+        val graphLoader: LoadingCache<PsiFile, GraphDatabaseService?> = Caffeine
+                .newBuilder()
+                .maximumSize(50)
+                .expireAfterAccess(5, TimeUnit.MINUTES)
+                .refreshAfterWrite(1, TimeUnit.MINUTES)
+                .build({
+                    file: PsiFile ->
+                    createGraphDatabase(file)
+                })
 
-    private fun  createGraphDatabase(file: PsiFile): GraphDatabaseService? {
+        private fun createGraphDatabase(file: PsiFile): GraphDatabaseService? {
 
-        val createDatabaseQuery = GraphGenerator()
-        createDatabaseQuery.generate(file)
-        val input = createDatabaseQuery.generatedInputStream?.bufferedReader()?.use { it.readText() }
+            val createDatabaseQuery = GraphGenerator()
+            createDatabaseQuery.generate(file)
+            val input = createDatabaseQuery.generatedInputStream?.bufferedReader()?.use { it.readText() }
 
-        if(input.isNullOrEmpty()) {
+            if (input.isNullOrEmpty()) {
+                return null
+            }
+
+            try {
+                val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
+                return graphDatabase.createDatabase(input!!, "analyzer")
+            } catch (e: Exception) {
+
+                //Graph Database Plugin not installed, fail gracefully
+            }
             return null
         }
-
-        try {
-            val graphDatabase = file.project.getComponent(GraphDatabase::class.java)
-            return graphDatabase.createDatabase(input!!, "analyzer")
-        } catch (e: Exception) {
-
-            //Graph Database Plugin not installed, fail gracefully
-        }
-        return null
     }
 }

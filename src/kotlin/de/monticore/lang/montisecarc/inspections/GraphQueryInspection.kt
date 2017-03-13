@@ -14,6 +14,7 @@ import de.monticore.lang.montisecarc.psi.MSASuppressAnnotation
 import de.monticore.lang.montisecarc.psi.util.getPrevNonCommentSibling
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
+import java.util.concurrent.TimeUnit
 
 /**
  * Copyright 2016 thomasbuning
@@ -77,59 +78,74 @@ class GraphQueryInspection() : LocalInspectionTool() {
                         instance.info("Execute $graphQuery")
                         if (!graphQuery.isNullOrEmpty()) {
 
-                            val result = graphDatabaseService.execute(graphQuery)
+                            val tx = graphDatabaseService.beginTx(1, TimeUnit.MINUTES)
 
-                            if (result != null) {
+                            try {
 
-                                while (result.hasNext()) {
+                                val result = graphDatabaseService.execute(graphQuery)
 
-                                    for ((key, value) in result.next()) {
+                                if (result != null) {
 
-                                        if (value is Node && value.graphElementCanBeHighlighted()) {
+                                    while (result.hasNext()) {
 
-                                            val element_offset = value.getProperty("element_offset", "") as String
+                                        for ((key, value) in result.next()) {
 
-                                            val filePath = value.getProperty("file_path", "") as String
+                                            if (value is Node && value.graphElementCanBeHighlighted()) {
 
-                                            val sameFile = file.virtualFile.canonicalPath == filePath
+                                                val element_offset = (value.getProperty("element_offset", "0") as String).toInt()
 
-                                            if (!element_offset.isNullOrEmpty()) {
+                                                val filePath = value.getProperty("file_path", "") as String
 
-                                                val offset = element_offset.toInt()
-                                                if (offset > 0 && sameFile) {
-
-                                                    file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                if (element_offset <= 0) {
+                                                    continue
                                                 }
-                                            }
+                                                if (file.virtualFile.canonicalPath != filePath) {
+                                                    continue
+                                                }
 
-                                        } else if (value is Relationship) {
+                                                file.findElementAt(element_offset)?.highlightElement(loadedPolicy, callback)
 
-                                            val element_offset = value.getProperty("element_offset", "") as String
+                                            } else if (value is Relationship) {
 
-                                            val filePath = value.getProperty("file_path", "") as String
+                                                val element_offset = value.getProperty("element_offset", "") as String
 
-                                            val sameFile = file.virtualFile.canonicalPath == filePath
+                                                val filePath = value.getProperty("file_path", "") as String
 
-                                            if (!element_offset.isNullOrEmpty()) {
+                                                val sameFile = file.virtualFile.canonicalPath == filePath
 
-                                                val offset = element_offset.toInt()
-                                                if (offset > 0 && sameFile) {
+                                                if (!element_offset.isNullOrEmpty()) {
 
-                                                    file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                    val offset = element_offset.toInt()
+                                                    if (offset > 0 && sameFile) {
+
+                                                        file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                tx.success()
+                            } catch (e: Exception) {
+
+                                tx.failure()
+                            } finally {
+
+                                tx.close()
                             }
                         }
                     }
                 }
             } catch (e: NoClassDefFoundError) {
                 //Ignore Database Plugin not installed
+                val mes = e.localizedMessage
+            } catch (e: Exception) {
+
+                val message = e.localizedMessage
             }
         }
     }
+
     private fun PsiElement.policyIsSuppressed(loadedPolicy: Policy): Boolean {
 
         /**
@@ -146,7 +162,7 @@ class GraphQueryInspection() : LocalInspectionTool() {
             return false
         }
 
-        while(element != null && element !is MSAFile) {
+        while (element != null && element !is MSAFile) {
 
             val prevNonCommentSibling = element.getPrevNonCommentSibling()
 
@@ -155,7 +171,7 @@ class GraphQueryInspection() : LocalInspectionTool() {
                 if (findSuppressedPolicy(prevNonCommentSibling)) return true
             }
 
-            if(element.firstChild is MSASuppressAnnotation) {
+            if (element.firstChild is MSASuppressAnnotation) {
 
                 if (findSuppressedPolicy(element.firstChild as MSASuppressAnnotation)) return true
             }
@@ -169,17 +185,17 @@ class GraphQueryInspection() : LocalInspectionTool() {
     private fun PsiElement.highlightElement(loadedPolicy: Policy, callback: (PsiElement, Policy, Array<LocalQuickFix>, ProblemHighlightType) -> Unit) {
 
         var element = this
-        while(element !is MSAHighlightable && element != null) {
+        while (element !is MSAHighlightable && element != null) {
 
             element = element.parent
         }
 
-        if(element.policyIsSuppressed(loadedPolicy)) {
+        if (element.policyIsSuppressed(loadedPolicy)) {
 
             return
         }
 
-        if(element != null) {
+        if (element != null) {
 
             var arrayOfLocalQuickFixes = emptyArray<LocalQuickFix>()
             val fix = loadedPolicy.fix?.fix

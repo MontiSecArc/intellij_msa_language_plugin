@@ -74,12 +74,12 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
             val findFileByURL = VfsUtil.findFileByURL(jarEntryURL) ?: return
 
             logger.info("found xsd file")
-            for (libraryRoot in LibraryUtil.getLibraryRoots(project, false, false)) {
+            for (libraryRoot in LibraryUtil.getLibraryRoots(project, true, true)) {
 
                 val libraryEntry = LibraryUtil.findLibraryEntry(libraryRoot, project)
                 if (libraryEntry != null) {
 
-                    for (file in libraryEntry.getFiles(OrderRootType.CLASSES)) {
+                    for (file in libraryEntry.getFiles(OrderRootType.SOURCES)) {
                         VfsUtilCore.iterateChildrenRecursively(file, VirtualFileFilter {
 
                             it.name.endsWith(".jar") || it.isDirectory || it.name == "PolicyConfiguration.xml" || it.name.endsWith(".cyp")

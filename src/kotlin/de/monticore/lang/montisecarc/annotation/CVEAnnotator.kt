@@ -74,6 +74,8 @@ class CVEAnnotator : Annotator {
 
                                                     if (cvssFloatValue != null && cvssFloatValue >= 7.0) {
                                                         holder.createErrorAnnotation(o, "$summary ($cwe, CVSS: $cvss)")
+                                                    } (cvssFloatValue != null && (cvssFloatValue < 7.0 || cvssFloatValue >= 4.0 )) {
+
                                                     } else {
                                                         holder.createInfoAnnotation(o, "$summary ($cwe, CVSS: $cvss)")
                                                     }
