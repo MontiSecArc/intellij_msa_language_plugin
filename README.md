@@ -1,6 +1,7 @@
 # MontiSecArc IntelliJ Language Plugin
 ![Bildschirmfoto_2016-11-11_um_09.27.00](/resources/img/Bildschirmfoto_2016-11-11_um_09.27.00.png)
-[![Build Status](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin.svg?branch=master)](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin)
+[![Build Status](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin.svg?branch=master)](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin)[![codecov](https://codecov.io/gh/MontiSecArc/intellij_msa_language_plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/MontiSecArc/intellij_msa_language_plugin)
+
 
 This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
 
