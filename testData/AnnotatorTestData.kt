@@ -1,7 +1,3 @@
-package de.monticore.lang.montisecarc
-
-import com.intellij.testFramework.ParsingTestCase
-
 /**
  * Copyright 2017 thomasbuning
  *
@@ -18,23 +14,9 @@ import com.intellij.testFramework.ParsingTestCase
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-class ParserTests : ParsingTestCase("", "secarc", MSAParserDefinition()) {
-
-    fun testParsingTestData() {
-        doTest(true)
-    }
-
-    override fun getTestDataPath(): String {
-        return "testData"
-    }
-
-    override fun skipSpaces(): Boolean {
-        return false
-    }
-
-    override fun includeRanges(): Boolean {
-        return true
+object AnnotatorTestData {
+    @JvmStatic fun main(args: Array<String>) {
+        System.out.println("Instance a;");
+        System.out.println("<error descr=\"Unresolved property\">Instance</error> a;");
     }
 }
