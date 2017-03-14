@@ -29,7 +29,5 @@ deploy:
     repo: MontiSecArc/intellij_msa_language_plugin
     tags: true
 
-test:
-    post:
-        - if [ -e ./gradlew ]; then ./gradlew check;else gradle check;fi
-        - bash <(curl -s https://codecov.io/bash)
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
