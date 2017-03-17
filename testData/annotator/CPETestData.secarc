@@ -1,0 +1,4 @@
+component A {
+
+    <error>cpe "cpe:2.3:a:nginx:nginx:1.9.9";</error>
+}

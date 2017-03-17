@@ -1,58 +1,6 @@
 package secarc.seccds;
 
-import secarc.seccds.fe.*;
-import secarc.seccds.msg.*;
+component CashDeskSystem {
 
-@SuppressPolicy(UnusedPort)
-component CashDeskSystem extends Store {
-
-    co<caret>
-
-    trustlevel +0 "potentielle interne Angreifer";
-
-    //@SuppressPolicy(UnusedPort)
-    trustlevelrelation cashDesk < store;
-
-
-
-    trustlevelrelation bank < target;
-
-    @SuppressPolicy(UnusedPort)
-    identity weak store -> bank;
-
-    //autoconnect encrypted port;
-    //autoinstantiate on;
-    accesscontrol on;
-
-    port @SuppressPolicy(UnusedPort)
-    in Image barcode,
-    @SuppressPolicy(UnusedPort)
-    in Event endSale,
-        out ProductData outProductData;
-
-    CashDesk cashDesk[encrypted bdOut -> bank.bankData; encrypted saleInformation -> store.saleInformation];
-
-    component Bank bank {
-
-        trustlevel -1;
-
-        port in BankData bankData;
-        port out PaymentAck paymentAck;
-
-        component Teller teller {
-
-            port in BankData bTellerIn;
-        }
-    }
-
-    connect bank.bankData -> barcode;
-
-    connect store.outPData -> bank.teller.bTellerIn;
-
-    Store store[storeServer.productData -> outPData];
-
-    connect encrypted bank.paymentAck -> cashDesk.paIn;
-
-    connect encrypted store.outPData -> cashDesk.inProductData;
-
+    comp<caret>
 }

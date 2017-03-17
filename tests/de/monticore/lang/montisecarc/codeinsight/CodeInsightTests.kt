@@ -1,6 +1,5 @@
 package de.monticore.lang.montisecarc.codeinsight
 
-import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.codeStyle.CodeStyleManager
@@ -30,7 +29,7 @@ class CodeInsightTests: LightCodeInsightFixtureTestCase() {
 
     override fun getTestDataPath(): String = "testData"
 
-    fun testCompletion() {
+    /*fun testCompletion() {
 
         myFixture.configureByFile("DefaultCashDeskSystem.secarc")
         myFixture.complete(CompletionType.BASIC, 1)
@@ -42,7 +41,7 @@ class CodeInsightTests: LightCodeInsightFixtureTestCase() {
             assertTrue(strings.containsAll(listOf("component", "connect", "accesscontrol", "autoconnect", "barcode")))
             assertEquals(5, strings.size)
         }
-    }
+    }*/
 
     fun testAnnotator() {
         myFixture.configureByFiles("AnnotatorTestData.kt", "CashDeskSystem.secarc")
