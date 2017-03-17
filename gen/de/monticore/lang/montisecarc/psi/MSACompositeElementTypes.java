@@ -11,7 +11,7 @@ public interface MSACompositeElementTypes {
 
   IElementType ACCESS_CONTROL_STATEMENT = new MSACompositeElementType("ACCESS_CONTROL_STATEMENT");
   IElementType ACCESS_STATEMENT = new MSACompositeElementType("ACCESS_STATEMENT");
-  IElementType AUTO_CONNECT_STATEMENT = new MSACompositeElementType("AUTO_CONNECT_STATEMENT");
+  IElementType CLEARANCE_FOR_STATEMENT = new MSACompositeElementType("CLEARANCE_FOR_STATEMENT");
   IElementType COMPONENT_BODY = new MSACompositeElementType("COMPONENT_BODY");
   IElementType COMPONENT_DECLARATION = ElementFactoryKt.factory("COMPONENT_DECLARATION");
   IElementType COMPONENT_EXTENSION = new MSACompositeElementType("COMPONENT_EXTENSION");
@@ -61,8 +61,8 @@ public interface MSACompositeElementTypes {
       else if (type == ACCESS_STATEMENT) {
         return new MSAAccessStatementImpl(node);
       }
-      else if (type == AUTO_CONNECT_STATEMENT) {
-        return new MSAAutoConnectStatementImpl(node);
+      else if (type == CLEARANCE_FOR_STATEMENT) {
+        return new MSAClearanceForStatementImpl(node);
       }
       else if (type == COMPONENT_BODY) {
         return new MSAComponentBodyImpl(node);

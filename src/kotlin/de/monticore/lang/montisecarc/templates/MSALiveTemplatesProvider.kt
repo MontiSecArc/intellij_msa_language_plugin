@@ -25,7 +25,8 @@ class MSALiveTemplatesProvider : DefaultLiveTemplatesProvider {
             "/de/monticore/lang/montisecarc/liveTemplates/accesscontrol",
             "/de/monticore/lang/montisecarc/liveTemplates/identity",
             "/de/monticore/lang/montisecarc/liveTemplates/trustlevel",
-            "/de/monticore/lang/montisecarc/liveTemplates/trustlevelrelation"
+            "/de/monticore/lang/montisecarc/liveTemplates/trustlevelrelation",
+            "/de/monticore/lang/montisecarc/liveTemplates/clearanceFor"
     )
 
     override fun getHiddenLiveTemplateFiles(): Array<out String>? = null

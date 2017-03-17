@@ -50,6 +50,7 @@
     CPE                  =  'cpe'
     CONFIGURATION        =  'configuration'
     SUPPRESS_POLICY_TOKEN = 'SuppressPolicy'
+    CLEARANCEFOR        =  'clearanceFor'
     AT                  =   '@'
     WHITE_SPACE='regexp:\s+'
      SINGLE_LINE_COMMENT = "regexp:(//|#)[^\r\n]*"
@@ -137,8 +138,6 @@ LEVEL ::= [ PLUS | MINUS ] NUMBER
 TrustLevelRelationStatement ::= Prefix? trustlevelrelation TrustLevelIdentifier { EQUAL | LESS | GREATER } TrustLevelIdentifier semi { pin=2 methods=[StartComponent="/TrustLevelIdentifier[0]" TargetComponent="/TrustLevelIdentifier[1]"] }
 TrustLevelIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName
 
-AutoConnectStatement ::= Prefix? AUTOCONNECT [ENCRYPTED | UNENCRYPTED] { TYPE | port | OFF } semi { pin=2 }
-
 AccessStatement ::= Prefix? ACCESS AccessRoles ( COMMA AccessRoles )* semi { pin=2 }
 private AccessRoles ::= PortAccessRole | RoleName
 PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAREN)
@@ -146,11 +145,13 @@ PortAccessRole ::= (QualifiedIdentifier LPAREN RoleName ( COMMA RoleName )* RPAR
 AccessControlStatement ::= Prefix? ACCESSCONTROL { ON | OFF } semi { pin=2 }
 
 IdentityStatement ::= Prefix IDENTITY { STRONG | WEAK } IdentityIdentifier ARROW IdentityIdentifier ( COMMA IdentityIdentifier)* semi { pin=2 }
-IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName { methods=[getReferencedPort getReferencedComponent getReferencedComponentInstance] }
+IdentityIdentifier ::= (ComponentInstanceName DOT)* ComponentInstanceName { methods=[getReferencedComponent getReferencedComponentInstance] }
 
 CPEStatement ::= Prefix? CPE STRING semi { pin=2 }
 
 ConfigurationStatement ::= Prefix? CONFIGURATION ID semi { pin=2 }
+
+ClearanceForStatement ::= Stereotype? CLEARANCEFOR JavaClassReference semi { pin=2 }
 
 private Statement ::=
     ComponentDeclaration |
@@ -158,15 +159,15 @@ private Statement ::=
     TrustLevelRelationStatement |
     CPEStatement |
     ConfigurationStatement |
-    AutoConnectStatement |
     AccessControlStatement |
     PortDeclaration |
     ComponentInstanceDeclaration |
     ConnectPortStatement |
     AccessStatement |
+    ClearanceForStatement |
     IdentityStatement
 {recoverWhile=statement_recover}
-private statement_recover ::= !( '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
+private statement_recover ::= !( '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName | CLEARANCEFOR )
 
 Stereotype ::= '<<' StereoValue ("," StereoValue)* '>' '>'
 private StereoValue ::= ID ("=" STRING)?

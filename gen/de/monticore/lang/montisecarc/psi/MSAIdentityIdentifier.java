@@ -11,12 +11,6 @@ public interface MSAIdentityIdentifier extends MSACompositeElement {
   List<MSAComponentInstanceName> getComponentInstanceNameList();
 
   @Nullable
-  MSAPortInstanceName getPortInstanceName();
-
-  @Nullable
-  MSAPortElement getReferencedPort();
-
-  @Nullable
   MSAComponentDeclaration getReferencedComponent();
 
   @Nullable

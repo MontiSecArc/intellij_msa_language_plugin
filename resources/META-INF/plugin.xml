@@ -28,7 +28,7 @@
     </project-components>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="143.0"/>
+    <idea-version since-build="145.0"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -64,17 +64,23 @@
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAInvalidPackageAnnotator"/>
         <annotator language="MSA"
                    implementationClass="de.monticore.lang.montisecarc.annotation.MSAProtocolAnnotator"/>
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortTypeAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.ThirdPartyComponentAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentInstanceAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentTypAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortInstanceAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SourceTargetAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SingleStatementsAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MainComponentAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.AccessRolesAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.TrustLevelAnnotator" />
-        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.CVEAnnotator" />
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortTypeAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.ThirdPartyComponentAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentInstanceAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAComponentTypAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MSAPortInstanceAnnotator"/>
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.SourceTargetAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.SingleStatementsAnnotator"/>
+        <annotator language="MSA"
+                   implementationClass="de.monticore.lang.montisecarc.annotation.MainComponentAnnotator"/>
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.AccessRolesAnnotator"/>
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.TrustLevelAnnotator"/>
+        <annotator language="MSA" implementationClass="de.monticore.lang.montisecarc.annotation.CVEAnnotator"/>
 
         <completion.contributor language="MSA"
                                 implementationClass="de.monticore.lang.montisecarc.completion.MSAKeywordCompletionContributor"/>
@@ -111,8 +117,8 @@
     </extensions>
 
     <extensions defaultExtensionNs="de.tbuning.neo4j.graphdatabase">
-        <Neo4JGraphDatabase databaseFolder="graph_editor" withServer="true" />
-        <Neo4JGraphDatabase databaseFolder="analyzer" withServer="false" />
+        <Neo4JGraphDatabase databaseFolder="graph_editor" withServer="true"/>
+        <Neo4JGraphDatabase databaseFolder="analyzer" withServer="false"/>
     </extensions>
 
     <actions>
@@ -120,12 +126,16 @@
                 text="MSA file" description="Create new MSA file">
             <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after"/>
         </action>
-        <group id="MSAGenerators" text="Generators" description="Generator Extensions for MSA Language" popup="true">
+        <action id="MSA.InformationFlow" class="de.monticore.lang.montisecarc.actions.NewClearanceClass"
+                text="Clearance Class" description="Create new Clearance Class">
+            <add-to-group group-id="NewGroup" relative-to-action="NewFile" anchor="after"/>
+        </action>
+        <group id="de.monticore.lang.montisecarc.Generators" text="Generators" description="Generator Extensions for MSA Language" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <action id="de.monticore.lang.montisecarc.GraphQueryEditor.MSAGenerateGraph" class="de.monticore.lang.montisecarc.actions.MSAGenerateGraph"
+            <action id="de.monticore.lang.montisecarc.GraphQueryEditor.MSAGenerateGraph"
+                    class="de.monticore.lang.montisecarc.actions.MSAGenerateGraph"
                     text="Generate Graph" description="Generate Graph from MSA File">
-                <add-to-group group-id="MSAGenerators" />
-                <keyboard-shortcut first-keystroke="alt shift G" keymap="$default" />
+                <keyboard-shortcut first-keystroke="alt shift G" keymap="$default"/>
             </action>
         </group>
     </actions>

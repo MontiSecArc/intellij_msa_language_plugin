@@ -1,0 +1,13 @@
+package ${PACKAGE_NAME};
+
+public enum MSASecurityClass {
+
+    NON_CONFIDENTIAL, CONFIDENTIAL,
+    SECRET, TOP_SECRET;
+}
+
+public @interface SecurityClassification {
+
+    SecurityClass securityClass()
+            default SecurityClass.NON_CONFIDENTIAL;
+}

@@ -14,10 +14,10 @@ public interface MSAComponentBody extends MSACompositeElement {
   List<MSAAccessStatement> getAccessStatementList();
 
   @NotNull
-  List<MSAAutoConnectStatement> getAutoConnectStatementList();
+  List<MSACPEStatement> getCPEStatementList();
 
   @NotNull
-  List<MSACPEStatement> getCPEStatementList();
+  List<MSAClearanceForStatement> getClearanceForStatementList();
 
   @NotNull
   List<MSAComponentDeclaration> getComponentDeclarationList();

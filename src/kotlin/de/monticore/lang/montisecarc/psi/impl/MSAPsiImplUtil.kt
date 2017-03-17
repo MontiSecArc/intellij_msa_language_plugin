@@ -374,15 +374,6 @@ class MSAPsiImplUtil {
 
         @JvmStatic fun getPackageIdentifier(element: MSAFile): String? = element.getPackage()?.packageIdentifier
 
-        @JvmStatic fun getReferencedPort(element: MSAIdentityIdentifier): MSAPortElement? {
-
-            if (element.portInstanceName != null) {
-
-                return element.portInstanceName!!.referencedPortElement
-            }
-            return null
-        }
-
         @JvmStatic fun getReferencedComponent(element: MSAIdentityIdentifier): MSAComponentDeclaration? {
 
             if (element.componentInstanceNameList.isNotEmpty()) {
@@ -412,6 +403,7 @@ class MSAPsiImplUtil {
 
     }
 }
+
 fun MSAComponentInstanceName?.resolveToComponentDeclaration() : MSAComponentDeclaration? {
 
     if (this == null) {

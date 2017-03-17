@@ -39,15 +39,7 @@ class IdentityStatementGenerator : MSAGenerator() {
             var startIdentifier: List<String> = emptyList()
             val msaIdentityIdentifier = msaIdentityStatement.identityIdentifierList.first()
             if (msaIdentityIdentifier != null) {
-                if (msaIdentityIdentifier.portInstanceName != null) {
-
-                    val msaPortInstanceName = msaIdentityIdentifier.portInstanceName!!.references[0].resolve()
-                    val msaPortElement = PsiTreeUtil.getParentOfType(msaPortInstanceName, MSAPortElement::class.java)
-                    if (msaPortElement != null && msaPortElement is MSAPortElement) {
-
-                        startIdentifier = PortElementGenerator.createPortIdentifiers(msaPortElement)
-                    }
-                } else if (msaIdentityIdentifier.componentInstanceNameList.last() != null) {
+                if (msaIdentityIdentifier.componentInstanceNameList.last() != null) {
 
                     val componentInstanceName = msaIdentityIdentifier.componentInstanceNameList.last()
                     val msaComponentName = componentInstanceName.references[0].resolve()
@@ -69,15 +61,7 @@ class IdentityStatementGenerator : MSAGenerator() {
             msaIdentityStatement.identityIdentifierList.subList(1, msaIdentityStatement.identityIdentifierList.size).forEach {
 
                 var stopIdentifier: List<String> = emptyList()
-                if (it.portInstanceName != null) {
-
-                    val msaPortInstanceName = msaIdentityIdentifier.portInstanceName!!.references[0].resolve()
-                    val msaPortElement = PsiTreeUtil.getParentOfType(msaPortInstanceName, MSAPortElement::class.java)
-                    if (msaPortElement != null && msaPortElement is MSAPortElement) {
-
-                        stopIdentifier = PortElementGenerator.createPortIdentifiers(msaPortElement)
-                    }
-                } else if (it.componentInstanceNameList.last() != null) {
+                if (it.componentInstanceNameList.last() != null) {
 
                     val componentInstanceName = it.componentInstanceNameList.last()
                     val msaComponentName = componentInstanceName.references[0].resolve()

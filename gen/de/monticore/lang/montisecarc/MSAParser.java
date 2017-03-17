@@ -30,11 +30,11 @@ public class MSAParser implements PsiParser, LightPsiParser {
     else if (t == ACCESS_STATEMENT) {
       r = AccessStatement(b, 0);
     }
-    else if (t == AUTO_CONNECT_STATEMENT) {
-      r = AutoConnectStatement(b, 0);
-    }
     else if (t == CPE_STATEMENT) {
       r = CPEStatement(b, 0);
+    }
+    else if (t == CLEARANCE_FOR_STATEMENT) {
+      r = ClearanceForStatement(b, 0);
     }
     else if (t == COMPONENT_BODY) {
       r = ComponentBody(b, 0);
@@ -253,59 +253,6 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // Prefix? AUTOCONNECT [ENCRYPTED | UNENCRYPTED] { TYPE | port | OFF } semi
-  public static boolean AutoConnectStatement(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "AutoConnectStatement")) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, AUTO_CONNECT_STATEMENT, "<auto connect statement>");
-    r = AutoConnectStatement_0(b, l + 1);
-    r = r && consumeToken(b, AUTOCONNECT);
-    p = r; // pin = 2
-    r = r && report_error_(b, AutoConnectStatement_2(b, l + 1));
-    r = p && report_error_(b, AutoConnectStatement_3(b, l + 1)) && r;
-    r = p && semi(b, l + 1) && r;
-    exit_section_(b, l, m, r, p, null);
-    return r || p;
-  }
-
-  // Prefix?
-  private static boolean AutoConnectStatement_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "AutoConnectStatement_0")) return false;
-    Prefix(b, l + 1);
-    return true;
-  }
-
-  // [ENCRYPTED | UNENCRYPTED]
-  private static boolean AutoConnectStatement_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "AutoConnectStatement_2")) return false;
-    AutoConnectStatement_2_0(b, l + 1);
-    return true;
-  }
-
-  // ENCRYPTED | UNENCRYPTED
-  private static boolean AutoConnectStatement_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "AutoConnectStatement_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, ENCRYPTED);
-    if (!r) r = consumeToken(b, UNENCRYPTED);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // TYPE | port | OFF
-  private static boolean AutoConnectStatement_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "AutoConnectStatement_3")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, TYPE);
-    if (!r) r = consumeToken(b, PORT);
-    if (!r) r = consumeToken(b, OFF);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
   // Prefix? CPE STRING semi
   public static boolean CPEStatement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "CPEStatement")) return false;
@@ -323,6 +270,28 @@ public class MSAParser implements PsiParser, LightPsiParser {
   private static boolean CPEStatement_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "CPEStatement_0")) return false;
     Prefix(b, l + 1);
+    return true;
+  }
+
+  /* ********************************************************** */
+  // Stereotype? CLEARANCEFOR JavaClassReference semi
+  public static boolean ClearanceForStatement(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ClearanceForStatement")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, CLEARANCE_FOR_STATEMENT, "<clearance for statement>");
+    r = ClearanceForStatement_0(b, l + 1);
+    r = r && consumeToken(b, CLEARANCEFOR);
+    p = r; // pin = 2
+    r = r && report_error_(b, JavaClassReference(b, l + 1));
+    r = p && semi(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // Stereotype?
+  private static boolean ClearanceForStatement_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ClearanceForStatement_0")) return false;
+    Stereotype(b, l + 1);
     return true;
   }
 
@@ -902,7 +871,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [PackageClause] (ImportDeclaration)* ComponentDeclaration?
+  // !<<eof>> [PackageClause] (ImportDeclaration)* ComponentDeclaration?
   static boolean File(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "File")) return false;
     boolean r;
@@ -910,32 +879,43 @@ public class MSAParser implements PsiParser, LightPsiParser {
     r = File_0(b, l + 1);
     r = r && File_1(b, l + 1);
     r = r && File_2(b, l + 1);
+    r = r && File_3(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // [PackageClause]
+  // !<<eof>>
   private static boolean File_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "File_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_);
+    r = !eof(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // [PackageClause]
+  private static boolean File_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "File_1")) return false;
     PackageClause(b, l + 1);
     return true;
   }
 
   // (ImportDeclaration)*
-  private static boolean File_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "File_1")) return false;
+  private static boolean File_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "File_2")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!File_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "File_1", c)) break;
+      if (!File_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "File_2", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // (ImportDeclaration)
-  private static boolean File_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "File_1_0")) return false;
+  private static boolean File_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "File_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = ImportDeclaration(b, l + 1);
@@ -944,14 +924,14 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   // ComponentDeclaration?
-  private static boolean File_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "File_2")) return false;
+  private static boolean File_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "File_3")) return false;
     ComponentDeclaration(b, l + 1);
     return true;
   }
 
   /* ********************************************************** */
-  // (ComponentInstanceName DOT)* ComponentInstanceName  PortInstanceName?
+  // (ComponentInstanceName DOT)* ComponentInstanceName
   public static boolean IdentityIdentifier(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "IdentityIdentifier")) return false;
     if (!nextTokenIs(b, ID)) return false;
@@ -959,7 +939,6 @@ public class MSAParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = IdentityIdentifier_0(b, l + 1);
     r = r && ComponentInstanceName(b, l + 1);
-    r = r && IdentityIdentifier_2(b, l + 1);
     exit_section_(b, m, IDENTITY_IDENTIFIER, r);
     return r;
   }
@@ -985,13 +964,6 @@ public class MSAParser implements PsiParser, LightPsiParser {
     r = r && consumeToken(b, DOT);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  // PortInstanceName?
-  private static boolean IdentityIdentifier_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "IdentityIdentifier_2")) return false;
-    PortInstanceName(b, l + 1);
-    return true;
   }
 
   /* ********************************************************** */
@@ -1535,12 +1507,12 @@ public class MSAParser implements PsiParser, LightPsiParser {
   //     TrustLevelRelationStatement |
   //     CPEStatement |
   //     ConfigurationStatement |
-  //     AutoConnectStatement |
   //     AccessControlStatement |
   //     PortDeclaration |
   //     ComponentInstanceDeclaration |
   //     ConnectPortStatement |
   //     AccessStatement |
+  //     ClearanceForStatement |
   //     IdentityStatement
   static boolean Statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Statement")) return false;
@@ -1551,12 +1523,12 @@ public class MSAParser implements PsiParser, LightPsiParser {
     if (!r) r = TrustLevelRelationStatement(b, l + 1);
     if (!r) r = CPEStatement(b, l + 1);
     if (!r) r = ConfigurationStatement(b, l + 1);
-    if (!r) r = AutoConnectStatement(b, l + 1);
     if (!r) r = AccessControlStatement(b, l + 1);
     if (!r) r = PortDeclaration(b, l + 1);
     if (!r) r = ComponentInstanceDeclaration(b, l + 1);
     if (!r) r = ConnectPortStatement(b, l + 1);
     if (!r) r = AccessStatement(b, l + 1);
+    if (!r) r = ClearanceForStatement(b, l + 1);
     if (!r) r = IdentityStatement(b, l + 1);
     exit_section_(b, l, m, r, false, statement_recover_parser_);
     return r;
@@ -1904,7 +1876,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !('<<' | component | import | semi | AT)
+  // !(';' | '<<' | <<eof>> | import | component | AT)
   static boolean import_recover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "import_recover")) return false;
     boolean r;
@@ -1914,22 +1886,23 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // '<<' | component | import | semi | AT
+  // ';' | '<<' | <<eof>> | import | component | AT
   private static boolean import_recover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "import_recover_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "<<");
-    if (!r) r = consumeToken(b, COMPONENT);
+    r = consumeToken(b, SEMICOLON);
+    if (!r) r = consumeToken(b, "<<");
+    if (!r) r = eof(b, l + 1);
     if (!r) r = consumeToken(b, IMPORT);
-    if (!r) r = semi(b, l + 1);
+    if (!r) r = consumeToken(b, COMPONENT);
     if (!r) r = consumeToken(b, AT);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // !(';' | '<<' | <<eof>> | import | component | AT)
+  // !(semi | '<<' | <<eof>> | 'import' | 'component' | AT)
   static boolean package_recover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "package_recover")) return false;
     boolean r;
@@ -1939,16 +1912,16 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ';' | '<<' | <<eof>> | import | component | AT
+  // semi | '<<' | <<eof>> | 'import' | 'component' | AT
   private static boolean package_recover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "package_recover_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, SEMICOLON);
+    r = semi(b, l + 1);
     if (!r) r = consumeToken(b, "<<");
     if (!r) r = eof(b, l + 1);
-    if (!r) r = consumeToken(b, IMPORT);
-    if (!r) r = consumeToken(b, COMPONENT);
+    if (!r) r = consumeToken(b, "import");
+    if (!r) r = consumeToken(b, "component");
     if (!r) r = consumeToken(b, AT);
     exit_section_(b, m, null, r);
     return r;
@@ -2015,7 +1988,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !( '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName)
+  // !( '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName | CLEARANCEFOR )
   static boolean statement_recover(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "statement_recover")) return false;
     boolean r;
@@ -2025,7 +1998,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName
+  // '<<' | AT | semi | trustlevel | trustlevelrelation | IDENTITY | ACCESSCONTROL | ACCESS | port | component | connect | CPE | CONFIGURATION | RBRACE | ComponentName | CLEARANCEFOR
   private static boolean statement_recover_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "statement_recover_0")) return false;
     boolean r;
@@ -2045,6 +2018,7 @@ public class MSAParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, CONFIGURATION);
     if (!r) r = consumeToken(b, RBRACE);
     if (!r) r = ComponentName(b, l + 1);
+    if (!r) r = consumeToken(b, CLEARANCEFOR);
     exit_section_(b, m, null, r);
     return r;
   }

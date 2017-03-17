@@ -114,7 +114,14 @@ class MSAReferenceContributor : PsiReferenceContributor() {
 
                 val javaReference = element as de.monticore.lang.montisecarc.psi.MSAJavaReference
 
+                val msaClearanceForStatement = PsiTreeUtil.getParentOfType(element, MSAClearanceForStatement::class.java)
+
                 val import = javaReference.text
+                if (msaClearanceForStatement != null) {
+
+                    return arrayOf(MSASecurityClassEnumReference(javaReference, TextRange(0, import.length), import))
+                }
+
                 return arrayOf(MSAJavaReference(javaReference, TextRange(0, import.length), import))
             }
         })

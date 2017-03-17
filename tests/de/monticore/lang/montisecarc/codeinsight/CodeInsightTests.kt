@@ -1,7 +1,14 @@
 package de.monticore.lang.montisecarc.codeinsight
 
 import com.intellij.codeInsight.completion.CompletionType
+import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.util.TextRange
+import com.intellij.psi.codeStyle.CodeStyleManager
+import com.intellij.psi.codeStyle.CodeStyleSettingsManager
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
+import com.intellij.util.containers.ContainerUtil
+
+
 
 /**
  * Copyright 2017 thomasbuning
@@ -26,20 +33,34 @@ class CodeInsightTests: LightCodeInsightFixtureTestCase() {
     fun testCompletion() {
 
         myFixture.configureByFile("DefaultCashDeskSystem.secarc")
-        myFixture.complete(CompletionType.BASIC, 1);
-        val strings = myFixture.lookupElementStrings;
+        myFixture.complete(CompletionType.BASIC, 1)
+        val strings = myFixture.lookupElementStrings
 
         if (strings == null) {
 
         } else {
-            assertTrue(strings.containsAll(listOf("component", "connect", "accesscontrol", "autoconnect", "barcode")));
-            assertEquals(5, strings.size);
+            assertTrue(strings.containsAll(listOf("component", "connect", "accesscontrol", "autoconnect", "barcode")))
+            assertEquals(5, strings.size)
         }
     }
 
     fun testAnnotator() {
         myFixture.configureByFiles("AnnotatorTestData.kt", "CashDeskSystem.secarc")
         myFixture.checkHighlighting(false, false, true, true)
+    }
+
+    fun testFormatter() {
+        myFixture.configureByFiles("FormatterCashDeskSystem.secarc")
+        CodeStyleSettingsManager.getSettings(project).SPACE_AROUND_ASSIGNMENT_OPERATORS = true
+
+        object : WriteCommandAction.Simple<Any>(project) {
+            @Throws(Throwable::class)
+            override fun run() {
+                CodeStyleManager.getInstance(project).reformatText(myFixture.file,
+                        ContainerUtil.newArrayList<TextRange>(myFixture.file.textRange))
+            }
+        }.execute()
+        myFixture.checkResultByFile("CashDeskSystem.secarc")
     }
 
 }

@@ -3,6 +3,7 @@ package de.monticore.lang.montisecarc.psi.impl
 import com.intellij.extapi.psi.StubBasedPsiElementBase
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.SharedImplUtil
 import com.intellij.psi.stubs.IStubElementType
 import com.intellij.psi.stubs.StubBase
 import de.monticore.lang.montisecarc.psi.MSACompositeElement
@@ -31,7 +32,7 @@ abstract class MSAStubbedElementImpl<StubT : StubBase<*>> : StubBasedPsiElementB
 
     constructor(stub: StubT, nodeType: IStubElementType<*, *>) : super(stub, nodeType)
 
-    override fun getParent(): PsiElement? = parentByTree
+    override fun getParent(): PsiElement? = SharedImplUtil.getParent(this.node)
 
     override fun getReference(): MSAReference? = null
 

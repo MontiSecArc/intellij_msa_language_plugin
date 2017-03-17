@@ -12,10 +12,8 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
-import de.monticore.lang.montisecarc.psi.MSAElementFactory
-import de.monticore.lang.montisecarc.psi.MSAFile
-import de.monticore.lang.montisecarc.psi.MSAJavaReference
-import de.monticore.lang.montisecarc.psi.MSAVisitor
+import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.psi.*
 
 /**
  * Copyright 2016 Thomas Buning
@@ -39,6 +37,12 @@ class MSAPortTypeAnnotator : Annotator {
         override fun visitJavaReference(o: MSAJavaReference) {
 
             super.visitJavaReference(o)
+
+            if (PsiTreeUtil.getParentOfType(o, MSAClearanceForStatement::class.java) != null) {
+
+                return
+            }
+
             if(o.references.isEmpty()) {
 
                 createElementTypCannotBeResolvedError(o, holder)

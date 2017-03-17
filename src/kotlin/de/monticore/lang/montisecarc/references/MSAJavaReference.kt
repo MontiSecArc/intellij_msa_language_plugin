@@ -93,7 +93,7 @@ class MSAJavaReference(element: MSAJavaReference, textRange: TextRange, val refe
         val map = PsiShortNamesCache.getInstance(element.project).allClassNames.flatMap {
             className ->
             PsiShortNamesCache.getInstance(element.project).getClassesByName(className, GlobalSearchScope.allScope(element.project)).map { aClass ->
-                JavaLookupElementBuilder.forClass(aClass).withInsertHandler { insertionContext, lookupElement ->
+                JavaLookupElementBuilder.forClass(aClass).withInsertHandler { _, lookupElement ->
 
                     val psiElement = lookupElement.psiElement
                     if (psiElement != null) {

@@ -1,7 +1,10 @@
 package de.monticore.lang.montisecarc;
 
-import com.intellij.lexer.*;
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.psi.TokenType.BAD_CHARACTER;
+import static com.intellij.psi.TokenType.WHITE_SPACE;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
@@ -21,18 +24,18 @@ import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 %unicode
 
 EOL=\R
-WHITE_SPACE=\s
+WHITE_SPACE=\s+
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 SINGLE_LINE_COMMENT=("//"|#)[^\r\n]*
 MULTI_LINE_COMMENT="/"\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*+"/")
 NUMBER=[0-9]+(\.[0-9]*)?
-ID=[:letter:][a-zA-Z_0-9]*
+ID=[a-zA-Z_]+[a-zA-Z_0-9]*
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 
 %%
 <YYINITIAL> {
-  {WHITE_SPACE}              { return com.intellij.psi.TokenType.WHITE_SPACE; }
+  {WHITE_SPACE}              { return WHITE_SPACE; }
 
   "{"                        { return LBRACE; }
   "}"                        { return RBRACE; }
@@ -67,6 +70,7 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "cpe"                      { return CPE; }
   "configuration"            { return CONFIGURATION; }
   "SuppressPolicy"           { return SUPPRESS_POLICY_TOKEN; }
+  "clearanceFor"             { return CLEARANCEFOR; }
   "@"                        { return AT; }
   "."                        { return DOT; }
   "*"                        { return ASTERIX; }
@@ -75,8 +79,6 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "component"                { return COMPONENT; }
   "extends"                  { return EXTENDS; }
   "port"                     { return PORT; }
-  "WEAK_AUTH"                { return WEAK_AUTH; }
-  "STRONG_AUTH"              { return STRONG_AUTH; }
   "connect"                  { return CONNECT; }
   "trustlevel"               { return TRUSTLEVEL; }
   "trustlevelrelation"       { return TRUSTLEVELRELATION; }
@@ -89,4 +91,4 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 
 }
 
-[^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
+[^] { return BAD_CHARACTER; }

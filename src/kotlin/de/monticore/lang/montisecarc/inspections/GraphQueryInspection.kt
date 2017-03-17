@@ -88,7 +88,7 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
                                     while (result.hasNext()) {
 
-                                        for ((key, value) in result.next()) {
+                                        for ((_, value) in result.next()) {
 
                                             if (value is Node && value.graphElementCanBeHighlighted()) {
 
@@ -138,10 +138,8 @@ class GraphQueryInspection() : LocalInspectionTool() {
                 }
             } catch (e: NoClassDefFoundError) {
                 //Ignore Database Plugin not installed
-                val mes = e.localizedMessage
             } catch (e: Exception) {
 
-                val message = e.localizedMessage
             }
         }
     }

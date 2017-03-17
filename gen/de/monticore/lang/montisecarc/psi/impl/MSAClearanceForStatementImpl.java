@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
 
-public class MSAAutoConnectStatementImpl extends MSACompositeElementImpl implements MSAAutoConnectStatement {
+public class MSAClearanceForStatementImpl extends MSACompositeElementImpl implements MSAClearanceForStatement {
 
-  public MSAAutoConnectStatementImpl(ASTNode node) {
+  public MSAClearanceForStatementImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MSAVisitor visitor) {
-    visitor.visitAutoConnectStatement(this);
+    visitor.visitClearanceForStatement(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,14 +27,14 @@ public class MSAAutoConnectStatementImpl extends MSACompositeElementImpl impleme
 
   @Override
   @Nullable
-  public MSAStereotype getStereotype() {
-    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
+  public MSAJavaClassReference getJavaClassReference() {
+    return PsiTreeUtil.getChildOfType(this, MSAJavaClassReference.class);
   }
 
   @Override
   @Nullable
-  public MSASuppressAnnotation getSuppressAnnotation() {
-    return PsiTreeUtil.getChildOfType(this, MSASuppressAnnotation.class);
+  public MSAStereotype getStereotype() {
+    return PsiTreeUtil.getChildOfType(this, MSAStereotype.class);
   }
 
 }

@@ -42,7 +42,7 @@ component CashDeskSystem extends Store {
 
     CashDesk cashDesk[encrypted bdOut -> bank.bankData; encrypted saleInformation -> store.saleInformation];
 
-    component Bank bank {
+    component   Bank bank {
 
         trustlevel -1;
 
@@ -55,7 +55,7 @@ component CashDeskSystem extends Store {
         }
     }
 
-    connect bank.bankData -> barcode;
+    connect   bank.bankData -> barcode;
 
     <<test="test">> connect store.outPData -[HTTPS]-> bank.teller.bTellerIn;
 

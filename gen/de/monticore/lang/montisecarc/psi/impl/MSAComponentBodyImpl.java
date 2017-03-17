@@ -39,14 +39,14 @@ public class MSAComponentBodyImpl extends MSACompositeElementImpl implements MSA
 
   @Override
   @NotNull
-  public List<MSAAutoConnectStatement> getAutoConnectStatementList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAAutoConnectStatement.class);
+  public List<MSACPEStatement> getCPEStatementList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSACPEStatement.class);
   }
 
   @Override
   @NotNull
-  public List<MSACPEStatement> getCPEStatementList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSACPEStatement.class);
+  public List<MSAClearanceForStatement> getClearanceForStatementList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAClearanceForStatement.class);
   }
 
   @Override

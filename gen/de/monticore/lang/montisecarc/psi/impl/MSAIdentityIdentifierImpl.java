@@ -32,17 +32,6 @@ public class MSAIdentityIdentifierImpl extends MSACompositeElementImpl implement
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentInstanceName.class);
   }
 
-  @Override
-  @Nullable
-  public MSAPortInstanceName getPortInstanceName() {
-    return PsiTreeUtil.getChildOfType(this, MSAPortInstanceName.class);
-  }
-
-  @Nullable
-  public MSAPortElement getReferencedPort() {
-    return MSAPsiImplUtil.getReferencedPort(this);
-  }
-
   @Nullable
   public MSAComponentDeclaration getReferencedComponent() {
     return MSAPsiImplUtil.getReferencedComponent(this);

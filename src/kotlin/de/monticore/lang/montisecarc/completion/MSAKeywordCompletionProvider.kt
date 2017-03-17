@@ -81,7 +81,7 @@ class MSAKeywordCompletionProvider: CompletionProvider<CompletionParameters> {
 
     @Nullable
     fun createTemplateBasedInsertHandler(@NotNull templateId: String): InsertHandler<LookupElement> {
-        return InsertHandler { context, item ->
+        return InsertHandler { context, _ ->
             val template = TemplateSettings.getInstance().getTemplateById(templateId)
             val editor = context.editor
             if (template != null) {

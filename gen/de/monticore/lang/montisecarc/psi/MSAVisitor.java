@@ -14,11 +14,11 @@ public class MSAVisitor extends PsiElementVisitor {
     visitCompositeElement(o);
   }
 
-  public void visitAutoConnectStatement(@NotNull MSAAutoConnectStatement o) {
+  public void visitCPEStatement(@NotNull MSACPEStatement o) {
     visitCompositeElement(o);
   }
 
-  public void visitCPEStatement(@NotNull MSACPEStatement o) {
+  public void visitClearanceForStatement(@NotNull MSAClearanceForStatement o) {
     visitCompositeElement(o);
   }
 

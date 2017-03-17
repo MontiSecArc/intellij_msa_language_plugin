@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MSAAutoConnectStatement extends MSACompositeElement {
+public interface MSAClearanceForStatement extends MSACompositeElement {
+
+  @Nullable
+  MSAJavaClassReference getJavaClassReference();
 
   @Nullable
   MSAStereotype getStereotype();
-
-  @Nullable
-  MSASuppressAnnotation getSuppressAnnotation();
 
 }

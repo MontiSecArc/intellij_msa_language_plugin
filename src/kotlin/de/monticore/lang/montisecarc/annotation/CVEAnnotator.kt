@@ -44,13 +44,13 @@ class CVEAnnotator : Annotator {
 
                 //"https://cve.circl.lu/api/cpe2.3/cpe:2.3:a:nginx:nginx:1.9.9"
                 fun getCVE(version: String) {
-                    val (request, response, result) = "$basePath/$version/$cpeText".httpGet().responseString()
+                    val (_, _, result) = "$basePath/$version/$cpeText".httpGet().responseString()
                     //do something with response
                     when (result) {
                         is Result.Success -> {
                             if (result.value != "None") {
 
-                                val (_request, _response, _result) = "$basePath/cvefor/$cpeText".httpGet().responseString()
+                                val (_, _, _result) = "$basePath/cvefor/$cpeText".httpGet().responseString()
                                 //do something with response
                                 when (_result) {
                                     is Result.Success -> {

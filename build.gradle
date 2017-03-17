@@ -24,6 +24,10 @@ intellij {
     pluginName name
     version ideaVersion
 
+    downloadSources Boolean.valueOf(downloadIdeaSources)
+    updateSinceUntilBuild = false
+    instrumentCode = false
+
     plugins = ['com.neueda4j.intellij.plugin.cypher:2.4.1', project(':GraphDatabase')]
 }
 
