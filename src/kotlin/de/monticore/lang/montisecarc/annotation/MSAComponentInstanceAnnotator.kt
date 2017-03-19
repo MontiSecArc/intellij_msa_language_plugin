@@ -4,9 +4,9 @@ import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceDeclaration
 import de.monticore.lang.montisecarc.psi.MSAComponentInstanceName
+import de.monticore.lang.montisecarc.psi.MSAComponentSignature
 import de.monticore.lang.montisecarc.psi.MSAVisitor
 
 /**
@@ -31,7 +31,7 @@ class MSAComponentInstanceAnnotator : Annotator {
         override fun visitComponentInstanceName(o: MSAComponentInstanceName) {
 
             super.visitComponentInstanceName(o)
-            val msaComponentDeclaration = PsiTreeUtil.getParentOfType(o, MSAComponentDeclaration::class.java)
+            val msaComponentDeclaration = PsiTreeUtil.getParentOfType(o, MSAComponentSignature::class.java)
             val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(o, MSAComponentInstanceDeclaration::class.java)
 
             if(msaComponentDeclaration == null && msaComponentInstanceDeclaration == null) {

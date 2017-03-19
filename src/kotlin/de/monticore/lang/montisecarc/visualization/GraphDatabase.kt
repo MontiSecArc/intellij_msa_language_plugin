@@ -53,7 +53,7 @@ class GraphDatabase(private val project: Project) : ProjectComponent, Disposable
 
                 it.startDatabase(project.basePath.orEmpty())
             }
-        } catch (ex: NoClassDefFoundError) {
+        } catch (ex: Exception) {
 
             Logger.getInstance(GraphDatabase::class.java).info("Graph Database Plugin not installed")
         }

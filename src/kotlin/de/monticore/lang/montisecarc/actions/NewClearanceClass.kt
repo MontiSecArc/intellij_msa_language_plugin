@@ -49,9 +49,6 @@ class NewClearanceClass : CreateFileFromTemplateAction("Create New Information F
         return NEW_MSA_FILE
     }
 
-
-
-
     override fun postProcess(createdElement: PsiFile, templateName: String, customProperties: Map<String, String>?) {
 
         if (createdElement is MSAFile) {

@@ -35,7 +35,7 @@ class MSAInvalidSemanticAnnotator : Annotator {
 
             super.visitConfigurationStatement(o)
             val config = o.id?.text
-            if(!!config.isNullOrEmpty() && config!!.first().isUpperCase()) {
+            if(!config.isNullOrEmpty() && config!!.first().isUpperCase()) {
 
                 holder.createWeakWarningAnnotation(o, "Configuration names are supposed to be lower case")
             }

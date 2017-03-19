@@ -54,4 +54,9 @@ abstract class MSAPortElementImplMixin: MSAStubbedNamedElementImpl<MSAPortElemen
 
         return foundPolicyViolations
     }
+
+    override fun resetPolicyViolations() {
+
+        foundPolicyViolations.clear()
+    }
 }

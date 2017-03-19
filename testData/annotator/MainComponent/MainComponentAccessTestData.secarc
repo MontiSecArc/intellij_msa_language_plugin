@@ -1,0 +1,10 @@
+component A {
+
+    accesscontrol on;
+
+    component <error descr="Access control is activated therefore, access roles need to be defined in this component or main component">B b</error> {
+
+    }
+
+    <error descr="Access control is activated therefore, access roles need to be defined in this component or main component">A</error> a;
+}

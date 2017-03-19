@@ -93,7 +93,7 @@ class CVEAnnotator : Annotator {
                 if (cpeText.contains("cpe:2.3")) {
 
                     getCVE("cpe2.3")
-                } else if (cpeText.contains("cpe:2.2")) {
+                } else if (cpeText.contains("cpe:/")) {
 
                     getCVE("cpe2.2")
                 }

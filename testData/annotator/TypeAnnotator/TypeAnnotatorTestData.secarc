@@ -1,0 +1,6 @@
+component A {
+
+    accesscontrol off;
+
+    <error descr="Component cannot be resolved">B</error> b;
+}

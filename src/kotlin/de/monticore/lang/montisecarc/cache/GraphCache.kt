@@ -2,6 +2,7 @@ package de.monticore.lang.montisecarc.cache
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiFile
 import de.monticore.lang.montisecarc.generator.graph.GraphGenerator
 import de.monticore.lang.montisecarc.visualization.GraphDatabase
@@ -27,17 +28,7 @@ import java.util.concurrent.TimeUnit
 class GraphCache {
 
     companion object {
-        val graphLoader: LoadingCache<PsiFile, GraphDatabaseService?> = Caffeine
-                .newBuilder()
-                .maximumSize(50)
-                .expireAfterAccess(5, TimeUnit.MINUTES)
-                .refreshAfterWrite(1, TimeUnit.MINUTES)
-                .build({
-                    file: PsiFile ->
-                    createGraphDatabase(file)
-                })
-
-        private fun createGraphDatabase(file: PsiFile): GraphDatabaseService? {
+        fun createGraphDatabase(file: PsiFile): GraphDatabaseService? {
 
             val createDatabaseQuery = GraphGenerator()
             createDatabaseQuery.generate(file)

@@ -51,7 +51,11 @@ class SingleStatementsAnnotator : Annotator {
             }
             if (o.accessStatementList.size > 1) {
 
-                annotateLeftStatements(holder, "access roles statement", o.cpeStatementList)
+                annotateLeftStatements(holder, "access roles statement", o.accessStatementList)
+            }
+            if (o.clearanceForStatementList.size > 1) {
+
+                annotateLeftStatements(holder, "clearance for statement", o.clearanceForStatementList)
             }
             super.visitComponentBody(o)
         }

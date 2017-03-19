@@ -1,12 +1,20 @@
 package de.monticore.lang.montisecarc.generator.graph
 
+import com.intellij.codeInsight.lookup.LookupElementBuilder
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.search.PsiShortNamesCache
 import com.intellij.psi.util.PsiTreeUtil
+import de.monticore.lang.montisecarc.MSAFileElementType
 import de.monticore.lang.montisecarc.generator.FreeMarker
 import de.monticore.lang.montisecarc.generator.Generator
 import de.monticore.lang.montisecarc.generator.MSAGenerator
-import de.monticore.lang.montisecarc.psi.*
+import de.monticore.lang.montisecarc.psi.MSAClearanceForStatement
+import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration
+import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
+import de.monticore.lang.montisecarc.psi.MSAPortElement
 import java.io.InputStream
 
 /**
@@ -30,16 +38,18 @@ class GraphGenerator : Generator() {
     override fun getSuffix(): String = ""
 
     override fun save(parseFile: PsiFile) {
-        //Noop
     }
 
     override fun getExtension(): String = ".cyp"
 
     override fun getDisplayName(): String = "Graph Generator"
 
+
     private val trustLevels = mutableSetOf<Int>()
     private val nodes = mutableSetOf<String>()
     private val connectors = mutableSetOf<String>()
+    private val securityClasses = mutableSetOf<String>()
+    private val securityClassesConnectors = mutableSetOf<String>()
     private var referencedComponentInstances = mutableListOf<Pair<PsiFile, MSAComponentDeclaration>>()
     /**
      * Key is the super component that needs to be replaced by the value
@@ -89,6 +99,9 @@ class GraphGenerator : Generator() {
         trustLevels.forEach {
             nodes.add(TrustLevelGenerator.generateTrustLevelNode(it))
         }
+
+        nodes.addAll(securityClasses.distinct())
+        connectors.addAll(securityClassesConnectors.distinct())
 
         nodes.addAll(connectors)
 
@@ -267,115 +280,149 @@ class GraphGenerator : Generator() {
 
         registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorIdentityGenerator(), extractStringsFromList(connectors))
 
-
-        /**
-         *
-         * ToDo: Extends in Instance Declarations
-         */
-
-
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
+
+        registerGenerator(MSACompositeElementTypes.CLEARANCE_FOR_STATEMENT, ClearanceForGenerator(), extractString(securityClassesConnectors))
+
+        registerGenerator(MSAFileElementType, SecurityClassGenerator(), extractStringsFromList(securityClasses))
+
+        registerGenerator(MSAFileElementType, SecurityClassLinkGenerator(), extractStringsFromList(securityClassesConnectors))
+
+        registerGenerator(MSACompositeElementTypes.PORT_ELEMENT, SecurityClassPortConnectorGenerator(), extractStringsFromList(connectors))
 
         return this
     }
 }
 
-class ConnectorIdentityGenerator : MSAGenerator() {
-
-    fun getIdentifier(psiElement: PsiElement, componentInstanceNames: List<MSAComponentInstanceName>): String? {
-        var identifier: String? = null
-        if (componentInstanceNames.isEmpty()) {
-
-            // Source is Enclosing Component
-            val startComponent = PsiTreeUtil.getParentOfType(psiElement, MSAComponentDeclaration::class.java)
-
-            if (startComponent != null) {
-                identifier = ComponentDeclarationGenerator.createComponentIdentifier(startComponent)
-            }
-        } else {
-
-            val startComponent = componentInstanceNames.last().references[0].resolve()
-
-            if (startComponent != null) {
-
-                val msaComponentDeclaration = PsiTreeUtil.getParentOfType(startComponent, MSAComponentDeclaration::class.java)
-                val msaComponentInstanceDeclaration = PsiTreeUtil.getParentOfType(startComponent, MSAComponentInstanceDeclaration::class.java)
-
-                if (msaComponentDeclaration != null) {
-
-                    identifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
-                } else if (msaComponentInstanceDeclaration != null) {
-
-                    val msaComponentName = msaComponentInstanceDeclaration.componentNameWithTypeProjectionList.last().componentName.references[0].resolve()
-
-                    val componentDeclaration = PsiTreeUtil.getParentOfType(msaComponentName, MSAComponentDeclaration::class.java)
-
-                    if (componentDeclaration != null && componentDeclaration is MSAComponentDeclaration) {
-
-                        identifier = ComponentDeclarationGenerator.createComponentIdentifier(componentDeclaration)
-                    }
-                }
-            }
-        }
-        return identifier
-    }
+class SecurityClassPortConnectorGenerator : MSAGenerator() {
 
     override fun generate(psiElement: PsiElement): Any? {
 
-        if (psiElement is MSAConnector) {
+        val msaPortElement = psiElement as MSAPortElement
 
-            val weak = psiElement.node.findChildByType(MSATokenElementTypes.WEAK)
-            val strong = psiElement.node.findChildByType(MSATokenElementTypes.STRONG)
+        val portIdentifiers = PortElementGenerator.createPortIdentifiers(msaPortElement)
 
-            if (weak != null || strong != null) {
+        val msaJavaReference = msaPortElement.javaClassReference?.javaReferenceList?.last()
 
-                val startComponentInstanceNames = psiElement.connectSource.qualifiedIdentifier.componentInstanceNameList
+        if (msaJavaReference != null) {
 
-                val startIdentifier = getIdentifier(psiElement, startComponentInstanceNames)
-                if (!startIdentifier.isNullOrEmpty()) {
+            val references = msaJavaReference.references
 
+            if (references.isNotEmpty()) {
 
-                    val connectors = mutableListOf<String>()
+                val resolve = references.get(0).resolve()
 
-                    val link = if (weak != null) ":WEAK" else ":STRONG"
-                    psiElement.connectTargetList.forEach {
+                if (resolve != null && resolve is PsiClass) {
 
-                        val stopComponentInstanceNames = it.qualifiedIdentifier.componentInstanceNameList
+                    return resolve.modifierList?.annotations?.filter {
 
-                        val stopIdentifier = getIdentifier(psiElement, stopComponentInstanceNames)
+                        it.qualifiedName?.contains("SecurityClassification") ?: false
+                    }?.flatMap {
+                        it.parameterList.attributes.filter {
+                            it.name == "securityClass"
+                        }.map {
+                            it.value?.text?.substringAfterLast(".")
+                        }
+                    }?.filter { it != null }?.requireNoNulls()?.flatMap { securityClass ->
 
-                        if (!stopIdentifier.isNullOrEmpty()) {
+                        portIdentifiers.map {
+
                             val connector_model = mutableMapOf<String, Any>()
-                            connector_model.put("relationship_type", link)
-                            connector_model.put("start_port", startIdentifier!!)
-                            connector_model.put("target_port", stopIdentifier!!)
+                            connector_model.put("relationship_type", ":SECURITY_CLASS")
+                            connector_model.put("start_port", it)
+                            connector_model.put("target_port", securityClass)
                             connector_model.put("element_offset", psiElement.textOffset)
-                            val connector = FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
-
-                            connectors.add(connector)
+                            FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
                         }
                     }
-
-                    return connectors
                 }
             }
         }
         return null
     }
-
 }
 
-class SuperComponentGenerator : MSAGenerator() {
+class SecurityClassLinkGenerator : MSAGenerator() {
 
     override fun generate(psiElement: PsiElement): Any? {
 
-        if (psiElement is MSAComponentDeclaration) {
+        val securityLists = PsiShortNamesCache.getInstance(psiElement.project)
+                .getClassesByName("MSASecurityClass", GlobalSearchScope.allScope(psiElement.project))
+                .filter { it.isEnum }
+                .map {
+                    it.fields.filter { !it.name.isNullOrEmpty() }.map {
+                        it.name!!
+                    }
+                }
 
-            return psiElement.superComponents.map {
-                Triple(it.containingFile, it, psiElement)
+        val list = securityLists.flatMap {
+
+            it.mapIndexed { index, s ->
+                if (index + 1 < it.size) {
+
+                    val connector_model = mutableMapOf<String, Any>()
+                    connector_model.put("relationship_type", ":WEAKER")
+                    connector_model.put("start_port", s)
+                    connector_model.put("target_port", it[index + 1])
+                    connector_model.put("element_offset", psiElement.textOffset)
+                    FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
+                } else {
+                    null
+                }
+            }
+        }.filter { !it.isNullOrEmpty() }.requireNoNulls()
+
+        return list
+
+    }
+
+}
+
+class SecurityClassGenerator : MSAGenerator() {
+
+    override fun generate(psiElement: PsiElement): Any? {
+
+        return PsiShortNamesCache.getInstance(psiElement.project)
+                .getClassesByName("MSASecurityClass", GlobalSearchScope.allScope(psiElement.project))
+                .filter { it.isEnum }
+                .flatMap {
+                    it.fields.filter { !it.name.isNullOrEmpty() }.map {
+                        it.name!!
+                        val model = mutableMapOf<String, Any>()
+
+                        model.put("id", it.name!!)
+                        model.put("instance_name", it.name!!)
+
+                        val extras = mutableMapOf<String, String>()
+                        extras.put("element_offset", psiElement.textOffset.toString())
+                        extras.put("file_path", psiElement.containingFile.virtualFile.canonicalPath.orEmpty())
+                        model.put("extra_arguments", extras)
+
+                        FreeMarker(this.javaClass).generateModelOutput("ToGraph/SecurityClassMacro.ftl", model)
+                    }
+                }
+    }
+}
+
+class ClearanceForGenerator : MSAGenerator() {
+
+    override fun generate(psiElement: PsiElement): Any? {
+
+        val msaClearanceForStatement = psiElement as MSAClearanceForStatement
+        val msaComponentDeclaration = PsiTreeUtil.getParentOfType(psiElement, MSAComponentDeclaration::class.java)
+        if (msaComponentDeclaration != null) {
+            val identifier = ComponentDeclarationGenerator.createComponentIdentifier(msaComponentDeclaration)
+            val securityClass = msaClearanceForStatement.javaClassReference?.javaReferenceList?.last()?.text
+
+            if (!securityClass.isNullOrEmpty()) {
+                val connector_model = mutableMapOf<String, Any>()
+                connector_model.put("relationship_type", ":CLEARANCE_FOR")
+                connector_model.put("start_port", identifier)
+                connector_model.put("target_port", securityClass!!)
+                connector_model.put("element_offset", psiElement.textOffset)
+                return FreeMarker(this.javaClass).generateModelOutput("ToGraph/ConnectorMacro.ftl", connector_model)
             }
         }
-
         return null
     }
 }

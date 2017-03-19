@@ -1,0 +1,35 @@
+import java.lang.String;
+
+component A {
+
+    accesscontrol off;
+
+    cpe "abd";
+    configuration test;
+
+    <error descr="Component can only define one configuration statement">configuration test;</error>
+
+    trustlevel +1 'description';
+
+    <error descr="Component can only define one trustlevel statement">trustlevel +1 'description';</error>
+
+    trustlevelrelation b < c;
+
+    <error descr="Component can only define one trustlevel relation statement">trustlevelrelation c > b;</error>
+
+    <error descr="Component can only define one access control statement">accesscontrol off;</error>
+
+    <error descr="Component can only define one cpe statement">cpe "asd";</error>
+
+
+    component B b {
+
+        access policy, <warning descr="Access role should only be defined once">policy</warning>;
+
+}
+
+component C c {
+
+
+}
+}

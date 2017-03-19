@@ -49,7 +49,7 @@ class GraphQueryQuickFix(val graphQuery: String, val flawName: String) : LocalQu
     override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
 
         try {
-            val graphDatabaseService = GraphCache.graphLoader.get(descriptor.psiElement.containingFile)
+            val graphDatabaseService = GraphCache.createGraphDatabase(descriptor.psiElement.containingFile)
             if (graphDatabaseService != null) {
 
 

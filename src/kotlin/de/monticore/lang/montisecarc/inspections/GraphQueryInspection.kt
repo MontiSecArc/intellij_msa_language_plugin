@@ -4,15 +4,20 @@ import com.intellij.codeInspection.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiRecursiveElementWalkingVisitor
 import de.monticore.lang.montisecarc.analyzer.inspections.graphElementCanBeHighlighted
 import de.monticore.lang.montisecarc.cache.GraphCache
+import de.monticore.lang.montisecarc.generator.MSAPsiRecursiveElementWalkingVisitor
 import de.monticore.lang.montisecarc.policy.Policy
 import de.monticore.lang.montisecarc.policy.PolicyLoader
 import de.monticore.lang.montisecarc.psi.MSAFile
 import de.monticore.lang.montisecarc.psi.MSAHighlightable
 import de.monticore.lang.montisecarc.psi.MSASuppressAnnotation
+import de.monticore.lang.montisecarc.psi.MSAVisitor
 import de.monticore.lang.montisecarc.psi.util.getPrevNonCommentSibling
+import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
+import org.neo4j.graphdb.PropertyContainer
 import org.neo4j.graphdb.Relationship
 import java.util.concurrent.TimeUnit
 
@@ -43,105 +48,114 @@ class GraphQueryInspection() : LocalInspectionTool() {
             return null
         }
 
-        instance.info("Check File ${file.name}")
-        val problems = mutableListOf<String>()
-        val problemDescriptors = mutableListOf<ProblemDescriptor>()
-        doCheckFile(file, {
-            element, loadedPolicy, quickFixes, problemType ->
-            val problemDescriptor = manager.createProblemDescriptor(element, loadedPolicy.inspection!!.description, isOnTheFly, quickFixes, problemType)
-
-            problems.add(problemDescriptor.toString())
-            problemDescriptors.add(problemDescriptor)
-        })
-
-        instance.info("Found ${problemDescriptors.size} problems")
-
-        return problemDescriptors.toTypedArray()
+        return doCheckFile(file, manager).orEmpty().toTypedArray()
     }
 
-    private fun doCheckFile(file: PsiFile, callback: (psiElement: PsiElement, loadedPolicy: Policy, emptyArray: Array<LocalQuickFix>, problemHighlight: ProblemHighlightType) -> Unit) {
+    @Synchronized
+    private fun doCheckFile(file: PsiFile, manager: InspectionManager): List<ProblemDescriptor>? {
 
-        if (file is MSAFile) {
-
-            try {
-                val graphDatabaseService = GraphCache.graphLoader.get(file)
-                if (graphDatabaseService != null) {
-
-                    val policyLoader = file.project.getComponent(PolicyLoader::class.java)
-
-                    instance.info("Found ${policyLoader.loadedPolicies.size} policies")
-                    for (loadedPolicy in policyLoader.loadedPolicies) {
-
-
-                        val graphQuery = loadedPolicy.inspection!!.inspection.orEmpty()
-
-                        instance.info("Execute $graphQuery")
-                        if (!graphQuery.isNullOrEmpty()) {
-
-                            val tx = graphDatabaseService.beginTx(1, TimeUnit.MINUTES)
-
-                            try {
-
-                                val result = graphDatabaseService.execute(graphQuery)
-
-                                if (result != null) {
-
-                                    while (result.hasNext()) {
-
-                                        for ((_, value) in result.next()) {
-
-                                            if (value is Node && value.graphElementCanBeHighlighted()) {
-
-                                                val element_offset = (value.getProperty("element_offset", "0") as String).toInt()
-
-                                                val filePath = value.getProperty("file_path", "") as String
-
-                                                if (element_offset <= 0) {
-                                                    continue
-                                                }
-                                                if (file.virtualFile.canonicalPath != filePath) {
-                                                    continue
-                                                }
-
-                                                file.findElementAt(element_offset)?.highlightElement(loadedPolicy, callback)
-
-                                            } else if (value is Relationship) {
-
-                                                val element_offset = value.getProperty("element_offset", "") as String
-
-                                                val filePath = value.getProperty("file_path", "") as String
-
-                                                val sameFile = file.virtualFile.canonicalPath == filePath
-
-                                                if (!element_offset.isNullOrEmpty()) {
-
-                                                    val offset = element_offset.toInt()
-                                                    if (offset > 0 && sameFile) {
-
-                                                        file.findElementAt(offset)?.highlightElement(loadedPolicy, callback)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                tx.success()
-                            } catch (e: Exception) {
-
-                                tx.failure()
-                            } finally {
-
-                                tx.close()
-                            }
-                        }
-                    }
-                }
-            } catch (e: NoClassDefFoundError) {
-                //Ignore Database Plugin not installed
-            } catch (e: Exception) {
-
-            }
+        if (file !is MSAFile) {
+            return null
         }
+        // Reset
+        resetViolations(file)
+
+        try {
+
+            val graphDatabaseService = GraphCache.createGraphDatabase(file)
+            if (graphDatabaseService != null) {
+
+                val policyLoader = file.project.getComponent(PolicyLoader::class.java)
+
+                instance.info("Found ${policyLoader.loadedPolicies.size} policies")
+                return policyLoader.loadedPolicies.flatMap{ loadedPolicy ->
+
+                    runInspection(file, graphDatabaseService, loadedPolicy).map {
+                        manager.createProblemDescriptor(it.psiElement, loadedPolicy.inspection!!.description, true, it.quickFixes, it.problemHighlight)
+                    }
+
+                }
+            }
+        } catch (e: NoClassDefFoundError) {
+            //Ignore Database Plugin not installed
+        } catch (e: Exception) {
+
+        }
+        return null
+    }
+
+    private fun runInspection(file: MSAFile, graphDatabaseService: GraphDatabaseService, loadedPolicy: Policy): List<HighlightElement> {
+        val graphQuery = loadedPolicy.inspection!!.inspection.orEmpty()
+
+        var highlightableElements = emptyList<HighlightElement>()
+
+        instance.info("Execute $graphQuery")
+        if (graphQuery.isNullOrEmpty()) {
+
+            return highlightableElements
+        }
+
+
+        val tx = graphDatabaseService.beginTx()
+
+        try {
+
+            val result = graphDatabaseService.execute(graphQuery)
+
+            if (result == null) {
+
+                return highlightableElements
+            }
+
+            highlightableElements = result.iterator().asSequence()
+                    .flatMap {
+                        it.values.asSequence()
+                    }
+                    .filter {
+                        (it is Node && it.graphElementCanBeHighlighted()) || it is Relationship
+                    }
+                    .map {
+
+                        it as PropertyContainer
+                        val element_offset = (it.getProperty("element_offset", "0") as String).toInt()
+
+                        val filePath = it.getProperty("file_path", "") as String
+
+                        if (element_offset > 0 && file.virtualFile.canonicalPath == filePath) {
+
+                            file.findElementAt(element_offset)?.highlightElement(loadedPolicy)
+                        } else {
+                            null
+                        }
+                    }.filter {
+                        it != null
+                    }.requireNoNulls().toList()
+
+            tx.success()
+        } catch (e: Exception) {
+
+            tx.failure()
+        } finally {
+
+            tx.close()
+        }
+
+        return highlightableElements
+    }
+
+    private fun resetViolations(file: PsiFile) {
+        file.accept(object : PsiRecursiveElementWalkingVisitor() {
+
+            override fun visitElement(element: PsiElement?) {
+
+                super.visitElement(element)
+
+                if (element is MSAHighlightable) {
+
+                    element.resetPolicyViolations()
+                }
+            }
+        })
     }
 
     private fun PsiElement.policyIsSuppressed(loadedPolicy: Policy): Boolean {
@@ -180,7 +194,12 @@ class GraphQueryInspection() : LocalInspectionTool() {
         return false
     }
 
-    private fun PsiElement.highlightElement(loadedPolicy: Policy, callback: (PsiElement, Policy, Array<LocalQuickFix>, ProblemHighlightType) -> Unit) {
+    private fun createElementHighlight(element: PsiElement, manager: InspectionManager, loadedPolicy: Policy, quickFixes: Array<LocalQuickFix>, problemType: ProblemHighlightType): ProblemDescriptor {
+
+        return manager.createProblemDescriptor(element, loadedPolicy.inspection!!.description, true, quickFixes, problemType)
+    }
+
+    private fun PsiElement.highlightElement(loadedPolicy: Policy): HighlightElement? {
 
         var element = this
         while (element !is MSAHighlightable && element != null) {
@@ -190,7 +209,7 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
         if (element.policyIsSuppressed(loadedPolicy)) {
 
-            return
+            return null
         }
 
         if (element != null) {
@@ -205,7 +224,11 @@ class GraphQueryInspection() : LocalInspectionTool() {
             }
 
             (element as MSAHighlightable).addPolicyViolation(loadedPolicy.id)
-            callback(element, loadedPolicy, arrayOfLocalQuickFixes, ProblemHighlightType.valueOf(loadedPolicy.severity))
+            return HighlightElement(element, arrayOfLocalQuickFixes, ProblemHighlightType.valueOf(loadedPolicy.severity))
         }
+
+        return null
     }
 }
+
+data class HighlightElement(val psiElement: PsiElement, val quickFixes: Array<LocalQuickFix>, val problemHighlight: ProblemHighlightType)

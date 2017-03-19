@@ -1,0 +1,17 @@
+import java.lang.String;
+
+component A {
+
+    accesscontrol off;
+
+    component B b {
+        port in String inPort;
+    }
+
+    component C c {
+        port out String outPort;
+    }
+
+    connect encrypted c.outPort -[String]-> b.inPort;
+    connect unencrypted c.outPort -[String]-> b.inPort;
+}

@@ -79,7 +79,7 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
                 val libraryEntry = LibraryUtil.findLibraryEntry(libraryRoot, project)
                 if (libraryEntry != null) {
 
-                    for (file in libraryEntry.getFiles(OrderRootType.SOURCES)) {
+                    for (file in libraryEntry.getFiles(OrderRootType.CLASSES)) {
                         VfsUtilCore.iterateChildrenRecursively(file, VirtualFileFilter {
 
                             it.name.endsWith(".jar") || it.isDirectory || it.name == "PolicyConfiguration.xml" || it.name.endsWith(".cyp")

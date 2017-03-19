@@ -1,0 +1,6 @@
+component A {
+
+    accesscontrol off;
+
+    identity weak <error descr="Component Instance cannot be resolved">b</error> -> <error descr="Component Instance cannot be resolved">c</error>;
+}

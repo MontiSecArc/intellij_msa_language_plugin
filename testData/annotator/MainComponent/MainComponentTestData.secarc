@@ -1,0 +1,3 @@
+component <error descr="Main component has either access control or access roles">A</error> {
+
+}

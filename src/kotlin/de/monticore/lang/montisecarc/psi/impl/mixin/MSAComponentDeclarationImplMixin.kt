@@ -62,4 +62,9 @@ abstract class MSAComponentDeclarationImplMixin: MSAStubbedNamedElementImpl<MSAC
         }
         return superComponents.toTypedArray()
     }
+
+    override fun resetPolicyViolations() {
+
+        foundPolicyViolations.clear()
+    }
 }

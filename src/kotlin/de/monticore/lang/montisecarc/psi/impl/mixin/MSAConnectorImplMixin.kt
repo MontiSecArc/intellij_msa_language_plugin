@@ -33,4 +33,9 @@ abstract class MSAConnectorImplMixin(node: ASTNode) : MSAConnector, ASTWrapperPs
 
         return foundPolicyViolations
     }
+
+    override fun resetPolicyViolations() {
+
+        foundPolicyViolations.clear()
+    }
 }

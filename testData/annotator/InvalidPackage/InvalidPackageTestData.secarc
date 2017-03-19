@@ -1,0 +1,6 @@
+<warning descr="Package directive does not match files location">package abc.def</warning>;
+
+component A {
+
+    accesscontrol on;
+}

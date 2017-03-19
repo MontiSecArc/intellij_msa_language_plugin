@@ -6,8 +6,7 @@ public enum MSASecurityClass {
     SECRET, TOP_SECRET;
 }
 
-public @interface SecurityClassification {
+@interface SecurityClassification {
 
-    SecurityClass securityClass()
-            default SecurityClass.NON_CONFIDENTIAL;
+    MSASecurityClass securityClass();
 }

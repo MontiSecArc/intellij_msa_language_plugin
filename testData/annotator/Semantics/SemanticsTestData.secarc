@@ -1,0 +1,12 @@
+import java.lang.String;
+
+component <weak_warning descr="Type names are supposed to be upper case">a</weak_warning> <weak_warning descr="Instance names are supposed to be lower case">A</weak_warning> {
+
+    accesscontrol off;
+
+    access <weak_warning descr="Role names are supposed to be lower case">Role</weak_warning>;
+
+    <weak_warning descr="Configuration names are supposed to be lower case">configuration Config;</weak_warning>
+
+     port in <error descr="Port Element Typ cannot be resolved">String</error> Name;
+}
