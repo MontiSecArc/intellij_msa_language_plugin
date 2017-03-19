@@ -278,8 +278,6 @@ class GraphGenerator : Generator() {
 
         registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorGenerator(), extractStringsFromList(connectors))
 
-        registerGenerator(MSACompositeElementTypes.CONNECTOR, ConnectorIdentityGenerator(), extractStringsFromList(connectors))
-
         registerGenerator(MSACompositeElementTypes.COMPONENT_DECLARATION, ComponentTrustLevelGenerator(), extractTrustLevel())
 
         registerGenerator(MSACompositeElementTypes.CLEARANCE_FOR_STATEMENT, ClearanceForGenerator(), extractString(securityClassesConnectors))
