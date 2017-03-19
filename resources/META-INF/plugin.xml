@@ -1,7 +1,7 @@
 <idea-plugin version="4">
     <id>de.monticore.lang.montisecarc.MontiSecArcLanguagePlugin</id>
     <name>MontiSecArc Language Plugin</name>
-    <version>0.8.10</version>
+    <version>0.8.16</version>
     <vendor email="thomas.buning@rwth-aachen.de"/>
 
     <description><![CDATA[
