@@ -1,6 +1,6 @@
 # MontiSecArc IntelliJ Language Plugin
 ![Bildschirmfoto_2016-11-11_um_09.27.00](/resources/img/Bildschirmfoto_2016-11-11_um_09.27.00.png)
-[![Build Status](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin.svg?branch=master)](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin)[![codecov](https://codecov.io/gh/MontiSecArc/intellij_msa_language_plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/MontiSecArc/intellij_msa_language_plugin)
+[![Build Status](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin.svg?branch=master)](https://travis-ci.org/MontiSecArc/intellij_msa_language_plugin) [![codecov](https://codecov.io/gh/MontiSecArc/intellij_msa_language_plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/MontiSecArc/intellij_msa_language_plugin)
 
 
 This projects brings the MontiSecArc language to the popular IntelliJ IDE. The plugin provides a deep integration of secure architecture files into the IDE. Allowing the fast creation of secure architectures and an plain learning curve.
@@ -85,17 +85,7 @@ component ServiceA {
 - Graph Generation (with these two plugins installed: [1](https://github.com/MontiSecArc/graphdatabase/releases/latest), [2](https://plugins.jetbrains.com/idea/plugin/8087-graph-database-support))
 
 # Create New Version
-1. Update the version property in **gradle.properties** to the new version 
-2. Execute the following gradle tasks:
-    1. build > build
-    2. build > jar
-    3. intellij > buildPlugin
-    4. publishing > artifactoryPublish
-
-*x > y* describes the task folder in the IntelliJ Gradle view where x is the folder and y the task.
-
-Publishing a new version requires a valid Artifactory user. This user needs to be created before and the credentials need to be saved as *artifactory_user* and *artifactory_password*. These two properties mustn't be checked into version control. Therefore, placing them in the global gradle.properties file is advised.
-
+New versions are automatically created by creating a new Git Tag.
 
 # Troubleshooting
 
