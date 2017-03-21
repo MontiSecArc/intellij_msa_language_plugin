@@ -1,16 +1,20 @@
-package de.monticore.lang.montisecarc.parser
+package de.monticore.lang.montisecarc.actions
 
-import com.intellij.testFramework.ParsingTestCase
-import de.monticore.lang.montisecarc.MSAParserDefinition
+import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
+import org.junit.Assert.*
 
 /**
  * Copyright 2017 thomasbuning
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *
  *
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -19,27 +23,15 @@ import de.monticore.lang.montisecarc.MSAParserDefinition
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-class ParserTests : ParsingTestCase("", "secarc", MSAParserDefinition()) {
-
-    fun testParsingTestData() {
-        doTest(true)
-    }
-
-    fun testCashDeskSystem() {
-        doTest(true)
-    }
+class MSAGenerateGraphTest: LightCodeInsightFixtureTestCase() {
 
     override fun getTestDataPath(): String {
-        return "testData/parser"
+        return "testData/actions"
     }
 
-    override fun skipSpaces(): Boolean {
-        return false
-    }
+    fun testGenerateGraphAction() {
 
-    override fun includeRanges(): Boolean {
-        return true
+        val configureByFile = myFixture.configureByFiles("CashDeskSystem.secarc", "CashDesk.secarc", "Store.secarc")
+        myFixture.testAction(MSAGenerateGraph())
     }
 }

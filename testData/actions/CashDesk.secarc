@@ -1,0 +1,29 @@
+package secarc.seccds.fe;
+
+// import message types
+import secarc.seccds.msg.*;
+import java.awt.Image;
+
+component CashDesk {
+
+    accesscontrol off;
+
+    trustlevel +1;
+
+    port in Event newSale,
+        in Image barcode,
+        out String outIdentifier,
+        in Event endSale,
+        in ProductData inProductData,
+        out ProductData outProductData;
+
+    port in Event cardPay,
+        critical in CardData,
+        critical in Integer pin,
+        critical out BankData bdOut,
+        in PaymentAck paIn,
+        out Boolean validation;
+
+    port out SaleInformation;
+
+}

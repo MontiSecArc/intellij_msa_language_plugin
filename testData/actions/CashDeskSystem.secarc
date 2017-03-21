@@ -1,0 +1,66 @@
+package Generator;
+
+import secarc.seccds.fe.*;
+import secarc.seccds.msg.*;
+
+@SuppressPolicy(UnusedPort)
+component CashDeskSystem extends Store {
+
+    trustlevel +0 "potentielle interne Angreifer";
+
+    access endSale(policy);
+
+    configuration test;
+
+    access policy;
+
+    cpe "cpe:2.3:a:nginx:nginx:1.9.9";
+
+    trustlevelrelation store > bank;
+
+    //@SuppressPolicy(UnusedPort)
+    trustlevelrelation cashDesk < store;
+
+    trustlevelrelation bank < target;
+
+    @SuppressPolicy(UnusedPort)
+    identity weak store -> bank;
+
+    //autoconnect encrypted port;
+    //autoinstantiate on;
+    accesscontrol on;
+
+    port @SuppressPolicy(UnusedPort)
+    in Image barcode,
+    @SuppressPolicy(UnusedPort)
+    in Event endSale,
+        out ProductData outProductData;
+
+    CashDesk cashDesk[encrypted bdOut -> bank.bankData; encrypted saleInformation -> store.saleInformation];
+
+    component Bank bank {
+
+        trustlevel -1;
+
+        port in BankData bankData;
+        port out PaymentAck paymentAck;
+
+        component Teller teller {
+
+            port in BankData bTellerIn;
+        }
+    }
+
+    connect bank.bankData -> barcode;
+
+    <<test="test">> connect store.outPData -[HTTPS]-> bank.teller.bTellerIn;
+
+    Store store[storeServer.productData -> outPData];
+
+    connect unencrypted bank.paymentAck -> cashDesk.paIn;
+
+    connect encrypted store.outPData -> cashDesk.inProductData;
+
+    identity strong cashDesk -> store;
+    identity weak bank -> store;
+}

@@ -1,4 +1,4 @@
-package de.monticore.lang.montisecarc.import.data
+package de.monticore.lang.montisecarc.importing.data
 
 /**
  * Copyright 2016 thomasbuning
@@ -36,38 +36,6 @@ data class Component(val id: String, val foundName: String?, var trustLevel: Int
     override fun hashCode(): Int {
         return super.hashCode()
     }
-}
-
-fun Component.findCommonAncestor(other: Component): Component? {
-
-    if (this == other) {
-        return this
-    }
-
-    var firstParent: Component? = this
-    var secondParent: Component? = other
-
-    while (secondParent != null) {
-
-        if (secondParent == firstParent) {
-
-            return firstParent
-        }
-
-        val tempParent = firstParent?.parent
-        while (firstParent != null) {
-
-            if (secondParent == firstParent) {
-
-                return firstParent
-            }
-            firstParent = firstParent.parent
-        }
-        firstParent = tempParent
-        secondParent = secondParent.parent
-    }
-
-    return secondParent
 }
 
 fun Component.getPackageIdentifier(): String {

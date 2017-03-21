@@ -51,7 +51,12 @@ class MSAGenerateGraph : AnAction() {
 
                         if (!inputText.isNullOrEmpty()) {
                             graphDatabase.createDatabase(inputText!!)
-                            Notifications.Bus.notify(Notification("MSA", "Success", "Successfully created graph database for file ${file.name}", NotificationType.INFORMATION))
+
+                            try {
+                                Notifications.Bus.notify(Notification("MSA", "Success", "Successfully created graph database for file ${file.name}", NotificationType.INFORMATION))
+                            } catch (_:Exception) {
+
+                            }
                         }
                     }
 

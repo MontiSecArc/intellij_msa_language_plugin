@@ -1,0 +1,9 @@
+package de.test;
+
+import a.b.c;
+
+component ParsingTestData extends CashDeskSystem<String> {
+
+    <<test="test">> CashDeskSystem<String> cashDeskSystem;
+
+}

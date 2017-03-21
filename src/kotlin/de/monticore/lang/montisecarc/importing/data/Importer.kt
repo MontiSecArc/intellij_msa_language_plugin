@@ -1,4 +1,4 @@
-package de.monticore.lang.montisecarc.import.data
+package de.monticore.lang.montisecarc.importing.data
 
 import java.io.InputStream
 

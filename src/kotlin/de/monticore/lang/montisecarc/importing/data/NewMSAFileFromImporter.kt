@@ -1,4 +1,4 @@
-package de.monticore.lang.montisecarc.import.data
+package de.monticore.lang.montisecarc.importing.data
 
 import com.intellij.ide.util.PackageChooserDialog
 import com.intellij.openapi.actionSystem.AnAction
@@ -8,6 +8,7 @@ import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.psi.search.GlobalSearchScope
 import de.monticore.lang.montisecarc.generator.FreeMarker
+import org.jetbrains.jps.incremental.storage.BuildTargetConfiguration
 import java.io.File
 
 /**
@@ -119,7 +120,7 @@ open class NewMSAFileFromImporter(val importer: Importer) : AnAction() {
         }
     }
 
-    private fun getModelFor(env: Component, inPortNeededIds: List<String>, outPortNeededIds: List<String>, packageIdentifier: String): String {
+    fun getModelFor(env: Component, inPortNeededIds: List<String>, outPortNeededIds: List<String>, packageIdentifier: String): String {
         val map = mutableMapOf<String, Any>()
         map.put("componentName", env.typeName)
         if (env.trustLevel != null) {
