@@ -1,7 +1,6 @@
 package de.monticore.lang.montisecarc.annotation
 
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
-import junit.framework.TestCase
 
 /**
  * Copyright 2017 thomasbuning
@@ -23,22 +22,15 @@ import junit.framework.TestCase
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class MSAInvalidPackageAnnotatorTest: LightCodeInsightFixtureTestCase() {
+class ImportClassFixTest: LightCodeInsightFixtureTestCase() {
 
     override fun getTestDataPath(): String {
         return "testData/annotator"
     }
 
-    fun testInvalidPackage() {
+    fun testInvalidPortElementTypeImport() {
 
-        myFixture.configureByFiles("InvalidPackage/InvalidPackageTestData.secarc")
+        myFixture.configureByFiles("InvalidPackage/ImportPortTypeTest.secarc")
         myFixture.checkHighlighting(false, false, true, true)
-
-        val allQuickFixes = myFixture.getAllQuickFixes()
-
-        TestCase.assertEquals(allQuickFixes.size, 1)
-
-        myFixture.launchAction(allQuickFixes[0])
-        myFixture.checkResultByFile("InvalidPackage/InvalidPackageTestData.secarc", "InvalidPackage/InvalidPackageTestDataFixed.secarc", false);
     }
 }

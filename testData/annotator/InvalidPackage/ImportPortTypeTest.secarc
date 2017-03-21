@@ -1,0 +1,8 @@
+package InvalidPackage;
+
+component ImportPortTypeTest {
+
+    accesscontrol off;
+
+    port in <error>String</error> test;
+}

@@ -1,0 +1,9 @@
+package InvalidPackage;
+import org.neo4j.codegen.ExpressionToString;
+
+component ImportPortTypeTest {
+
+    accesscontrol off;
+
+    port in String test;
+}

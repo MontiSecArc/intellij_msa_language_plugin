@@ -1,0 +1,6 @@
+package InvalidPackage;
+
+component A {
+
+    accesscontrol on;
+}
