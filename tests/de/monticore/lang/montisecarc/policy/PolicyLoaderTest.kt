@@ -33,6 +33,6 @@ class PolicyLoaderTest: LightCodeInsightFixtureTestCase() {
 
         //ToDo add XSD
         //ToDo add Library
-        myFixture.configureFromTempProjectFile()
+        //myFixture.configureFromTempProjectFile()
     }
 }
