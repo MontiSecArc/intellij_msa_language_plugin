@@ -31,7 +31,6 @@ public interface MSATokenElementTypes {
   MSATokenType COMMA = new MSATokenType(",");
   MSATokenType DOT = new MSATokenType(".");
   MSATokenType EXTENDS = new MSATokenType("extends");
-  MSATokenType FILTER = new MSATokenType("filter");
   MSATokenType GREATER = new MSATokenType(">");
   MSATokenType ID = new MSATokenType("ID");
   MSATokenType LBRACE = new MSATokenType("{");
@@ -46,15 +45,12 @@ public interface MSATokenElementTypes {
   MSATokenType SEMICOLON = new MSATokenType(";");
   MSATokenType SEMICOLON_SYNTHETIC = new MSATokenType("<NL>");
   MSATokenType STRING = new MSATokenType("STRING");
-  MSATokenType SUPER = new MSATokenType("super");
 
   // Attributes
   MSATokenType STRONG = new MSATokenType("strong");
   MSATokenType TYPE = new MSATokenType("type");
   MSATokenType ENCRYPTED = new MSATokenType("encrypted");
   MSATokenType CRITICAL = new MSATokenType("critical");
-  MSATokenType STRONG_AUTH = new MSATokenType("STRONG_AUTH");
-  MSATokenType WEAK_AUTH = new MSATokenType("WEAK_AUTH");
   MSATokenType UNENCRYPTED = new MSAAttributeTokenType("unencrypted");
   MSATokenType WEAK = new MSAAttributeTokenType("weak");
 

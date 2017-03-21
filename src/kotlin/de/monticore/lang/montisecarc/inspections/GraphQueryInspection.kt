@@ -5,21 +5,17 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor
-import de.monticore.lang.montisecarc.analyzer.inspections.graphElementCanBeHighlighted
 import de.monticore.lang.montisecarc.cache.GraphCache
-import de.monticore.lang.montisecarc.generator.MSAPsiRecursiveElementWalkingVisitor
 import de.monticore.lang.montisecarc.policy.Policy
 import de.monticore.lang.montisecarc.policy.PolicyLoader
 import de.monticore.lang.montisecarc.psi.MSAFile
 import de.monticore.lang.montisecarc.psi.MSAHighlightable
 import de.monticore.lang.montisecarc.psi.MSASuppressAnnotation
-import de.monticore.lang.montisecarc.psi.MSAVisitor
 import de.monticore.lang.montisecarc.psi.util.getPrevNonCommentSibling
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.PropertyContainer
 import org.neo4j.graphdb.Relationship
-import java.util.concurrent.TimeUnit
 
 /**
  * Copyright 2016 thomasbuning
@@ -37,7 +33,7 @@ import java.util.concurrent.TimeUnit
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GraphQueryInspection() : LocalInspectionTool() {
+class GraphQueryInspection : LocalInspectionTool() {
 
     val instance = Logger.getInstance(GraphQueryInspection::class.java)
 
@@ -100,12 +96,7 @@ class GraphQueryInspection() : LocalInspectionTool() {
 
         try {
 
-            val result = graphDatabaseService.execute(graphQuery)
-
-            if (result == null) {
-
-                return highlightableElements
-            }
+            val result = graphDatabaseService.execute(graphQuery) ?: return highlightableElements
 
             highlightableElements = result.iterator().asSequence()
                     .flatMap {
@@ -192,11 +183,6 @@ class GraphQueryInspection() : LocalInspectionTool() {
         }
 
         return false
-    }
-
-    private fun createElementHighlight(element: PsiElement, manager: InspectionManager, loadedPolicy: Policy, quickFixes: Array<LocalQuickFix>, problemType: ProblemHighlightType): ProblemDescriptor {
-
-        return manager.createProblemDescriptor(element, loadedPolicy.inspection!!.description, true, quickFixes, problemType)
     }
 
     private fun PsiElement.highlightElement(loadedPolicy: Policy): HighlightElement? {

@@ -2,14 +2,9 @@ package de.monticore.lang.montisecarc.actions
 
 import com.intellij.ide.fileTemplates.DefaultTemplatePropertiesProvider
 import com.intellij.ide.fileTemplates.FileTemplate
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDirectory
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.PathUtil
-import de.monticore.lang.montisecarc.psi.impl.MSAPsiImplUtil
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import java.util.*
@@ -40,7 +35,7 @@ class MSATemplatePropertiesProvider: DefaultTemplatePropertiesProvider {
 
     @NotNull
     fun suggestPackageForDirectory(@Nullable directory: PsiDirectory?): String {
-        return getLocalPackageName(if (directory != null) directory.name else "")
+        return getLocalPackageName(directory?.name ?: "")
     }
 
     fun getLocalPackageName(@NotNull importPath: String): String {

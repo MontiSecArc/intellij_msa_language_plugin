@@ -1,7 +1,6 @@
 package de.monticore.lang.montisecarc.generator.graph
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 import de.monticore.lang.montisecarc.generator.FreeMarker
 import de.monticore.lang.montisecarc.generator.MSAGenerator
 import de.monticore.lang.montisecarc.psi.MSAComponentDeclaration

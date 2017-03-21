@@ -25,7 +25,7 @@ import de.monticore.lang.montisecarc.psi.MSAJavaReference
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class MSASecurityClassEnumReference(element: MSAJavaReference, textRange: TextRange, val reference: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
+class MSASecurityClassEnumReference(element: MSAJavaReference, textRange: TextRange) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 

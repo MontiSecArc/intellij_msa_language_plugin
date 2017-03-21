@@ -77,7 +77,7 @@ class MSAReferenceContributor : PsiReferenceContributor() {
                 }
 
                 if (!instanceName.isEmpty() && instanceName.first().isLowerCase()) {
-                    return arrayOf(MSAComponentInstanceNameReference(msaComponentInstanceName, TextRange(0, instanceName.length), instanceName))
+                    return arrayOf(MSAComponentInstanceNameReference(msaComponentInstanceName, TextRange(0, instanceName.length)))
                 } else {
                     return PsiReference.EMPTY_ARRAY
                 }
@@ -119,7 +119,7 @@ class MSAReferenceContributor : PsiReferenceContributor() {
                 val import = javaReference.text
                 if (msaClearanceForStatement != null) {
 
-                    return arrayOf(MSASecurityClassEnumReference(javaReference, TextRange(0, import.length), import))
+                    return arrayOf(MSASecurityClassEnumReference(javaReference, TextRange(0, import.length)))
                 }
 
                 return arrayOf(MSAJavaReference(javaReference, TextRange(0, import.length), import))

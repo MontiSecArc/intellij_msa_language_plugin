@@ -30,7 +30,7 @@ import de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceIndex
  * limitations under the License.
  */
 
-class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, textRange: TextRange, val reference: String) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
+class MSAComponentInstanceNameReference(val element: MSAComponentInstanceName, textRange: TextRange) : PsiReferenceBase<PsiElement>(element, textRange), PsiPolyVariantReference {
 
     override fun multiResolve(incompleteCode: Boolean): Array<out ResolveResult> {
 

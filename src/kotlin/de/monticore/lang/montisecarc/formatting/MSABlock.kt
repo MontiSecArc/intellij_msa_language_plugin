@@ -39,7 +39,7 @@ class MSABlock(node: ASTNode, wrap: Wrap?, alignment: Alignment?, @NotNull val s
 
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
 
-        return MSASpacingProcessor(child1, child2, myNode, settings).getSpacing()
+        return MSASpacingProcessor(child1, child2, settings).getSpacing()
     }
 
     override fun buildChildren(): List<Block> {

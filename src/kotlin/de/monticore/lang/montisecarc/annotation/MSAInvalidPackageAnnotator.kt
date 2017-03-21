@@ -75,7 +75,7 @@ class MSAInvalidPackageRenamePackageDirectiveFix(val actualPackage: String): Int
     }
 }
 
-class MSAInvalidPackageRemovePackageDirectiveFix(): IntentionAction {
+class MSAInvalidPackageRemovePackageDirectiveFix : IntentionAction {
     override fun getFamilyName() = "MSA"
 
     override fun startInWriteAction(): Boolean = true

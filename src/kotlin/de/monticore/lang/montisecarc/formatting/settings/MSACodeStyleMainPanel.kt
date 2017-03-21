@@ -1,7 +1,6 @@
 package de.monticore.lang.montisecarc.formatting.settings
 
 import com.intellij.application.options.TabbedLanguageCodeStylePanel
-import com.intellij.lang.Language
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import de.monticore.lang.montisecarc.MSALanguage
 

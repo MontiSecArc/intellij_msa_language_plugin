@@ -29,7 +29,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 class NewMSAFileAction : CreateFileFromTemplateAction("Create MSA file", "Create a new MSA file", MSAIcons.FILE), DumbAware {
-    val FILE_TEMPLATE = "MSA File"
     val APPLICATION_TEMPLATE = "MSA Component"
 
     private val NEW_MSA_FILE = "Create MSA File"

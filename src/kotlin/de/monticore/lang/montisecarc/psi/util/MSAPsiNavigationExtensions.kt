@@ -5,19 +5,28 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.psi.util.PsiUtilCore
 
 /**
- * Created by thomasbuning on 27.09.16.
- */
-inline fun <reified T : PsiElement> PsiElement.parentOfType(strict: Boolean = true, minStartOffset: Int = -1): T? =
+* Copyright 2017 thomasbuning
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*   http://www.apache.org/licenses/LICENSE-2.0
+*
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+        inline fun <reified T : PsiElement> PsiElement.parentOfType(strict: Boolean = true, minStartOffset: Int = -1): T? =
         PsiTreeUtil.getParentOfType(this, T::class.java, strict, minStartOffset)
 
 inline fun <reified T : PsiElement> PsiElement.childOfType(strict: Boolean = true): T? =
         PsiTreeUtil.findChildOfType(this, T::class.java, strict)
-
-inline fun <reified T : PsiElement> PsiElement.descendentsOfType(): Collection<T> =
-        PsiTreeUtil.findChildrenOfType(this, T::class.java)
 
 
 /**
@@ -26,27 +35,6 @@ inline fun <reified T : PsiElement> PsiElement.descendentsOfType(): Collection<T
 fun PsiElement?.getPrevNonCommentSibling(): PsiElement? =
         PsiTreeUtil.skipSiblingsBackward(this, PsiWhiteSpace::class.java, PsiComment::class.java)
 
-/**
- * Finds first sibling that is neither comment, nor whitespace after given element.
- */
-fun PsiElement?.getNextNonCommentSibling(): PsiElement? =
-        PsiTreeUtil.skipSiblingsForward(this, PsiWhiteSpace::class.java, PsiComment::class.java)
-
-
-
-
-/**
- * Finds two edge leaf PSI elements within given range.
- */
-private fun PsiFile.getElementRange(startOffset: Int, endOffset: Int): Pair<PsiElement, PsiElement>? {
-    val element1 = findElementAtIgnoreWhitespaceBefore(startOffset) ?: return null
-    val element2 = findElementAtIgnoreWhitespaceAfter(endOffset - 1) ?: return null
-
-    // Elements have crossed (for instance when selection was inside single whitespace block)
-    if (element1.textRange.startOffset >= element2.textRange.endOffset) return null
-
-    return element1 to element2
-}
 
 /**
  * Finds a leaf PSI element at the specified offset from the start of the text range of this node.
@@ -72,27 +60,3 @@ private fun PsiFile.findElementAtIgnoreWhitespaceAfter(offset: Int): PsiElement?
     return element
 }
 
-/**
- * Finds child of [parent] of which given element is descendant.
- */
-private fun PsiElement.getTopmostParentInside(parent: PsiElement): PsiElement {
-    if (parent == this) return this
-
-    var element = this
-    while (parent != element.parent) {
-        element = element.parent
-    }
-    return element
-}
-
-private fun collectElements(start: PsiElement, stop: PsiElement?, pred: (PsiElement) -> Boolean): Array<out PsiElement> {
-    val list = mutableListOf<PsiElement>()
-    var current = start
-    while (current != stop) {
-        if (pred(current)) {
-            list.add(current)
-        }
-        current = current.nextSibling
-    }
-    return PsiUtilCore.toPsiElementArray(list)
-}

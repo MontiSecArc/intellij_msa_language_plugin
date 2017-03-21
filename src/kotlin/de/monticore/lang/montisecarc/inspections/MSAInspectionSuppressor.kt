@@ -1,4 +1,4 @@
-package de.monticore.lang.montisecarc.analyzer.inspections
+package de.monticore.lang.montisecarc.inspections
 
 import com.intellij.codeInsight.FileModificationService
 import com.intellij.codeInsight.daemon.impl.actions.AbstractBatchSuppressByNoInspectionCommentFix

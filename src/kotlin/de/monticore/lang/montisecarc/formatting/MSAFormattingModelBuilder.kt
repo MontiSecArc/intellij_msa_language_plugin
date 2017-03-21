@@ -32,7 +32,7 @@ class MSAFormattingModelBuilder: FormattingModelBuilder {
     @NotNull
     override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {
         val psiFile = element.containingFile
-        val rootNode = if (psiFile is MSAFile) psiFile.node else element.node
+        val rootNode = (psiFile as? MSAFile)?.node ?: element.node
         val rootBlock = MSABlock(rootNode, null, null, settings)
         return DocumentBasedFormattingModel(rootBlock, element.project, settings, psiFile.fileType, psiFile)
     }

@@ -1,13 +1,9 @@
 package de.monticore.lang.montisecarc.cache
 
-import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.benmanes.caffeine.cache.LoadingCache
-import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.PsiFile
 import de.monticore.lang.montisecarc.generator.graph.GraphGenerator
 import de.monticore.lang.montisecarc.visualization.GraphDatabase
 import org.neo4j.graphdb.GraphDatabaseService
-import java.util.concurrent.TimeUnit
 
 /**
  * Copyright 2016 thomasbuning

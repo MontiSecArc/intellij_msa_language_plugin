@@ -1,11 +1,8 @@
 package de.monticore.lang.montisecarc.psi
 
 import com.intellij.extapi.psi.PsiFileBase
-import com.intellij.lang.Language
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.psi.util.CachedValuesManager
 import de.monticore.lang.montisecarc.MSAFileType
 import de.monticore.lang.montisecarc.MSALanguage
 import org.jetbrains.annotations.Nullable

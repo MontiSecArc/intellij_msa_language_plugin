@@ -8,7 +8,6 @@ import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.psi.search.GlobalSearchScope
 import de.monticore.lang.montisecarc.generator.FreeMarker
-import org.jetbrains.jps.incremental.storage.BuildTargetConfiguration
 import java.io.File
 
 /**

@@ -1,6 +1,5 @@
 package de.monticore.lang.montisecarc.generator.graph
 
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
@@ -308,7 +307,7 @@ class SecurityClassPortConnectorGenerator : MSAGenerator() {
 
             if (references.isNotEmpty()) {
 
-                val resolve = references.get(0).resolve()
+                val resolve = references[0].resolve()
 
                 if (resolve != null && resolve is PsiClass) {
 

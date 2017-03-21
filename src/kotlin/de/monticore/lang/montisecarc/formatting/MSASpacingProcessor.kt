@@ -2,7 +2,6 @@ package de.monticore.lang.montisecarc.formatting
 
 import com.intellij.formatting.Block
 import com.intellij.formatting.Spacing
-import com.intellij.lang.ASTNode
 import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.formatter.common.AbstractBlock
 import de.monticore.lang.montisecarc.psi.MSACompositeElementTypes
@@ -23,7 +22,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-class MSASpacingProcessor(val child1: Block?, val child2: Block, val myNode: ASTNode, val cmSettings: CommonCodeStyleSettings) {
+class MSASpacingProcessor(val child1: Block?, val child2: Block, val cmSettings: CommonCodeStyleSettings) {
 
 
     fun getSpacing(): Spacing? {

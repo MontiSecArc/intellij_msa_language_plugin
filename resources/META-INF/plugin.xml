@@ -110,7 +110,7 @@
                          implementationClass="de.monticore.lang.montisecarc.inspections.MSAPortTypMissingImplementationInspection"
                          displayName="Unresolved Port Type Reference" language="MSA" groupName="MSA"/>
         <lang.inspectionSuppressor language="MSA"
-                                   implementationClass="de.monticore.lang.montisecarc.analyzer.inspections.MSAInspectionSuppressor"/>
+                                   implementationClass="de.monticore.lang.montisecarc.inspections.MSAInspectionSuppressor"/>
         <localInspection implementationClass="de.monticore.lang.montisecarc.inspections.GraphQueryInspection"
                          displayName="Policy Check" groupName="MSA"/>
     </extensions>

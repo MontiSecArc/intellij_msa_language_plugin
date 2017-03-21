@@ -2,7 +2,6 @@ package de.monticore.lang.montisecarc.generator.graph
 
 import de.monticore.lang.montisecarc.generator.FreeMarker
 import de.monticore.lang.montisecarc.generator.MSAGenerator
-import java.net.URL
 
 /**
  * Copyright 2016 thomasbuning
@@ -60,10 +59,6 @@ abstract class TrustLevelGenerator: MSAGenerator() {
             return FreeMarker(this.javaClass).generateModelOutput("ToGraph/TrustlevelMacro.ftl", model)
         }
 
-        private fun getUrl(path: String): URL? {
-
-            return TrustLevelGenerator::class.java.classLoader.getResource(path)
-        }
     }
 
     fun createConnectorString(source: String, target: String): String {

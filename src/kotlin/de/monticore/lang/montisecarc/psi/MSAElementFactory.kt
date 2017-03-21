@@ -33,12 +33,8 @@ object MSAElementFactory {
     fun createConnector(project: Project, from: String, to: String, isEncrypted: Boolean) : MSAConnector {
 
         val encrypted = if (isEncrypted) "encrypted" else ""
-        return createFile(project, "component A { connect ${encrypted} $from -> $to; }").firstChild.children[1].children[0] as MSAConnector
+        return createFile(project, "component A { connect $encrypted $from -> $to; }").firstChild.children[1].children[0] as MSAConnector
     }
-
-    // ToDo: Anders erzeugen!
-    fun createIdentifier(project: Project, name: String): PsiElement =
-            createFromText<MSAPortElement>(project, "mod $name;")!!.javaClassReference!!
 
     private inline fun <reified T : MSACompositeElement> createFromText(project: Project, code: String): T? =
             PsiFileFactory.getInstance(project)
@@ -48,22 +44,6 @@ object MSAElementFactory {
     fun createFile(project: Project, text: String): MSAFile {
         val name = "dummy.secarc"
         return PsiFileFactory.getInstance(project).createFileFromText(name, MSAFileType.instance, text) as MSAFile
-    }
-
-    fun createImport(project: Project, path: String): MSAImportDeclaration {
-
-        val file = createFile(project, "import $path;\n")
-        return file.firstChild as MSAImportDeclaration
-    }
-
-    fun createConnectSourceName(project: Project, newName: String): MSAConnectSource {
-        val file = createFile(project, newName)
-        return file.firstChild as MSAConnectSource
-    }
-
-    fun createConnectTargetName(project: Project, newName: String): MSAConnectTarget{
-        val file = createFile(project, newName)
-        return file.firstChild as MSAConnectTarget
     }
 
     fun createPackageStatement(project: Project, actualPackage: String): MSAPackageClause {

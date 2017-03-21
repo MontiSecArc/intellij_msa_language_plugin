@@ -2,8 +2,8 @@ package de.test;
 
 import a.b.c;
 
-component ParsingTestData extends CashDeskSystem<String> {
+component ParsingTestData<String extends Object> extends CashDeskSystem<String> {
 
-    <<test="test">> CashDeskSystem<String> cashDeskSystem;
+    <<test="test">> CashDeskSystem<String extends Object> cashDeskSystem;
 
 }

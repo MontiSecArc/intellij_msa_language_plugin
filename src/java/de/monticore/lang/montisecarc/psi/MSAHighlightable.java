@@ -20,9 +20,9 @@ import java.util.List;
  */
 public interface MSAHighlightable extends MSACompositeElement {
 
-    public void addPolicyViolation(String violation);
+    void addPolicyViolation(String violation);
 
-    public List<String> getPolicyViolations();
+    List<String> getPolicyViolations();
 
-    public void resetPolicyViolations();
+    void resetPolicyViolations();
 }
