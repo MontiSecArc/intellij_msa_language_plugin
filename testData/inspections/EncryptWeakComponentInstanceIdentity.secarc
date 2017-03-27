@@ -1,0 +1,19 @@
+package inspections;
+
+component EncryptWeakComponentInstanceIdentity {
+
+    identity weak a -> b;
+
+    component A a {
+
+        port out Data;
+    }
+    component B b {
+
+        trustlevel +1;
+
+        port in Data;
+    }
+    connect a.data -> b.data; //Flaw
+}
+

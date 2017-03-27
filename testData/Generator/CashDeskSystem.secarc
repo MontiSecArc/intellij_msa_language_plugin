@@ -21,8 +21,6 @@ component CashDeskSystem extends Store {
     //@SuppressPolicy(UnusedPort)
     trustlevelrelation cashDesk < store;
 
-    trustlevelrelation bank < target;
-
     @SuppressPolicy(UnusedPort)
     identity weak store -> bank;
 

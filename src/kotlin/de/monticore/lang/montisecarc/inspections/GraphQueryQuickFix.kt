@@ -3,7 +3,9 @@ package de.monticore.lang.montisecarc.inspections
 import com.graphaware.tx.event.improved.api.LazyTransactionData
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemDescriptor
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiElement
 import de.monticore.lang.montisecarc.cache.GraphCache
 import de.monticore.lang.montisecarc.psi.MSAElementFactory
 import org.neo4j.graphdb.GraphDatabaseService
@@ -26,7 +28,7 @@ import org.neo4j.graphdb.event.TransactionEventHandler
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GraphQueryQuickFix(val graphQuery: String, val flawName: String) : LocalQuickFix {
+class GraphQueryQuickFix(val graphQuery: String, val flawName: String, val element: PsiElement) : LocalQuickFix {
 
     fun transactional(graphDb: GraphDatabaseService, body: GraphDatabaseService.() -> Unit) {
         val tx = graphDb.beginTx()!!
@@ -63,24 +65,26 @@ class GraphQueryQuickFix(val graphQuery: String, val flawName: String) : LocalQu
 
                         override fun beforeCommit(data: TransactionData?): Any? {
 
-                            val lazyTransactionData = LazyTransactionData(data)
-                            lazyTransactionData.allDeletedRelationships.forEach {
+                            WriteCommandAction.runWriteCommandAction(project) {
 
-                                val element_offset = it.getProperty("element_offset", "") as String
+                                val lazyTransactionData = LazyTransactionData(data)
+                                lazyTransactionData.allDeletedRelationships.forEach {
 
-                                if (!element_offset.isNullOrEmpty()) {
+                                    val element_offset = it.getProperty("element_offset", "") as String
 
-                                    descriptor.psiElement.parent.parent.node.removeChild(descriptor.psiElement.parent.node)
+                                    if (!element_offset.isNullOrEmpty()) {
+
+                                        element.parent.parent.node.removeChild(descriptor.psiElement.parent.node)
+                                    }
+                                }
+
+                                lazyTransactionData.allCreatedRelationships.forEach {
+
+                                    val msaConnector = MSAElementFactory.createConnector(project, it.startNode.getProperty("name") as String, it.endNode.getProperty("name") as String, it.type.name() == "ENCRYPTED")
+
+                                    element.parent.parent.node.addChild(msaConnector.node)
                                 }
                             }
-
-                            lazyTransactionData.allCreatedRelationships.forEach {
-
-                                val msaConnector = MSAElementFactory.createConnector(descriptor.psiElement.project, it.startNode.getProperty("instanceName") as String, it.endNode.getProperty("instanceName") as String, it.isType(org.neo4j.graphdb.RelationshipType.withName("ENCRYPTED")))
-
-                                descriptor.psiElement.parent.parent.add(msaConnector)
-                            }
-
                             return null
                         }
 

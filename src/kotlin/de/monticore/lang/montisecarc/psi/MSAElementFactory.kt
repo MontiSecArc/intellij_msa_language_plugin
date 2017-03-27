@@ -31,7 +31,7 @@ object MSAElementFactory {
     fun createConnector(project: Project, from: String, to: String, isEncrypted: Boolean) : MSAConnector {
 
         val encrypted = if (isEncrypted) "encrypted" else ""
-        return createFile(project, "component A { connect $encrypted $from -> $to; }").firstChild.children[1].children[0] as MSAConnector
+        return createFile(project, "component A { connect $encrypted $from -> $to; }").firstChild.children[1].children[0].children[0] as MSAConnector
     }
 
     fun createFile(project: Project, text: String): MSAFile {

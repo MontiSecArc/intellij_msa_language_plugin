@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Policies xmlns="http://www.tbuning.de"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.tbuning.de PolicyConfiguration.xsd">
+    <Policy id="InformationFlowPortComponent" name="Information Flow Violation between Port and Component" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/InformationFlowPortComponent.cyp</Path>
+            <ProblemDescription>Information Flow Violation between Port and Component</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="InformationFlowComponentPort" name="Information Flow Violation between Component and Port" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/InformationFlowComponentPort.cyp</Path>
+            <ProblemDescription>Information Flow Violation between Component and Port</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="InformationFlowPortPort" name="Information Flow Violation between Port and Port" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/InformationFlowPortPort.cyp</Path>
+            <ProblemDescription>Information Flow Violation between Port and Port</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="ClientTampering" name="Client Tampering" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/ClientTampering.cyp</Path>
+            <ProblemDescription>Possible Client Tampering</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="DirectAccess" name="Direct Access" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/DirectAccess.cyp</Path>
+            <ProblemDescription>Direct Access</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="AuthenticationOverUntrustedConnector" name="Authentication Over Untrusted Connector" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/AuthenticationOverUntrustedConnector.cyp</Path>
+            <ProblemDescription>Authentication Over Untrusted Connector</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="EncryptedPaths" name="Encrypted Paths" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/EncryptedPaths.cyp</Path>
+            <ProblemDescription>Encrypted Path with unencrypted parts</ProblemDescription>
+        </GraphQueryInspection>
+    </Policy>
+    <Policy id="EncryptStrongIdentity" name="Encrypt Strong and Weak Identity" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/EncryptStrongIdentity.cyp</Path>
+            <ProblemDescription>Identity link needs encryption</ProblemDescription>
+        </GraphQueryInspection>
+        <GraphQueryFix>
+            <Path>fixes/EncryptComponentInstanceIdentity.cyp</Path>
+            <FixDescription>Encrypt identity links</FixDescription>
+        </GraphQueryFix>
+    </Policy>
+    <Policy id="MultipleAccessPoints" name="Multiple Access Points" severity="INFORMATION">
+        <GraphQueryInspection>
+            <Path>inspections/MultipleAccessPoints.cyp</Path>
+            <ProblemDescription>Multiple Access Points to Component</ProblemDescription>
+        </GraphQueryInspection>
+        <GraphQueryFix>
+            <Path>fixes/MultipleAccessPoints.cyp</Path>
+            <FixDescription>Introduce Single Access Point</FixDescription>
+        </GraphQueryFix>
+    </Policy>
+    <Policy id="UntrustedConnector" name="Untrusted Connector" severity="ERROR">
+        <GraphQueryInspection>
+            <Path>inspections/UntrustedConnector.cyp</Path>
+            <ProblemDescription>Connection is untrusted</ProblemDescription>
+        </GraphQueryInspection>
+        <GraphQueryFix>
+            <Path>fixes/UntrustedConnector.cyp</Path>
+            <FixDescription>Encrypt Connector</FixDescription>
+        </GraphQueryFix>
+    </Policy>
+</Policies>

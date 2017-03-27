@@ -106,8 +106,6 @@
         <stubIndex implementation="de.monticore.lang.montisecarc.stubs.index.MSAComponentInstanceDeclarationIndex"/>
 
         <!-- Inspection -->
-        <localInspection level="WARNING" enabledByDefault="true"
-                         implementationClass="de.monticore.lang.montisecarc.inspections.MSAPortTypMissingImplementationInspection"
                          displayName="Unresolved Port Type Reference" language="MSA" groupName="MSA"/>
         <lang.inspectionSuppressor language="MSA"
                                    implementationClass="de.monticore.lang.montisecarc.inspections.MSAInspectionSuppressor"/>

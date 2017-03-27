@@ -206,7 +206,7 @@ class GraphQueryInspection : LocalInspectionTool() {
             if (!fix.isNullOrEmpty()) {
 
 
-                arrayOfLocalQuickFixes = arrayOf(GraphQueryQuickFix(fix!!, loadedPolicy.name))
+                arrayOfLocalQuickFixes = arrayOf(GraphQueryQuickFix(fix!!, loadedPolicy.name, element))
             }
 
             (element as MSAHighlightable).addPolicyViolation(loadedPolicy.id)

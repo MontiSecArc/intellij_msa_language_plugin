@@ -25,7 +25,7 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
 class MSAGenerateGraphTest: LightCodeInsightFixtureTestCase() {
 
     override fun getTestDataPath(): String {
-        return "testData/actions"
+        return "testData/Generator"
     }
 
     fun testGenerateGraphAction() {

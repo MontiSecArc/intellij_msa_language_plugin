@@ -8,6 +8,7 @@ import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.libraries.LibraryUtil
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VfsUtilCore
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileFilter
 import com.intellij.util.PathUtil
 import com.intellij.util.io.URLUtil
@@ -69,9 +70,20 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
             logger.info("found project containing msa files")
 
             logger.info("after post startup")
-            val jarEntryURL = URLUtil.getJarEntryURL(File(PathUtil.getJarPathForClass(PolicyLoader::class.java)), "/policy_schemes/Policies_v1.xsd")
+            var jarEntryURL = URLUtil.getJarEntryURL(File(PathUtil.getJarPathForClass(PolicyLoader::class.java)), "/policy_schemes/Policies_v1.xsd")
 
-            val findFileByURL = VfsUtil.findFileByURL(jarEntryURL) ?: return
+            var findFileByURL = VfsUtil.findFileByURL(jarEntryURL)?.inputStream
+
+            if (findFileByURL == null) {
+
+                jarEntryURL = PolicyLoader::class.java.classLoader.getResource("policy_schemes/Policies_v1.xsd")
+
+                findFileByURL = VfsUtil.findFileByURL(jarEntryURL)?.inputStream
+            }
+
+            if (findFileByURL == null) {
+                return
+            }
 
             logger.info("found xsd file")
             for (libraryRoot in LibraryUtil.getLibraryRoots(project, true, true)) {
@@ -86,32 +98,36 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
                         }, ContentIterator {
 
                             logger.info("found ${it.name}")
-                            if (it.name == "PolicyConfiguration.xml" && validateAgainstXSD(it.inputStream, findFileByURL.inputStream)) {
-
-                                logger.info("is policy configuration")
-                                val factory = SAXParserFactory.newInstance()
-                                val parser = factory.newSAXParser()
-                                val saxHandler = PoliciesV1SAXHandler(it.parent.path)
-                                parser.parse(it.inputStream, saxHandler)
-                                loadedPolicies.addAll(saxHandler.policies)
-
-                                for ((path, inputString) in graphQueries) {
-                                    addGraphQueryToPolicy(path, inputString)
-                                }
-                            } else if (it.name.endsWith(".cyp")) {
-
-                                val inputString = it.inputStream.bufferedReader().use { it.readText() }
-
-                                logger.info("graph query: $inputString")
-                                if (!addGraphQueryToPolicy(it.path, inputString)) {
-
-                                    graphQueries.put(it.path, inputString)
-                                }
+                            if (findFileByURL != null) {
+                                parsePolicy(findFileByURL as InputStream, it)
                             }
                             true
                         })
                     }
                 }
+            }
+        }
+    }
+
+    fun parsePolicy(xsd: InputStream, policy: VirtualFile) {
+        if (policy.name == "PolicyConfiguration.xml" && validateAgainstXSD(policy.inputStream, xsd)) {
+
+            val factory = SAXParserFactory.newInstance()
+            val parser = factory.newSAXParser()
+            val saxHandler = PoliciesV1SAXHandler(policy.parent.path)
+            parser.parse(policy.inputStream, saxHandler)
+            loadedPolicies.addAll(saxHandler.policies)
+
+            for ((path, inputString) in graphQueries) {
+                addGraphQueryToPolicy(path, inputString)
+            }
+        } else if (policy.name.endsWith(".cyp")) {
+
+            val inputString = policy.inputStream.bufferedReader().use { it.readText() }
+
+            if (!addGraphQueryToPolicy(policy.path, inputString)) {
+
+                graphQueries.put(policy.path, inputString)
             }
         }
     }
@@ -144,6 +160,11 @@ class PolicyLoader(val project: Project?) : ProjectComponent {
             return false
         }
 
+    }
+
+    fun clearLoadedPolicies() {
+
+        loadedPolicies.clear()
     }
 }
 

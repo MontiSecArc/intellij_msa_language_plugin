@@ -1,0 +1,5 @@
+package inspections;
+
+class Data {
+
+}

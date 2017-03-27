@@ -1,6 +1,7 @@
 package de.monticore.lang.montisecarc.inspections
 
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
+import de.monticore.lang.montisecarc.policy.BasePolicyTestCase
+import junit.framework.TestCase
 
 /**
  * Copyright 2017 thomasbuning
@@ -22,16 +23,22 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GraphQueryInspectionTest: LightCodeInsightFixtureTestCase() {
+class GraphQueryInspectionTest: BasePolicyTestCase() {
 
-    override fun getTestDataPath(): String {
-        return "testData/parser"
-    }
+    private var testData = "testData/inspections"
 
-    fun testGraphQueryInspection() {
+    fun testGraphQueryInspection() = withPolicies {
 
-        myFixture.configureByFiles("CashDeskSystem.secarc")
+        myFixture.configureByFiles( "$testData/EncryptStrongComponentInstanceIdentity.secarc",
+                                    "$testData/EncryptWeakComponentInstanceIdentity.secarc",
+                                    "$testData/Data.java")
         myFixture.enableInspections(GraphQueryInspection())
-        myFixture.checkHighlighting(true, true, true, true)
+        myFixture.checkHighlighting(false, false, true, false)
+
+        val allQuickFixes = myFixture.getAllQuickFixes()
+
+        TestCase.assertEquals(allQuickFixes.size, 5)
+
+        allQuickFixes.find { it.familyName == "Fix Encrypt Strong and Weak Identity" }?.invoke(myFixture.project, myFixture.editor, myFixture.file)
     }
 }

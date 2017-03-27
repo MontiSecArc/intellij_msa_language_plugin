@@ -1,7 +1,6 @@
 package de.monticore.lang.montisecarc.policy
 
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
-import org.junit.Assert.*
+import junit.framework.TestCase
 
 /**
  * Copyright 2017 thomasbuning
@@ -23,16 +22,19 @@ import org.junit.Assert.*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class PolicyLoaderTest: LightCodeInsightFixtureTestCase() {
+class PolicyLoaderTest : BasePolicyTestCase() {
 
     override fun getTestDataPath(): String {
         return "testData/policy"
     }
 
-    fun testPolicyLoader() {
+    fun testPolicyLoader() = withPolicies {
 
-        //ToDo add XSD
-        //ToDo add Library
-        //myFixture.configureFromTempProjectFile()
+
+        TestCase.assertEquals(10, it.loadedPolicies.size)
+
+        it.loadedPolicies.forEach {
+            TestCase.assertNotNull(it.inspection)
+        }
     }
 }

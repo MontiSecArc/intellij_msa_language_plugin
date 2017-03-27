@@ -1,0 +1,21 @@
+package inspections;
+
+component EncryptStrongComponentInstanceIdentity {
+
+    trustlevel 0;
+
+    identity strong a -> b;
+
+    component A a {
+
+        port out <error descr="Port Element Typ cannot be resolved">Data</error>;
+    }
+    component B b {
+
+        trustlevel +1;
+
+        port <error descr="Possible Client Tampering">in <error descr="Port Element Typ cannot be resolved">Data</error></error>;
+    }
+    connect <error descr="Identity link needs encryption">a.data -> b.data</error>; //Flaw
+}
+
