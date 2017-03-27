@@ -1,0 +1,4 @@
+gen/**
+grammars/**
+graphdatabase/**
+tests/**
