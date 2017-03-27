@@ -4,8 +4,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import de.monticore.lang.montisecarc.MSAFileType
-import de.monticore.lang.montisecarc.MSALanguage
-import de.monticore.lang.montisecarc.psi.util.childOfType
 
 /**
  *  Copyright 2016 thomasbuning
@@ -35,11 +33,6 @@ object MSAElementFactory {
         val encrypted = if (isEncrypted) "encrypted" else ""
         return createFile(project, "component A { connect $encrypted $from -> $to; }").firstChild.children[1].children[0] as MSAConnector
     }
-
-    private inline fun <reified T : MSACompositeElement> createFromText(project: Project, code: String): T? =
-            PsiFileFactory.getInstance(project)
-                    .createFileFromText("DUMMY.secarc", MSALanguage.instance, code)
-                    ?.childOfType<T>()
 
     fun createFile(project: Project, text: String): MSAFile {
         val name = "dummy.secarc"

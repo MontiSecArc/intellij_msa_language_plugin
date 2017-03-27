@@ -70,55 +70,13 @@ class MSAColorSettingsPage : ColorSettingsPage {
                 "		out ProductData outPDataNS,\n" +
                 "		in Event endSale;\n" +
                 "		\n" +
-                "	port\n" +
-                "		in Event payCash,\n" +
-                "		in Double amountMoney,\n" +
-                "		out Double outAmountChange;\n" +
-                "		\n" +
-                "	port\n" +
-                "		in Event payCard,\n" +
-                "		in CardData cardDataPC,\n" +
-                "		in Integer pinPC,\n" +
-                "		out Boolean outValidationPC;\n" +
-                "	port \n" +
-                "		in Event payOnline,\n" +
-                "		in AccountData accDataPO,\n" +
-                "		in Integer pinPO,\n" +
-                "		out Boolean outValidationPO;\n" +
-                "	\n" +
-                "	port\n" +
-                "		in Event getCash,\n" +
-                "		in CardData cDataGC,\n" +
-                "		in Integer pinGC,\n" +
-                "		out Double outAmountMoney;\n" +
-                "		\n" +
-                "	component CashDesk cashDesk;\n" +
+                "	CashDesk cashDesk;\n" +
                 "	\n" +
                 "	connect newSale -> cashDesk.newSale;\n" +
                 "	connect barcode -> cashDesk.barcode;\n" +
                 "	connect cashDesk.outPDataNS -> outPDataNS;\n" +
                 "	connect endSale -> cashDesk.endSale;\n" +
                 "	\n" +
-                "	connect payCash -> cashDesk.payCash;\n" +
-                "	connect amountMoney -> cashDesk.amountMoney;\n" +
-                "	connect cashDesk.outAmountChange -> outAmountChange;\n" +
-                "	\n" +
-                "	connect payCard -> cashDesk.payCard;\n" +
-                "	connect cardDataPC -> cashDesk.cardDataPC;\n" +
-                "	connect pinPC -> cashDesk.pinPC;\n" +
-                "	connect cashDesk.outValidationPC -> outValidationPC;\n" +
-                "\n" +
-                "	connect payOnline -> cashDesk.payOnline;\n" +
-                "	connect accDataPO -> cashDesk.accDataPO;\n" +
-                "	connect pinPO -> cashDesk.pinPO;\n" +
-                "	connect cashDesk.outValidationPO -> outValidationPO;	\n" +
-                "	\n" +
-                "	connect getCash -> cashDesk.getCash;\n" +
-                "	connect cDataGC -> cashDesk.cDataGC;\n" +
-                "	connect pinGC -> cashDesk.pinGC;\n" +
-                "	connect cashDesk.outAmountMoney -> outAmountMoney;\n" +
-                "	\n" +
-                "	// web service ports\n" +
                 "	port\n" +
                 "		in Event newOrder,\n" +
                 "		in Integer productId,\n" +
@@ -129,19 +87,6 @@ class MSAColorSettingsPage : ColorSettingsPage {
                 "		in AccountData accDataPOW,\n" +
                 "		in Integer pinPOW,\n" +
                 "		out Boolean outValidationPOW;\n" +
-                "\n" +
-                "	component WebSite webSite;\n" +
-                "	\n" +
-                "	connect newOrder -> webSite.newOrder;\n" +
-                "	connect productId -> webSite.productId;\n" +
-                "	connect webSite.outPDataNO -> outPDataNO;\n" +
-                "	connect endOrder -> webSite.endOrder;\n" +
-                "	\n" +
-                "	connect payOnlineWeb -> webSite.payOnlineWeb;\n" +
-                "	connect accDataPOW -> webSite.accDataPOW;\n" +
-                "	connect pinPOW -> webSite.pinPOW;\n" +
-                "	connect webSite.outValidationPOW -> outValidationPOW;\n" +
-                "	\n" +
                 "\n" +
                 "}"
     }

@@ -79,36 +79,35 @@ class PortElementGenerator : MSAGenerator() {
 
                 if (enclosingComponentName != null) {
 
-                    return ReferencesSearch.search(enclosingComponentName).map {
+                    return ReferencesSearch.search(enclosingComponentName).filter {
+                        it.element is MSAComponentName
+                    }.map {
 
                         var newPair: Pair<String, String>? = null
-                        val componentName = it.element
-                        if (componentName is MSAComponentName) {
 
-                            /**
-                             * Can be used in a component instance declaration or extends
-                             */
-                            val msaComponentNameWithTypeProjection = PsiTreeUtil.getParentOfType(componentName, MSAComponentNameWithTypeProjection::class.java)
-                            if (msaComponentNameWithTypeProjection != null) {
+                        /**
+                         * Can be used in a component instance declaration or extends
+                         */
+                        val msaComponentNameWithTypeProjection = PsiTreeUtil.getParentOfType(it.element, MSAComponentNameWithTypeProjection::class.java)
+                        if (msaComponentNameWithTypeProjection != null) {
 
-                                typeParameter.second.listIterator().withIndex().forEach {
+                            typeParameter.second.filter {
+                                it.text == referenceType
+                            }.listIterator().withIndex().forEach {
 
-                                    if (it.value.text == referenceType) {
+                                val typeProjectionList = msaComponentNameWithTypeProjection.typeProjections?.typeProjectionList
+                                if (typeProjectionList != null && typeProjectionList.size >= it.index) {
 
-                                        val typeProjectionList = msaComponentNameWithTypeProjection.typeProjections?.typeProjectionList
-                                        if (typeProjectionList != null && typeProjectionList.size >= it.index) {
+                                    val newReferenceType = typeProjectionList[it.index]
 
-                                            val newReferenceType = typeProjectionList[it.index]
-
-                                            val referenceTypeText = newReferenceType.text
-                                            val portInstanceName = portElementInstanceName ?: referenceTypeText.decapitalize()
-                                            newPair = Pair(referenceTypeText, portInstanceName)
-                                        }
-                                    }
-
+                                    val referenceTypeText = newReferenceType.text
+                                    val portInstanceName = portElementInstanceName ?: referenceTypeText.decapitalize()
+                                    newPair = Pair(referenceTypeText, portInstanceName)
                                 }
+
                             }
                         }
+
                         newPair
                     }.requireNoNulls()
                 }

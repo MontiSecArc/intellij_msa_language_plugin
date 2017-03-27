@@ -10,10 +10,4 @@ public interface MSAIdentityIdentifier extends MSACompositeElement {
   @NotNull
   List<MSAComponentInstanceName> getComponentInstanceNameList();
 
-  @Nullable
-  MSAComponentDeclaration getReferencedComponent();
-
-  @Nullable
-  MSAComponentInstanceDeclaration getReferencedComponentInstance();
-
 }

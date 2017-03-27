@@ -1,7 +1,6 @@
 package de.monticore.lang.montisecarc.actions
 
 import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
-import org.junit.Assert.*
 
 /**
  * Copyright 2017 thomasbuning
@@ -31,7 +30,7 @@ class MSAGenerateGraphTest: LightCodeInsightFixtureTestCase() {
 
     fun testGenerateGraphAction() {
 
-        val configureByFile = myFixture.configureByFiles("CashDeskSystem.secarc", "CashDesk.secarc", "Store.secarc")
+        myFixture.configureByFiles("CashDeskSystem.secarc", "CashDesk.secarc", "Store.secarc")
         myFixture.testAction(MSAGenerateGraph())
     }
 }

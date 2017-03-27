@@ -58,4 +58,5 @@ public class MSAPortElementImpl extends MSAPortElementImplMixin implements MSAPo
   public String getPortName() {
     return MSAPsiImplUtil.getPortName(this);
   }
+
 }

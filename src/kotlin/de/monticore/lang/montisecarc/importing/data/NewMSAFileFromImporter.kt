@@ -84,26 +84,7 @@ open class NewMSAFileFromImporter(val importer: Importer) : AnAction() {
             }
             var imports = emptyList<String>()
             if (child.connections.isNotEmpty()) {
-                val connections = child.connections.map {
-                    var from = child.getPath(it.from)
-                    var to = child.getPath(it.to)
-                    // Create Instance
-                    val mutableMap = mutableMapOf<String, String>()
-                    if (to != null) {
-                        if (!from.isNullOrEmpty()) {
-                            from += "."
-                        }
-                        if (!to.isNullOrEmpty()) {
-                            to += "."
-                        }
-                        mutableMap.put("from", from ?: "")
-                        mutableMap.put("to", to)
-                    } else {
-                        mutableMap.put("from", "")
-                        mutableMap.put("to", "${it.to.instanceName}.")
-                    }
-                    mutableMap
-                }
+                val connections = modelConntectors(child)
                 val instances = child.connections.filter { child.getPath(it.to) == null }.map {
                     val mutableMap = mutableMapOf<String, String>()
                     mutableMap.put("type", it.to.typeName)
@@ -135,26 +116,7 @@ open class NewMSAFileFromImporter(val importer: Importer) : AnAction() {
         }
         map.put("packageName", packageIdentifier)
         if (env.connections.isNotEmpty()) {
-            val connections = env.connections.map {
-                var from = env.getPath(it.from)
-                var to = env.getPath(it.to)
-                // Create Instance
-                val mutableMap = mutableMapOf<String, String>()
-                if (to != null) {
-                    if (!from.isNullOrEmpty()) {
-                        from += "."
-                    }
-                    if (!to.isNullOrEmpty()) {
-                        to += "."
-                    }
-                    mutableMap.put("from", from ?: "")
-                    mutableMap.put("to", to)
-                } else {
-                    mutableMap.put("from", "")
-                    mutableMap.put("to", "${it.to.instanceName}.")
-                }
-                mutableMap
-            }
+            val connections = modelConntectors(env)
             val instances = env.connections.filter { env.getPath(it.to) == null }.map {
                 val mutableMap = mutableMapOf<String, String>()
                 mutableMap.put("type", it.to.typeName)
@@ -168,6 +130,30 @@ open class NewMSAFileFromImporter(val importer: Importer) : AnAction() {
         val childImports = childModels.flatMap { it.second }
         map.put("imports", imports.union(childImports))
         return FreeMarker(this.javaClass).generateModelOutput("ToMSA/MSAEnvComponent.ftl", map).removeUnnecessaryFreeMarkerCharacters()
+    }
+
+    private fun modelConntectors(env: Component): List<MutableMap<String, String>> {
+        val connections = env.connections.map {
+            var from = env.getPath(it.from)
+            var to = env.getPath(it.to)
+            // Create Instance
+            val mutableMap = mutableMapOf<String, String>()
+            if (to != null) {
+                if (!from.isNullOrEmpty()) {
+                    from += "."
+                }
+                if (!to.isNullOrEmpty()) {
+                    to += "."
+                }
+                mutableMap.put("from", from ?: "")
+                mutableMap.put("to", to)
+            } else {
+                mutableMap.put("from", "")
+                mutableMap.put("to", "${it.to.instanceName}.")
+            }
+            mutableMap
+        }
+        return connections
     }
 
     private fun String.removeUnnecessaryFreeMarkerCharacters() = Regex("[\r\n]+").replace(this.trim(), "\r\n")

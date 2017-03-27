@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static de.monticore.lang.montisecarc.psi.MSACompositeElementTypes.*;
 import de.monticore.lang.montisecarc.psi.*;
-import static de.monticore.lang.montisecarc.psi.MSATokenElementTypes.*;
 
 public class MSAIdentityIdentifierImpl extends MSACompositeElementImpl implements MSAIdentityIdentifier {
 
@@ -30,16 +29,6 @@ public class MSAIdentityIdentifierImpl extends MSACompositeElementImpl implement
   @NotNull
   public List<MSAComponentInstanceName> getComponentInstanceNameList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MSAComponentInstanceName.class);
-  }
-
-  @Nullable
-  public MSAComponentDeclaration getReferencedComponent() {
-    return MSAPsiImplUtil.getReferencedComponent(this);
-  }
-
-  @Nullable
-  public MSAComponentInstanceDeclaration getReferencedComponentInstance() {
-    return MSAPsiImplUtil.getReferencedComponentInstance(this);
   }
 
 }

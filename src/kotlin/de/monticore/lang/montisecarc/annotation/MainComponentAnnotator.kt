@@ -29,26 +29,26 @@ class MainComponentAnnotator : Annotator {
         override fun visitComponentDeclaration(o: MSAComponentDeclaration) {
             super.visitComponentDeclaration(o)
 
-            val componentName = o.componentSignature?.componentNameWithType?.componentName
+            val componentName = o.componentSignature?.componentNameWithType?.componentName ?: return
+            val collection = ReferencesSearch.search(componentName).findAll()
 
-            if (componentName != null) {
-                val instanceName = o.componentSignature?.componentInstanceName
+            if (collection.isNotEmpty()) {
+                return
+            }
 
-                if (instanceName == null) {
-                    val collection = ReferencesSearch.search(componentName).findAll()
+            val instanceName = o.componentSignature?.componentInstanceName
 
-                    if (collection.isEmpty()) {
+            if (instanceName != null) {
+                return
+            }
 
-                        // Not referenced therefore, main component
-                        val peps = o.componentBody?.accessControlStatementList?.size ?: 0
-                        val roles = o.componentBody?.accessStatementList?.size ?: 0
+            // Not referenced therefore, main component
+            val peps = o.componentBody?.accessControlStatementList?.size ?: 0
+            val roles = o.componentBody?.accessStatementList?.size ?: 0
 
-                        if (peps == 0 && roles == 0) {
+            if (peps == 0 && roles == 0) {
 
-                            holder.createErrorAnnotation(o.componentSignature!!, "Main component has either access control or access roles")
-                        }
-                    }
-                }
+                holder.createErrorAnnotation(o.componentSignature!!, "Main component has either access control or access roles")
             }
         }
 

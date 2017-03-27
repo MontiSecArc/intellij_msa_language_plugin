@@ -1,5 +1,7 @@
 package de.monticore.lang.montisecarc.psi.impl
 
+import com.intellij.lang.ASTNode
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
@@ -37,27 +39,34 @@ class MSAPsiImplUtil {
         @JvmStatic fun setName(element: MSAPortInstanceName, newName: String): PsiElement {
 
             val property = MSAElementFactory.createPortInstanceName(element.project, newName)
-            val keyNode = element.node
+            val keyNode = element.firstChild.node
             val newKeyNode = property.firstChild.node
-            element.node.replaceChild(keyNode, newKeyNode)
+            replaceInWriteCommand(element, keyNode, newKeyNode)
             return element
+        }
+
+        private fun replaceInWriteCommand(element: PsiElement, keyNode: ASTNode, newKeyNode: ASTNode) {
+            WriteCommandAction.runWriteCommandAction(element.project) {
+
+                element.node.replaceChild(keyNode, newKeyNode)
+            }
         }
 
         @JvmStatic fun setName(element: MSAComponentInstanceName, newName: String): PsiElement {
 
             val property = MSAElementFactory.createPortInstanceName(element.project, newName)
-            val keyNode = element.node
+            val keyNode = element.firstChild.node
             val newKeyNode = property.firstChild.node
-            element.node.replaceChild(keyNode, newKeyNode)
+            replaceInWriteCommand(element, keyNode, newKeyNode)
             return element
         }
 
         @JvmStatic fun setName(element: MSAComponentName, newName: String): PsiElement {
 
             val property = MSAElementFactory.createPortInstanceName(element.project, newName)
-            val keyNode = element.node
+            val keyNode = element.firstChild.node
             val newKeyNode = property.firstChild.node
-            element.node.replaceChild(keyNode, newKeyNode)
+            replaceInWriteCommand(element, keyNode, newKeyNode)
             return element
         }
 
@@ -206,7 +215,7 @@ class MSAPsiImplUtil {
 
                 val typeProjectionList = it.typeProjections?.typeProjectionList
                 var typeProjectionString = ""
-                if(!typeProjectionList.isNullOrEmpty()) {
+                if (!typeProjectionList.isNullOrEmpty()) {
                     typeProjectionString = "<${typeProjectionList!!.joinToString(",")}>"
                 }
                 "${it.componentName.name}$typeProjectionString"
@@ -371,40 +380,10 @@ class MSAPsiImplUtil {
             }
             return packageIdentifier
         }
-
-        @JvmStatic fun getPackageIdentifier(element: MSAFile): String? = element.getPackage()?.packageIdentifier
-
-        @JvmStatic fun getReferencedComponent(element: MSAIdentityIdentifier): MSAComponentDeclaration? {
-
-            if (element.componentInstanceNameList.isNotEmpty()) {
-
-                val instanceName = element.componentInstanceNameList.last()
-                if (instanceName.references.isNotEmpty()) {
-
-                    return instanceName.references[0].resolve() as? MSAComponentDeclaration
-                }
-            }
-            return null
-        }
-
-        @JvmStatic fun getReferencedComponentInstance(element: MSAIdentityIdentifier): MSAComponentInstanceDeclaration? {
-
-            if (element.componentInstanceNameList.isNotEmpty()) {
-
-                val instanceName = element.componentInstanceNameList.last()
-                if (instanceName.references.isNotEmpty()) {
-
-                    return instanceName.references[0].resolve() as? MSAComponentInstanceDeclaration
-                }
-            }
-            return null
-        }
-
-
     }
 }
 
-fun MSAComponentInstanceName?.resolveToComponentDeclaration() : MSAComponentDeclaration? {
+fun MSAComponentInstanceName?.resolveToComponentDeclaration(): MSAComponentDeclaration? {
 
     if (this == null) {
 
