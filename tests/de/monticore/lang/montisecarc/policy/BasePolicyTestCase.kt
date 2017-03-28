@@ -1,6 +1,6 @@
 package de.monticore.lang.montisecarc.policy
 
-import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.JavaCodeInsightFixtureTestCase
 
 /**
  * Copyright 2017 thomasbuning
@@ -18,7 +18,7 @@ import com.intellij.testFramework.fixtures.LightCodeInsightFixtureTestCase
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-abstract class BasePolicyTestCase: LightCodeInsightFixtureTestCase() {
+abstract class BasePolicyTestCase: JavaCodeInsightFixtureTestCase() {
 
 
     private var dataPath = "testData/policy"
