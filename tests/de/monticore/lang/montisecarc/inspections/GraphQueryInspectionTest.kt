@@ -2,6 +2,7 @@ package de.monticore.lang.montisecarc.inspections
 
 import de.monticore.lang.montisecarc.policy.BasePolicyTestCase
 import junit.framework.TestCase
+import org.junit.Ignore
 
 /**
  * Copyright 2017 thomasbuning
@@ -23,6 +24,8 @@ import junit.framework.TestCase
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+//Can only be executed as a single test case else it fails
+@Ignore
 class GraphQueryInspectionTest: BasePolicyTestCase() {
 
     private var testData = "testData/inspections"

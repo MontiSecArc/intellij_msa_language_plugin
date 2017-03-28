@@ -64,14 +64,16 @@ class GraphQueryInspection : LocalInspectionTool() {
                 val policyLoader = file.project.getComponent(PolicyLoader::class.java)
 
                 instance.info("Found ${policyLoader.loadedPolicies.size} policies")
-                return policyLoader.loadedPolicies.flatMap{ loadedPolicy ->
+                val problems = policyLoader.loadedPolicies.flatMap { loadedPolicy ->
 
                     runInspection(file, graphDatabaseService, loadedPolicy).map {
                         manager.createProblemDescriptor(it.psiElement, loadedPolicy.inspection!!.description, true, it.quickFixes, it.problemHighlight)
                     }
-
                 }
+
+                return problems
             }
+
         } catch (e: NoClassDefFoundError) {
             //Ignore Database Plugin not installed
         } catch (e: Exception) {
